@@ -6,13 +6,13 @@
     "autoload": {
       "psr-4": {
         "R2Packages\\Framework\\": "framework/src/"
-      }
+      },
+      "files": [
+        "framework/src/DatabaseFn.php"
+      ]  
     },
     "require": {
       "php": ">=7.4"
-    },
-    "files": [
-      "framework/src/DatabaseFn.php"
-    ]
+    }
   }
   
