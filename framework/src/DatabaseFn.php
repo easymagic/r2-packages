@@ -1,7 +1,5 @@
 <?php
 
-use PDO;
-use PDOException;
 use R2Packages\Framework\Connection;
 
 /**
