@@ -154,7 +154,7 @@ class Route
         $found      = false;
 
         if (!isset($this->routes[$method])) {
-            Utils::dd("Request method not supported");
+            Utils::dd("Request method not supported..");
         }
 
         foreach ($this->routes[$method] as $route => $callback) {
