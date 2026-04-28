@@ -1,7 +1,5 @@
 <?php
 
-namespace R2Packages\Framework;
-
 use PDO;
 use PDOException;
 use R2Packages\Framework\Connection;
