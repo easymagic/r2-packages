@@ -1,0 +1,14 @@
+{
+    "name": "r2-packages/framework",
+    "description": "A simple reusable PHP package",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+      "psr-4": {
+        "R2Packages\\Framework\\": "src/"
+      }
+    },
+    "require": {
+      "php": ">=7.4"
+    }
+  }
