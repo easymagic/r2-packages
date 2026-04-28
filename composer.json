@@ -10,6 +10,9 @@
     },
     "require": {
       "php": ">=7.4"
-    }
+    },
+    "files": [
+      "framework/src/DatabaseFn.php"
+    ]
   }
   
