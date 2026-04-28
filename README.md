@@ -1,5 +1,9 @@
 # R2 Packages Framework
 
+[![Latest Stable Version](https://poser.pugx.org/r2-packages/framework/v/stable)](https://packagist.org/packages/r2-packages/framework)
+[![Total Downloads](https://poser.pugx.org/r2-packages/framework/downloads)](https://packagist.org/packages/r2-packages/framework)
+[![License](https://poser.pugx.org/r2-packages/framework/license)](https://packagist.org/packages/r2-packages/framework)
+
 A small reusable PHP routing framework package.
 
 ## Requirements
