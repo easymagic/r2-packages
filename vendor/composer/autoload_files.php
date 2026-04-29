@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'e87094fb976645a8008b5e4e2dc93d85' => $baseDir . '/framework/src/Config.php',
     '07c31c1020f2a2b55a8b54605b543593' => $baseDir . '/framework/src/DatabaseFn.php',
     '209682735fa4d9ba30bd74852bdd3608' => $baseDir . '/framework/src/Helpers.php',
 );
