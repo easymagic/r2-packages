@@ -29,3 +29,13 @@ function route($name, $params = []){
     $path = $route->getRouteByName($name,$params);
     return $path;
 }
+
+function isLocal(){
+    $isLocal =
+    (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === 'localhost') ||
+    (isset($_SERVER['SERVER_NAME']) && $_SERVER['SERVER_NAME'] === 'localhost') ||
+    (isset($_SERVER['SERVER_ADDR']) && 
+        ($_SERVER['SERVER_ADDR'] === '127.0.0.1' || $_SERVER['SERVER_ADDR'] === '::1')) ||
+    (php_sapi_name() === 'cli-server');
+    return $isLocal;
+}
