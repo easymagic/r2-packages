@@ -8,7 +8,8 @@
         "R2Packages\\Framework\\": "framework/src/"
       },
       "files": [
-        "framework/src/DatabaseFn.php"
+        "framework/src/DatabaseFn.php",
+        "framework/src/Helpers.php"
       ]  
     },
     "require": {

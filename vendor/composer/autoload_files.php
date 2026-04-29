@@ -7,4 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     '07c31c1020f2a2b55a8b54605b543593' => $baseDir . '/framework/src/DatabaseFn.php',
+    '209682735fa4d9ba30bd74852bdd3608' => $baseDir . '/framework/src/Helpers.php',
 );
