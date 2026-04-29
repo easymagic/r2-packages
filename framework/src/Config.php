@@ -18,6 +18,16 @@ function initConfig($dir)
     define('MAIL_TEMPLATE_DIR', SRC_DIR . '/mail_templates');
 
 
+    if (isLocal()) {
+        define('BASE_URL', $_ENV['BASE_URL_DEV']);
+        define('MAIL_SERVICE', 'mailtrap'); // Supported: 'mailtrap' or 'mail'
+    } else {
+        define('BASE_URL', $_ENV['BASE_URL']);
+        define('MAIL_SERVICE', 'mail');
+    }
+    
+
+
 
     // -------------------------------------------------------------
     // Autoloader
@@ -28,4 +38,8 @@ function initConfig($dir)
             include_once $path;
         }
     });
+}
+
+function mail_service(){
+    return MAIL_SERVICE;
 }
