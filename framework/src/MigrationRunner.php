@@ -2,7 +2,7 @@
 
 namespace R2Packages\Framework;
 
-class Migration
+class MigrationRunner
 {
 
     public static function run($migrationsDir){
