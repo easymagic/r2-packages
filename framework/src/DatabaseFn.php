@@ -9,7 +9,7 @@ use R2Packages\Framework\Utils;
 function dbConnection() 
 {
     $config = require 'dbConfig.php';
-    Utils::dd($config);
+    // Utils::dd($config);
     return Connection::getConnection($config['db']);
 }
 
