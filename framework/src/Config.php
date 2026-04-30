@@ -43,3 +43,8 @@ function initConfig($dir)
 function mail_service(){
     return MAIL_SERVICE;
 }
+
+function routeListen(){
+    include_once DIR_PATH . '/../src/routes/web.php';
+    $route->run($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);    
+}
