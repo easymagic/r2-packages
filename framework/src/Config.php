@@ -1,8 +1,13 @@
 <?php
 
+use R2Packages\Framework\Utils;
 
 function initConfig($dir)
 {
+
+
+    Utils::load_env(".env");
+
     define("DIR_PATH", $dir);
 
     define('SRC_DIR', DIR_PATH . '/../src');
