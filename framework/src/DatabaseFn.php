@@ -1,7 +1,7 @@
 <?php
 
 use R2Packages\Framework\Connection;
-
+use R2Packages\Framework\Utils;
 /**
  * Get the database connection instance
  * @return PDO Database connection
@@ -9,7 +9,7 @@ use R2Packages\Framework\Connection;
 function dbConnection() 
 {
     $config = require 'dbConfig.php';
-    // dd($config);
+    Utils::dd($config);
     return Connection::getConnection($config['db']);
 }
 
