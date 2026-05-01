@@ -8,6 +8,8 @@ function initConfig($dir)
 
     Utils::load_env(".env");
 
+    define("INTERNAL_PATH",__DIR__);
+
     define("DIR_PATH", $dir);
 
     define('SRC_DIR', DIR_PATH . '/../src');
