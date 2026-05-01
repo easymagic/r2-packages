@@ -11,7 +11,8 @@ use R2Packages\Framework\Publisher;
 greet();
 
 $publisher = new Publisher();
-$publisher->publish();
+$content = $publisher->publish();
+echo $content . "\n";
 echo 'Publisher published';
 
  

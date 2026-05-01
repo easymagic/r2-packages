@@ -6,6 +6,9 @@ class Publisher
 {
     public function publish()
     {
-        copy(INTERNAL_PATH . '/migrations/UserMigration.php', ROOT_DIR . '/../src/migrations/UserMigration.php');
+        ob_start();
+        include __DIR__ . '/mail_templates/mail_template.mail.php';
+        $content = ob_get_clean();
+        return $content;
     }
 }
