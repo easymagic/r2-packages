@@ -1,8 +1,14 @@
 #!/usr/bin/env php
 <?php 
-require __DIR__ . '/../vendor/autoload.php';
+// print_r(scandir(__DIR__ . '/../../vendor'));
+require __DIR__ . '/../../vendor/autoload.php';
+include 'helper.php';
+
+// require '../../autoload.php';
 
 use R2Packages\Framework\Publisher;
+
+greet();
 
 $publisher = new Publisher();
 $publisher->publish();
