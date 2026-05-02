@@ -1,6 +1,6 @@
 <?php 
 
-namespace App\Migrations;
+namespace R2Packages\Framework\Migrations;
 
 use R2Packages\Framework\Migration;
 
