@@ -3,6 +3,7 @@
 namespace R2Packages\Framework\Repositories;
 
 use Exception;
+use R2Packages\Framework\Container;
 use R2Packages\Framework\Entities\BaseUserEntity;
 
 class BaseUserRepository
@@ -20,7 +21,8 @@ class BaseUserRepository
     public function findByEmail($email)
     {
         $result = dbFetchOne("SELECT * FROM users WHERE email = ?", [$email]);
-        $user = new BaseUserEntity($result);
+        /** @var BaseUserEntity $user */
+        $user = Container::getInstance()->get(BaseUserEntity::class, $result);
         if ($user->isEmpty()) {
             throw new Exception("User not found");
         }
@@ -36,7 +38,8 @@ class BaseUserRepository
     function find($id)
     {
         $result = dbFetchOne("SELECT * FROM users WHERE id = ?", [$id]);
-        $user = new BaseUserEntity($result);
+        /** @var BaseUserEntity $user */
+        $user = Container::getInstance()->get(BaseUserEntity::class, $result);
         if ($user->isEmpty()) {
             throw new Exception("User not found");
         }
