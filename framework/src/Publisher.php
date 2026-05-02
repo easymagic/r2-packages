@@ -6,6 +6,14 @@ class Publisher
 {
 
 
+    function getTemplate($templateName){
+        
+        $file = __DIR__ . '/' . $templateName . '.php';
+        $hnd = fopen($file, 'r');
+        $content = fread($hnd, filesize($file));
+        fclose($hnd);
+        return $content;
+    }
 
 
     public function publish()
