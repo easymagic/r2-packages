@@ -16,13 +16,16 @@ class Publisher
     }
 
 
-    public function publish()
+    public function publish($template)
     {
-        ob_start();
-        $file = __DIR__ . '/mail_templates/mail_template.mail.php';
-        $hnd = fopen($file, 'r');
-        $content = fread($hnd, filesize($file));
+        return $this->getTemplate($template);
+    }
+
+    public function write($template, $content)
+    {
+        $file = $template;
+        $hnd = fopen($file, 'w');
+        fwrite($hnd, $content);
         fclose($hnd);
-        return $content;
     }
 }
