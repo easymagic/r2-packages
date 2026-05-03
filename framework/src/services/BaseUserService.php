@@ -23,6 +23,27 @@ class BaseUserService
         return $user;
     }
 
+    public function saveForRegistration($name, $email, $password, $confirmPassword, $phone){
+        /** @var BaseUserEntity $user */
+        $user = Container::getInstance()->get(BaseUserEntity::class, [
+            'name' => $name,
+            'email' => $email,
+            'password' => $password,
+            'phone' => $phone
+         ]);
+
+    }
+
+    function initUserRegistration($data){
+        /** @var BaseUserEntity $user */
+        $data['name'] = $data['name'] ?? '';
+        $data['email'] = $data['email'] ?? '';
+        $data['password'] = $data['password'] ?? '';
+        $data['phone'] = $data['phone'] ?? '';
+        $user = Container::getInstance()->get(BaseUserEntity::class, $data);
+        return $user;
+    }
+
     public function register($name, $email, $password, $confirmPassword, $phone){
         /** @var BaseUserEntity $user */
         $user = Container::getInstance()->get(BaseUserEntity::class, [
@@ -33,7 +54,7 @@ class BaseUserService
          ]);
          $user->validateRegistration();
          $user->validateConfirmPassword($confirmPassword);
-         $this->baseUserRepository->save(0, [
+         $this->baseUserRepository->saveCache(0, [
             "name" => $name,
             "email" => $email,
             "password" => password_hash($password, PASSWORD_DEFAULT),
