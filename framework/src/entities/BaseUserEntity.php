@@ -21,7 +21,7 @@ class BaseUserEntity
     const STATUS_ACTIVE = 'active';
     const STATUS_INACTIVE = 'inactive';
 
-    private $onRegistrationValidation = null;
+    // private $onRegistrationValidation = null;
 
     private static $instance = null;
 
@@ -55,10 +55,10 @@ class BaseUserEntity
         return empty($this->id);
     }
 
-    public function setOnRegistrationValidation(callable $callback){
-        $this->onRegistrationValidation = $callback;
-        return $this;
-    }
+    // public function setOnRegistrationValidation(callable $callback){
+    //     $this->onRegistrationValidation = $callback;
+    //     return $this;
+    // }
 
     public function validateLoginPassword($password){
         $check = password_verify($password, $this->password);
@@ -109,7 +109,7 @@ class BaseUserEntity
         //     throw new Exception("Status is required!");
         // }
 
-        $this->validateCustomAccountCreation();
+        // $this->validateCustomAccountCreation();
         $this->generateOtp();
         $this->refreshToken();
     }
@@ -122,13 +122,13 @@ class BaseUserEntity
         return $this;
     }
 
-    public function validateCustomAccountCreation(){
-        if ($this->onRegistrationValidation){
-            $onRegistrationValidation = $this->onRegistrationValidation;
-            $onRegistrationValidation($this);
-        }
-        return $this;
-    }
+    // public function validateCustomAccountCreation(){
+    //     if ($this->onRegistrationValidation){
+    //         $onRegistrationValidation = $this->onRegistrationValidation;
+    //         $onRegistrationValidation($this);
+    //     }
+    //     return $this;
+    // }
 
     public function generateOtp(){
         $this->otp = rand(100000, 999999);

@@ -2,6 +2,7 @@
 
 namespace R2Packages\Framework\Services;
 
+use R2Packages\Framework\Container;
 use R2Packages\Framework\Entities\BaseUserEntity;
 use R2Packages\Framework\Repositories\BaseUserRepository;
 
@@ -11,7 +12,8 @@ class BaseUserService
 
     function __construct()
     {
-        $this->baseUserRepository = new BaseUserRepository();
+        /** @var BaseUserRepository $baseUserRepository */
+        $this->baseUserRepository = Container::getInstance()->get(BaseUserRepository::class);
     }
 
     public function login($email, $password)
@@ -22,7 +24,8 @@ class BaseUserService
     }
 
     public function register($name, $email, $password, $confirmPassword, $phone){
-         $user = BaseUserEntity::getInstance([
+        /** @var BaseUserEntity $user */
+        $user = Container::getInstance()->get(BaseUserEntity::class, [
             'name' => $name,
             'email' => $email,
             'password' => $password,
@@ -30,7 +33,7 @@ class BaseUserService
          ]);
          $user->validateRegistration();
          $user->validateConfirmPassword($confirmPassword);
-         $this->baseUserRepository->saveCache(0, [
+         $this->baseUserRepository->save(0, [
             "name" => $name,
             "email" => $email,
             "password" => password_hash($password, PASSWORD_DEFAULT),

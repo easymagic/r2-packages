@@ -10,6 +10,7 @@ class Container
 
     private static $instance = null;
     private $singletons = [];
+    private $instances = [];
 
     /**
      * Get the instance of the container
@@ -23,10 +24,18 @@ class Container
     }
 
     public function get($service, $args = []){
-        if(isset($this->services[$service])){
-            return $this->services[$service]($args);
+        if (isset($this->singletons[$service]) && $this->singletons[$service]){
+            if (isset($this->instances[$service]) && !empty($this->instances[$service])){
+                return $this->instances[$service];
+            }
+            $this->instances[$service] = $this->services[$service]($args);
+            return $this->instances[$service];
+        }else{
+            if(isset($this->services[$service])){
+                return $this->services[$service]($args);
+            }
+            throw new Exception("Service not found!");    
         }
-        throw new Exception("Service not found!");
     }
 
     public function set($service, $instance){
@@ -37,6 +46,7 @@ class Container
     public function singleton($service, $instance){
         $this->set($service, $instance);
         $this->singletons[$service] = true;
+        $this->instances[$service] = null;
         return $this;
     }
 
