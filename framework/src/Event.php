@@ -11,6 +11,7 @@ class Event
     public static function getInstance(){
         if(self::$instance === null){
             self::$instance = new self();
+            require_once 'event_bootstrap/boot.php';
         }
         return self::$instance;
     }
@@ -20,10 +21,10 @@ class Event
         return $this;
     }
 
-    public function dispatch($event, $data = []){
+    public function dispatch($event,...$data){
         if(isset($this->listeners[$event])){
             foreach($this->listeners[$event] as $listener){
-                $listener($data);
+                $listener(...$data);
             }
         }
         return $this;

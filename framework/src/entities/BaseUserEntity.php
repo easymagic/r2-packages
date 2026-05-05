@@ -17,6 +17,7 @@ class BaseUserEntity
     public $otp;
     public $token;
     public $password;
+    public $confirmPassword;
 
     const STATUS_ACTIVE = 'active';
     const STATUS_INACTIVE = 'inactive';
