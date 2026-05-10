@@ -11,7 +11,9 @@ function jsonResponse($data, $status = 200){
 function setAttributes($object, $attributes){
     // var_dump($object);
     foreach ($attributes as $attribute => $value) {
-        $object->$attribute = $value;
+        if(property_exists($object, $attribute)){
+            $object->$attribute = $value;
+        }
     }
     return $object;
 }

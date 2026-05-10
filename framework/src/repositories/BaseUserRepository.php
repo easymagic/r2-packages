@@ -46,28 +46,6 @@ class BaseUserRepository
         return $user;
     }
 
-    /**
-     * Save a user to cache
-     * @param int $id
-     * @param array $data
-     * @return BaseUserEntity
-     * @throws Exception
-     */
-    function saveCache($id,$data = []){
-       $this->savedCacheId = $id;
-       foreach ($data as $key => $value) {
-        $this->savedCache[$key] = $value;
-       }
-       return $this;
-    }
-
-    function getCache(){
-        return $this->savedCache;
-    }
-
-    function getCacheId(){
-        return $this->savedCacheId;
-    }
 
     /**
      * Save a user
