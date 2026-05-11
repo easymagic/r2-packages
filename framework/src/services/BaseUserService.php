@@ -11,64 +11,65 @@ class BaseUserService
 {
     protected BaseUserRepository $baseUserRepository;
 
+    const HOOK_REGISTER_SAVE_DATA = 'user.register.save.data';
+    const HOOK_REGISTER_SAVE_SUCCESS = 'user.register.save.success';
+    const HOOK_LOGOUT_REFRESH_TOKEN = 'user.logout.refresh.token';
+    const HOOK_CONFIRM_OTP_SUCCESS = 'user.confirm.otp.success';
+
     function __construct()
     {
         /** @var BaseUserRepository $baseUserRepository */
-        $this->baseUserRepository = Container::getInstance()->get(BaseUserRepository::class);
+        $this->baseUserRepository = new BaseUserRepository();
     }
 
-    public function login($email, $password)
+    public function login($data)
     {
+        $email = $data['email'] ?? '';
+        $password = $data['password'] ?? '';
         $user = $this->baseUserRepository->findByEmail($email);
         $user->validateLoginPassword($password);
         return $user;
     }
-
-    public function saveForRegistration($name, $email, $password, $confirmPassword, $phone){
-        /** @var BaseUserEntity $user */
-        $user = Container::getInstance()->get(BaseUserEntity::class, [
-            'name' => $name,
-            'email' => $email,
-            'password' => $password,
-            'phone' => $phone
-         ]);
-
-    }
-
     
 
-    public function register($name, $email, $password, $confirmPassword, $phone){
+    public function register($data){
 
-        /** @var BaseUserEntity $user */
-        $user = Container::getInstance()->get(BaseUserEntity::class, [
-            'name' => $name,
-            'email' => $email,
-            'password' => $password,
-            'phone' => $phone
-        ]);
+        $user = new BaseUserEntity($data);
         $user->validateRegistration();
-        $user->validateConfirmPassword($confirmPassword);
-
-        return $this->baseUserRepository->save(0, [
-            'name' => $name,
-            'email' => $email,
-            'password' => password_hash($password, PASSWORD_DEFAULT),
-            'phone' => $phone,
+        $input = [
+            'name' => $user->name,
+            'email' => $user->email,
+            'password' => password_hash($user->password, PASSWORD_DEFAULT),
+            'phone' => $user->phone,
             'otp' => $user->otp,
             'token' => $user->token,
             'role' => $user->role,
             'status' => $user->status,
             'created_at' => $user->created_at,
-            'updated_at' => $user->updated_at,
+            'updated_at' => $user->updated_at,            
+        ];
+        Event::getInstance()->dispatch(self::HOOK_REGISTER_SAVE_DATA, $user, $input);
+        $user = $this->baseUserRepository->save(0, $input);        
+        Event::getInstance()->dispatch(self::HOOK_REGISTER_SAVE_SUCCESS, $user);
+        return $user;
+    }
+
+    public function confirmOtp($id, $otp){
+        $user = $this->baseUserRepository->find($id);
+        $user->validateOtpAccountCreate($otp);
+        $this->baseUserRepository->save($id, [
+            'status' => $user->status
         ]);
-        
+        Event::getInstance()->dispatch(self::HOOK_CONFIRM_OTP_SUCCESS, $user);
+        return $user;
     }
 
     public function logout($id){
        $user = $this->baseUserRepository->find($id);
        $user->refreshToken();
-       return $this->baseUserRepository->save($id, [
+       $this->baseUserRepository->save($id, [
         'token' => $user->token
        ]);
+       Event::getInstance()->dispatch(self::HOOK_LOGOUT_REFRESH_TOKEN, $user);
     }
 }

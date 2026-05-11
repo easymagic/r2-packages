@@ -3,21 +3,16 @@
 namespace R2Packages\Framework\Entities;
 
 use Exception;
+use R2Packages\Framework\Event;
 
 class BaseUserEntity
 {
-    public $id;
-    public $name;
-    public $email;
-    public $phone;
-    public $role;
-    public $status = 'inactive';
-    public $created_at = null;
-    public $updated_at = null;
-    public $otp;
-    public $token;
-    public $password;
-    public $confirmPassword;
+
+    // public $fillable = [];
+    public $data = [];
+
+
+
 
     const STATUS_ACTIVE = 'active';
     const STATUS_INACTIVE = 'inactive';
@@ -25,6 +20,27 @@ class BaseUserEntity
     // private $onRegistrationValidation = null;
 
     private static $instance = null;
+
+    const HOOK_VALIDATE_REGISTER = 'user.register.validate';
+    const HOOK_VALIDATE_LOGIN = 'user.login.validate';
+    const HOOK_VALIDATE_OTP = 'user.otp.validate';
+    const HOOK_INITIALIZE_DATA = 'user.initialize.data';
+
+    function __get($name){
+        return $this->data[$name] ?? null;
+    }
+
+    function __set($name, $value){
+        $this->data[$name] = $value;
+    }
+
+    function __isset($name){
+        return isset($this->data[$name]);
+    }
+
+    function __unset($name){
+        unset($this->data[$name]);
+    }
 
     /**
      * Get an instance of the BaseUserEntity
@@ -50,6 +66,7 @@ class BaseUserEntity
             $this->updated_at = date('Y-m-d H:i:s');
         }
 
+        Event::getInstance()->dispatch(self::HOOK_INITIALIZE_DATA, $this,$data);
     }
 
     public function isEmpty(){
@@ -69,6 +86,7 @@ class BaseUserEntity
         if($this->status !== self::STATUS_ACTIVE){
             throw new Exception("Account is not active! , please activate your account from the OTP sent to your email or phone number.");
         }
+        Event::getInstance()->dispatch(self::HOOK_VALIDATE_LOGIN, $this);
         return $this;
     }
 
@@ -100,6 +118,8 @@ class BaseUserEntity
             throw new Exception("Password is required!");
         }
 
+        Event::getInstance()->dispatch(self::HOOK_VALIDATE_REGISTER, $this);
+
         //role
         // if(empty($this->role)){
         //     throw new Exception("Role is required!");
@@ -120,6 +140,7 @@ class BaseUserEntity
             throw new Exception("Invalid OTP!");
         }
         $this->status = self::STATUS_ACTIVE;
+        Event::getInstance()->dispatch(self::HOOK_VALIDATE_OTP, $this);
         return $this;
     }
 

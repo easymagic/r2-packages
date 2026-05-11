@@ -5,12 +5,16 @@ namespace R2Packages\Framework\Repositories;
 use Exception;
 use R2Packages\Framework\Container;
 use R2Packages\Framework\Entities\BaseUserEntity;
+use R2Packages\Framework\Event;
 
 class BaseUserRepository
 {
 
     private $savedCache = [];
     private $savedCacheId = 0;
+
+    const HOOK_FILTER_USERS = 'user.filter.users';
+    const HOOK_SELECT_SQL = 'user.select.sql';
 
     /**
      * Find a user by email
@@ -45,6 +49,60 @@ class BaseUserRepository
         }
         return $user;
     }
+
+    private function commonFilters($filters){
+        $sql = "SELECT * FROM users WHERE 1=1";
+        Event::getInstance()->dispatch(self::HOOK_SELECT_SQL, $sql, $filters);
+        $params = [];
+        if(count($filters) > 0){
+
+            if(isset($filters['email'])){
+                $sql .= " AND email = ?";
+                $params[] = $filters['email'];
+            }
+            if(isset($filters['phone'])){
+                $sql .= " AND phone = ?";
+                $params[] = $filters['phone'];
+            }
+            if(isset($filters['status'])){
+                $sql .= " AND status = ?";
+                $params[] = $filters['status'];
+            }
+            if(isset($filters['role'])){
+                $sql .= " AND role = ?";
+                $params[] = $filters['role'];
+            }
+            if(isset($filters['created_at'])){
+                $sql .= " AND created_at = ?";
+                $params[] = $filters['created_at'];
+            }
+            if(isset($filters['updated_at'])){
+                $sql .= " AND updated_at = ?";
+                $params[] = $filters['updated_at'];
+            }
+
+            Event::getInstance()->dispatch(self::HOOK_FILTER_USERS, $sql, $params);
+
+        }
+
+        return [$sql, $params];
+    }
+
+    function fetchAll($filters = []){
+        [$sql, $params] = $this->commonFilters($filters);
+        return dbFetchAll($sql, $params);
+    }
+
+    function fetch($filters = [],$size = 11){
+        [$sql, $params] = $this->commonFilters($filters);
+        return dbPaginate($sql, $size, $params);
+    }
+
+    function count($filters = []){
+        [$sql, $params] = $this->commonFilters($filters);
+        return dbCount($sql, $params);
+    }
+
 
 
     /**
