@@ -2,13 +2,14 @@
 
 namespace R2Packages\Framework\Services;
 
-use R2Packages\Framework\Container;
 use R2Packages\Framework\Entities\BaseUserEntity;
-use R2Packages\Framework\Event;
 use R2Packages\Framework\Repositories\BaseUserRepository;
+use R2Packages\Framework\Traits\WithEvents;
 
 class BaseUserService
 {
+    use WithEvents;
+
     protected BaseUserRepository $baseUserRepository;
 
     const HOOK_REGISTER_SAVE_DATA = 'user.register.save.data';
@@ -16,8 +17,11 @@ class BaseUserService
     const HOOK_LOGOUT_REFRESH_TOKEN = 'user.logout.refresh.token';
     const HOOK_CONFIRM_OTP_SUCCESS = 'user.confirm.otp.success';
 
-    function __construct()
+    private $data = [];
+
+    function __construct($data = [])
     {
+        $this->data = $data;
         /** @var BaseUserRepository $baseUserRepository */
         $this->baseUserRepository = new BaseUserRepository();
     }
@@ -48,9 +52,9 @@ class BaseUserService
             'created_at' => $user->created_at,
             'updated_at' => $user->updated_at,            
         ];
-        Event::getInstance()->dispatch(self::HOOK_REGISTER_SAVE_DATA, $user, $input);
+        self::dispatch(self::HOOK_REGISTER_SAVE_DATA, $user, $input);
         $user = $this->baseUserRepository->save(0, $input);        
-        Event::getInstance()->dispatch(self::HOOK_REGISTER_SAVE_SUCCESS, $user);
+        self::dispatch(self::HOOK_REGISTER_SAVE_SUCCESS, $user);
         return $user;
     }
 
@@ -60,7 +64,7 @@ class BaseUserService
         $this->baseUserRepository->save($id, [
             'status' => $user->status
         ]);
-        Event::getInstance()->dispatch(self::HOOK_CONFIRM_OTP_SUCCESS, $user);
+        self::dispatch(self::HOOK_CONFIRM_OTP_SUCCESS, $user);
         return $user;
     }
 
@@ -70,6 +74,6 @@ class BaseUserService
        $this->baseUserRepository->save($id, [
         'token' => $user->token
        ]);
-       Event::getInstance()->dispatch(self::HOOK_LOGOUT_REFRESH_TOKEN, $user);
+       self::dispatch(self::HOOK_LOGOUT_REFRESH_TOKEN, $user);
     }
 }

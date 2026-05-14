@@ -4,14 +4,15 @@ namespace R2Packages\Framework\Entities;
 
 use Exception;
 use R2Packages\Framework\Event;
+use R2Packages\Framework\Traits\WithEvents;
 
 class BaseUserEntity
 {
 
+    use WithEvents;
+
     // public $fillable = [];
     public $data = [];
-
-
 
 
     const STATUS_ACTIVE = 'active';
@@ -54,7 +55,6 @@ class BaseUserEntity
         return self::$instance;
     }
 
-
     public function __construct($data = [])
     {
         setAttributes($this, $data);
@@ -66,17 +66,12 @@ class BaseUserEntity
             $this->updated_at = date('Y-m-d H:i:s');
         }
 
-        Event::getInstance()->dispatch(self::HOOK_INITIALIZE_DATA, $this,$data);
+        self::dispatch(self::HOOK_INITIALIZE_DATA, $this,$data);
     }
 
     public function isEmpty(){
         return empty($this->id);
     }
-
-    // public function setOnRegistrationValidation(callable $callback){
-    //     $this->onRegistrationValidation = $callback;
-    //     return $this;
-    // }
 
     public function validateLoginPassword($password){
         $check = password_verify($password, $this->password);
@@ -86,7 +81,7 @@ class BaseUserEntity
         if($this->status !== self::STATUS_ACTIVE){
             throw new Exception("Account is not active! , please activate your account from the OTP sent to your email or phone number.");
         }
-        Event::getInstance()->dispatch(self::HOOK_VALIDATE_LOGIN, $this);
+        self::dispatch(self::HOOK_VALIDATE_LOGIN, $this);
         return $this;
     }
 
@@ -118,7 +113,7 @@ class BaseUserEntity
             throw new Exception("Password is required!");
         }
 
-        Event::getInstance()->dispatch(self::HOOK_VALIDATE_REGISTER, $this);
+        self::dispatch(self::HOOK_VALIDATE_REGISTER, $this);
 
         //role
         // if(empty($this->role)){
@@ -140,7 +135,7 @@ class BaseUserEntity
             throw new Exception("Invalid OTP!");
         }
         $this->status = self::STATUS_ACTIVE;
-        Event::getInstance()->dispatch(self::HOOK_VALIDATE_OTP, $this);
+        self::dispatch(self::HOOK_VALIDATE_OTP, $this);
         return $this;
     }
 
