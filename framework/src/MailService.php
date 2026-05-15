@@ -6,9 +6,9 @@ class MailService
 {
     public $from = 'noreply@example.com';
     
-    function send($to, $subject, $from, $template, $data)
+    function send($to, $subject, $from, $body)
     {
-        $body = mail_template(MAIL_TEMPLATE_DIR . '/' . $template . '.php', $data);
+        // $body = mail_template(MAIL_TEMPLATE_DIR . '/' . $template . '.php', $data);
 
         if (mail_service() === 'mail') {
             // use normal mail function to send the email as html

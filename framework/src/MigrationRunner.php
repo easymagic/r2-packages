@@ -2,7 +2,9 @@
 
 namespace R2Packages\Framework;
 
-use App\Migrations\UserMigration;
+use R2Packages\Framework\Migrations\UserMigration;
+
+// use App\Migrations\UserMigration;
 
 class MigrationRunner
 {

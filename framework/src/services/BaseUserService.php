@@ -4,6 +4,7 @@ namespace R2Packages\Framework\Services;
 
 use Exception;
 use R2Packages\Framework\Entities\BaseUserEntity;
+use R2Packages\Framework\MailService;
 use R2Packages\Framework\Repositories\BaseUserRepository;
 use R2Packages\Framework\Traits\WithEvents;
 
@@ -17,10 +18,17 @@ class BaseUserService
     const HOOK_REGISTER_SAVE_SUCCESS = 'user.register.save.success';
     const HOOK_LOGOUT_REFRESH_TOKEN = 'user.logout.refresh.token';
     const HOOK_VERIFY_OTP_SUCCESS = 'user.verify.otp.success';
+    const HOOK_BEFORE_VERIFY_OTP = 'user.before.verify.otp';
+    const HOOK_AFTER_REQUEST_PASSWORD_RESET = 'user.after.request.password.reset';
+    const HOOK_RESET_PASSWORD_SUCCESS = 'user.reset.password.success';
 
     private $data = [];
 
-    private BaseUserEntity $baseUserEntity;
+    public BaseUserEntity $baseUserEntity;
+
+    private $mailBody = '';
+
+    private MailService $mailService;
 
     function __construct($data = [])
     {
@@ -28,6 +36,7 @@ class BaseUserService
         /** @var BaseUserRepository $baseUserRepository */
         $this->baseUserRepository = new BaseUserRepository();
         $this->baseUserEntity = new BaseUserEntity($this->data);
+        $this->mailService = new MailService();
     }
 
     public function login()
@@ -40,6 +49,17 @@ class BaseUserService
             throw new Exception("Invalid login!");
         }
         return $user;
+    }
+
+    function setMailBody($body)
+    {
+        $this->mailBody = $body;
+        return $this;
+    }
+
+    function getMailBody()
+    {
+        return $this->mailBody;
     }
 
 
@@ -87,9 +107,10 @@ class BaseUserService
             'created_at' => $this->baseUserEntity->created_at,
             'updated_at' => $this->baseUserEntity->updated_at,
         ];
-        self::dispatch(self::HOOK_REGISTER_SAVE_DATA, $this->baseUserEntity, $input);
+        self::dispatch(self::HOOK_REGISTER_SAVE_DATA, $this, $input);
         $user = $this->baseUserRepository->save(0, $input);
-        self::dispatch(self::HOOK_REGISTER_SAVE_SUCCESS, $user);
+        self::dispatch(self::HOOK_REGISTER_SAVE_SUCCESS, $this);
+        $this->mailService->send($user->email, 'Welcome to our platform', 'noreply@example.com', $this->mailBody);
         return $user;
     }
 
@@ -102,17 +123,19 @@ class BaseUserService
         if (!isset($this->data['id']) || empty($this->data['id'])) {
             throw new Exception("ID is required!");
         }
+        
         $id = $this->data['id'];
         $otp = $this->data['otp'];
-        $user = $this->baseUserRepository->find($id);
-        if ($user->otp !== $otp) {
+        $this->baseUserEntity = $this->baseUserRepository->find($id);
+        if ($this->baseUserEntity->otp !== $otp) {
             throw new Exception("Invalid OTP!");
         }
+        self::dispatch(self::HOOK_BEFORE_VERIFY_OTP, $this);
         $this->baseUserRepository->save($id, [
             'status' => BaseUserEntity::STATUS_ACTIVE
         ]);
-        self::dispatch(self::HOOK_VERIFY_OTP_SUCCESS, $user);
-        return $user;
+        self::dispatch(self::HOOK_VERIFY_OTP_SUCCESS, $this);
+        return $this->baseUserEntity;
     }
 
     public function logout()
@@ -121,11 +144,55 @@ class BaseUserService
             throw new Exception("ID is required!");
         }
         $id = $this->data['id'];
-        $user = $this->baseUserRepository->find($id);
-        $user->refreshToken();
+        $this->baseUserEntity = $this->baseUserRepository->find($id);
+        $this->baseUserEntity->refreshToken();
         $this->baseUserRepository->save($id, [
-            'token' => $user->token
+            'token' => $this->baseUserEntity->token
         ]);
-        self::dispatch(self::HOOK_LOGOUT_REFRESH_TOKEN, $user);
+        self::dispatch(self::HOOK_LOGOUT_REFRESH_TOKEN, $this);
+    }
+
+    function requestPasswordReset()
+    {
+        if (!isset($this->data['email']) || empty($this->data['email'])) {
+            throw new Exception("Email is required!");
+        }
+        $this->baseUserEntity = $this->baseUserRepository->findByEmail($this->data['email']);
+        $this->baseUserEntity->generateOtp();
+        $this->baseUserEntity->refreshToken();
+        $this->baseUserEntity = $this->baseUserRepository->save($this->baseUserEntity->id, [
+            'token' => $this->baseUserEntity->token,
+            'otp' => $this->baseUserEntity->otp,
+        ]);
+
+        self::dispatch(self::HOOK_AFTER_REQUEST_PASSWORD_RESET, $this);
+        $this->mailService->send($this->baseUserEntity->email, 'Password Reset', 'noreply@example.com', $this->mailBody);
+        return $this->baseUserEntity;
+    }
+
+    function resetPassword()
+    {
+        // id (user id)
+        if (!isset($this->data['id']) || empty($this->data['id'])) {
+            throw new Exception("ID is required!");
+        }
+        if (!isset($this->data['otp']) || empty($this->data['otp'])) {
+            throw new Exception("OTP is required!");
+        }
+        if (!isset($this->data['password']) || empty($this->data['password'])) {
+            throw new Exception("Password is required!");
+        }
+        if (!isset($this->data['confirm_password']) || $this->data['password'] !== $this->data['confirm_password']) {
+            throw new Exception("Password and confirm password do not match!");
+        }
+        $this->baseUserEntity = $this->baseUserRepository->find($this->data['id']);
+        if ($this->baseUserEntity->otp !== $this->data['otp']) {
+            throw new Exception("Invalid OTP!");
+        }
+        $this->baseUserRepository->save($this->baseUserEntity->id, [
+            'password' => password_hash($this->data['password'], PASSWORD_DEFAULT),
+        ]);
+        self::dispatch(self::HOOK_RESET_PASSWORD_SUCCESS, $this);
+        return $this->baseUserEntity;
     }
 }

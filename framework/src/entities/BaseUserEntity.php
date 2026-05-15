@@ -22,9 +22,6 @@ class BaseUserEntity
 
     private static $instance = null;
 
-    const HOOK_VALIDATE_REGISTER = 'user.register.validate';
-    const HOOK_VALIDATE_LOGIN = 'user.login.validate';
-    const HOOK_AFTER_VALIDATE_OTP = 'user.after.validate.otp';
     const HOOK_INITIALIZE_DATA = 'user.initialize.data';
 
     /**
@@ -59,7 +56,7 @@ class BaseUserEntity
             $this->status = self::STATUS_INACTIVE;
         }
 
-        self::dispatch(self::HOOK_INITIALIZE_DATA, $this,$data);
+        self::dispatch(self::HOOK_INITIALIZE_DATA, $this);
     }
 
     public function isEmpty(){

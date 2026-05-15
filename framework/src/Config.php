@@ -14,6 +14,9 @@ function initConfig($dir)
 
     define('SRC_DIR', DIR_PATH . '/../src');
 
+    define('SRC_DIR_INTERNAL', INTERNAL_PATH . '/../src');
+
+
     define('MIGRATIONS_DIR', SRC_DIR . '/migrations');
 
     define('APP_PATH', basename(DIR_PATH));
