@@ -6,15 +6,16 @@ use Exception;
 use R2Packages\Framework\Container;
 use R2Packages\Framework\Entities\BaseUserEntity;
 use R2Packages\Framework\Event;
+use R2Packages\Framework\Traits\WithEvents;
 
 class BaseUserRepository
 {
 
-    private $savedCache = [];
-    private $savedCacheId = 0;
+    use WithEvents;
 
     const HOOK_FILTER_USERS = 'user.filter.users';
     const HOOK_SELECT_SQL = 'user.select.sql';
+    const HOOK_RELATIONS = 'user.relations';
 
     /**
      * Find a user by email
@@ -26,7 +27,8 @@ class BaseUserRepository
     {
         $result = dbFetchOne("SELECT * FROM users WHERE email = ?", [$email]);
         /** @var BaseUserEntity $user */
-        $user = Container::getInstance()->get(BaseUserEntity::class, $result);
+        $user = new BaseUserEntity($result);
+        self::dispatch(self::HOOK_RELATIONS, $user);
         if ($user->isEmpty()) {
             throw new Exception("User not found");
         }
@@ -43,7 +45,8 @@ class BaseUserRepository
     {
         $result = dbFetchOne("SELECT * FROM users WHERE id = ?", [$id]);
         /** @var BaseUserEntity $user */
-        $user = Container::getInstance()->get(BaseUserEntity::class, $result);
+        $user = new BaseUserEntity($result);
+        self::dispatch(self::HOOK_RELATIONS, $user);
         if ($user->isEmpty()) {
             throw new Exception("User not found");
         }
@@ -52,7 +55,7 @@ class BaseUserRepository
 
     private function commonFilters($filters){
         $sql = "SELECT * FROM users WHERE 1=1";
-        Event::getInstance()->dispatch(self::HOOK_SELECT_SQL, $sql, $filters);
+        self::dispatch(self::HOOK_SELECT_SQL, $sql, $filters);
         $params = [];
         if(count($filters) > 0){
 
@@ -81,7 +84,7 @@ class BaseUserRepository
                 $params[] = $filters['updated_at'];
             }
 
-            Event::getInstance()->dispatch(self::HOOK_FILTER_USERS, $sql, $params);
+            self::dispatch(self::HOOK_FILTER_USERS, $sql, $params);
 
         }
 

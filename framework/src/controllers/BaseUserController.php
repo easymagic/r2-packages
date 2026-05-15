@@ -13,11 +13,15 @@ class BaseUserController
     function __construct($request)
     {
         $this->request = $request;
-        $this->baseUserService = new BaseUserService();
+        $this->baseUserService = new BaseUserService($this->request);
     }
 
     public function login()
     {
-        $this->baseUserService->login($this->request);
+        $user = $this->baseUserService->login();
+        return jsonResponse([
+            'message' => 'Login successful',
+            'data' => $user
+        ]);
     }
 }
