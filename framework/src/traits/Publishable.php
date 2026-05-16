@@ -6,6 +6,8 @@ trait Publishable
 {
     public static function filePath()
     {
-        return __FILE__;
+        $reflection = new \ReflectionClass(static::class);
+
+        return $reflection->getFileName();
     }
 }
