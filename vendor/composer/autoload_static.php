@@ -13,14 +13,14 @@ class ComposerStaticInit9ea37f858313294e91132c4a4b95d59e
     );
 
     public static $prefixLengthsPsr4 = array (
-        'R' => 
+        'R' =>
         array (
             'R2Packages\\Framework\\' => 21,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'R2Packages\\Framework\\' => 
+        'R2Packages\\Framework\\' =>
         array (
             0 => __DIR__ . '/../..' . '/framework/src',
         ),
