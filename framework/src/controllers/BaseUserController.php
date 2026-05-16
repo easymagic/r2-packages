@@ -3,9 +3,12 @@
 namespace R2Packages\Framework\Controllers;
 
 use R2Packages\Framework\Services\BaseUserService;
+use R2Packages\Framework\Traits\Publishable;
 
 class BaseUserController
 {
+    use Publishable;
+
     private BaseUserService $baseUserService;
 
     private $request = [];
@@ -72,8 +75,8 @@ class BaseUserController
     }
 
 
-    public static function filePath()
-    {
-        return __FILE__;
-    }
+    // public static function filePath()
+    // {
+    //     return __FILE__;
+    // }
 }

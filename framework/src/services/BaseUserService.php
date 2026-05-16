@@ -6,11 +6,13 @@ use Exception;
 use R2Packages\Framework\Entities\BaseUserEntity;
 use R2Packages\Framework\MailService;
 use R2Packages\Framework\Repositories\BaseUserRepository;
+use R2Packages\Framework\Traits\Publishable;
 use R2Packages\Framework\Traits\WithEvents;
 
 class BaseUserService
 {
     use WithEvents;
+    use Publishable;
 
     protected BaseUserRepository $baseUserRepository;
 

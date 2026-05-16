@@ -2,13 +2,16 @@
 <?php
 
 use R2Packages\Framework\Controllers\BaseUserController;
+use R2Packages\Framework\Services\BaseUserService;
 
 require $GLOBALS['_composer_autoload_path'];
 
 echo "R2 CLI Loaded\n";
 
-echo getcwd();
+// echo getcwd();
 
 copy(BaseUserController::filePath(), getcwd() . '/src/controllers/BaseUserController.php');
+copy(BaseUserService::filePath(), getcwd() . '/src/services/BaseUserService.php');
 
+echo "File copied successfully\n";
 ?>
