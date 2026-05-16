@@ -1,10 +1,14 @@
 #!/usr/bin/env php
 <?php
 
+use R2Packages\Framework\Controllers\BaseUserController;
+
 require $GLOBALS['_composer_autoload_path'];
 
 echo "R2 CLI Loaded\n";
 
 echo getcwd();
+
+copy(BaseUserController::filePath(), getcwd() . '/src/controllers/BaseUserController.php');
 
 ?>

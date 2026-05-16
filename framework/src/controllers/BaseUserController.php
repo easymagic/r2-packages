@@ -70,5 +70,10 @@ class BaseUserController
             'data' => $user
         ]);
     }
-    
+
+
+    public static function filePath()
+    {
+        return __FILE__;
+    }
 }
