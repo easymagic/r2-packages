@@ -5,4 +5,6 @@ require $GLOBALS['_composer_autoload_path'];
 
 echo "R2 CLI Loaded\n";
 
+echo getcwd();
+
 ?>
