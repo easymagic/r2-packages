@@ -4,7 +4,7 @@
   "type": "project",
   "license": "MIT",
   "bin": [
-    "bin/package"
+    "framework/bin/package"
   ],
   "autoload": {
     "psr-4": {
