@@ -191,7 +191,7 @@ class Route
                     } elseif (is_array($callback['callback'])) {
                         $cls       = $callback['callback'][0];
                         $clsMethod = $callback['callback'][1];
-                        $clsObj    = new $cls($request);
+                        $clsObj    = Container::getInstance()->get($cls, $request);
     
                         if (method_exists($clsObj, $clsMethod)) {
                             call_user_func_array([$clsObj, $clsMethod], $args);

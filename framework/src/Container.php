@@ -25,6 +25,9 @@ class Container
         if(isset($this->services[$service])){
             return $this->services[$service]($args);
         }
+        if(class_exists($service)){
+            return new $service($args);
+        }
         throw new Exception("Service not found!");    
     }
 
