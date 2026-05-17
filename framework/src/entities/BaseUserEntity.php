@@ -2,27 +2,27 @@
 
 namespace R2Packages\Framework\Entities;
 
-use R2Packages\Framework\Traits\WithEvents;
-use R2Packages\Framework\Traits\WithSetterGetter;
-
 class BaseUserEntity
 {
 
-    use WithEvents;
-    use WithSetterGetter;
-
-    // public $fillable = [];
-    // public $data = [];
-
-
-    const STATUS_ACTIVE = 'active';
-    const STATUS_INACTIVE = 'inactive';
+    public $id = null;
+    public $name = null;
+    public $email = null;
+    public $password = null;
+    public $phone = null;
+    public $role = null;
+    public $status = null;
+    public $created_at = null;
+    public $updated_at = null;
+    public $otp = null;
+    public $token = null;
 
     // private $onRegistrationValidation = null;
 
     private static $instance = null;
 
-    const HOOK_INITIALIZE_DATA = 'user.initialize.data';
+    const STATUS_ACTIVE = 'active';
+    const STATUS_INACTIVE = 'inactive';
 
     /**
      * Get an instance of the BaseUserEntity
@@ -38,7 +38,8 @@ class BaseUserEntity
 
     public function __construct($data = [])
     {
-        $this->init($data);
+        setAttributes($this, $data);
+        
 
         if (empty($this->created_at)){
             $this->created_at = date('Y-m-d H:i:s');
@@ -56,7 +57,6 @@ class BaseUserEntity
             $this->status = self::STATUS_INACTIVE;
         }
 
-        self::dispatch(self::HOOK_INITIALIZE_DATA, $this);
     }
 
     public function isEmpty(){

@@ -11,11 +11,27 @@ use R2Packages\Framework\Traits\WithEvents;
 class BaseUserRepository
 {
 
-    use WithEvents;
+    protected $table = 'users';
+    protected $primaryKey = 'id';
+    protected $filters = [];
+    protected $size = 11;
+    protected $sql = '';
+    protected $params = [];
 
-    const HOOK_FILTER_USERS = 'user.filter.users';
-    const HOOK_SELECT_SQL = 'user.select.sql';
-    const HOOK_RELATIONS = 'user.relations';
+    function __construct($filters = [],$size = 11,$sql = '',$params = [])
+    {
+        $this->filters = $filters;
+        $this->size = $size;
+        if (!empty($sql)) {
+            $this->sql = $sql;
+        }else{
+            $this->sql = "SELECT * FROM {$this->table} WHERE 1=1";
+        }
+        if (!empty($params)) {
+            $this->params = $params;
+        }
+        $this->commonFilters();
+    }
 
     /**
      * Find a user by email
@@ -28,7 +44,6 @@ class BaseUserRepository
         $result = dbFetchOne("SELECT * FROM users WHERE email = ?", [$email]);
         /** @var BaseUserEntity $user */
         $user = new BaseUserEntity($result);
-        self::dispatch(self::HOOK_RELATIONS, $user);
         if ($user->isEmpty()) {
             throw new Exception("User not found");
         }
@@ -46,64 +61,61 @@ class BaseUserRepository
         $result = dbFetchOne("SELECT * FROM users WHERE id = ?", [$id]);
         /** @var BaseUserEntity $user */
         $user = new BaseUserEntity($result);
-        self::dispatch(self::HOOK_RELATIONS, $user);
         if ($user->isEmpty()) {
             throw new Exception("User not found");
         }
         return $user;
     }
 
-    private function commonFilters($filters){
-        $sql = "SELECT * FROM users WHERE 1=1";
-        self::dispatch(self::HOOK_SELECT_SQL, $sql, $filters);
-        $params = [];
-        if(count($filters) > 0){
+    protected function commonFilters(){
+        $sql = $this->sql;
+        $params = $this->params;
+        if(count($this->filters) > 0){
 
-            if(isset($filters['email'])){
+            if(isset($this->filters['email'])){
                 $sql .= " AND email = ?";
-                $params[] = $filters['email'];
+                $params[] = $this->filters['email'];
             }
-            if(isset($filters['phone'])){
+            if(isset($this->filters['phone'])){
                 $sql .= " AND phone = ?";
-                $params[] = $filters['phone'];
+                $params[] = $this->filters['phone'];
             }
-            if(isset($filters['status'])){
+            if(isset($this->filters['status'])){
                 $sql .= " AND status = ?";
-                $params[] = $filters['status'];
+                $params[] = $this->filters['status'];
             }
-            if(isset($filters['role'])){
+            if(isset($this->filters['role'])){
                 $sql .= " AND role = ?";
-                $params[] = $filters['role'];
+                $params[] = $this->filters['role'];
             }
-            if(isset($filters['created_at'])){
+            if(isset($this->filters['created_at'])){
                 $sql .= " AND created_at = ?";
-                $params[] = $filters['created_at'];
+                $params[] = $this->filters['created_at'];
             }
-            if(isset($filters['updated_at'])){
+            if(isset($this->filters['updated_at'])){
                 $sql .= " AND updated_at = ?";
-                $params[] = $filters['updated_at'];
+                $params[] = $this->filters['updated_at'];
             }
-
-            self::dispatch(self::HOOK_FILTER_USERS, $sql, $params);
 
         }
 
-        return [$sql, $params];
+        $this->sql = $sql;
+        $this->params = $params;
+
+        // return [$sql, $params];
+        return $this;
     }
 
-    function fetchAll($filters = []){
-        [$sql, $params] = $this->commonFilters($filters);
-        return dbFetchAll($sql, $params);
+    function fetchAll(){
+        return dbFetchAll($this->sql, $this->params);
     }
 
-    function fetch($filters = [],$size = 11){
-        [$sql, $params] = $this->commonFilters($filters);
-        return dbPaginate($sql, $size, $params);
+    function fetch(){
+        return dbPaginate($this->sql, $this->size, $this->params);
     }
 
-    function count($filters = []){
-        [$sql, $params] = $this->commonFilters($filters);
-        return dbCount($sql, $params);
+    function count(){
+        return dbCount($this->sql, $this->params);
     }
 
 

@@ -1,12 +1,14 @@
 <?php
 
+use R2Packages\Framework\Response;
+
 function jsonResponse($data, $status = 200){
-    header('Content-Type: application/json');
-    http_response_code($status);
-    echo json_encode($data);
-    exit;
+    Response::getInstance()->write($data, $status)->json();
 }
 
+function json($data, $status = 200){
+    Response::getInstance()->write($data, $status)->json();
+}
 
 function setAttributes($object, $attributes){
     // var_dump($object);
