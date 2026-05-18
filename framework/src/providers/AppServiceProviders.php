@@ -6,6 +6,10 @@ use R2Packages\Framework\Container;
 use R2Packages\Framework\Repositories\BaseUserRepository;
 use R2Packages\Framework\Services\BaseUserService;
 use R2Packages\Framework\Entities\BaseUserEntity;
+use R2Packages\Framework\MailService;
+use R2Packages\Framework\MailTemplates\MailTemplates;
+use R2Packages\Framework\Controllers\BaseUserController;
+
 class AppServiceProviders
 {
     public function register()
@@ -19,8 +23,16 @@ class AppServiceProviders
             return new BaseUserRepository($filters, $size, $sql, $params);
         });
 
-        Container::getInstance()->set(BaseUserEntity::class, function(){
-            return new BaseUserEntity();
+        Container::getInstance()->set(BaseUserEntity::class, function($request){
+            return new BaseUserEntity($request);
+        });
+
+        Container::getInstance()->set(MailService::class, function($request){
+            return new MailService($request);
+        });
+
+        Container::getInstance()->set(MailTemplates::class, function($request){
+            return new MailTemplates($request);
         });
 
         Container::getInstance()->set(BaseUserService::class, function($request){
@@ -35,6 +47,11 @@ class AppServiceProviders
                 Container::getInstance()->get(MailService::class, $request),
                 Container::getInstance()->get(MailTemplates::class, $request)
             );
+        });
+
+        // BaseUserController
+        Container::getInstance()->set(BaseUserController::class, function($request){
+            return new BaseUserController($request, Container::getInstance()->get(BaseUserService::class, $request));
         });
     }
 }
