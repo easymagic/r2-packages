@@ -6,8 +6,6 @@ function initConfig($dir)
 {
     Utils::load_env(".env");
 
-    
-
     define("DIR_PATH", $dir);
 
     define('APP_PATH', basename(DIR_PATH));
@@ -20,9 +18,6 @@ function initConfig($dir)
         define('MAIL_SERVICE', 'mail');
     }
     
-
-
-
     // -------------------------------------------------------------
     // Autoloader
     // -------------------------------------------------------------
