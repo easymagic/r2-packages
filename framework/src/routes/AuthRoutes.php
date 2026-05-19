@@ -2,11 +2,12 @@
 namespace R2Packages\Framework\Routes;
 
 use R2Packages\Framework\Route;
+use R2Packages\Framework\Controllers\BaseUserController;
 
 class AuthRoutes
 {
     private Route $route;
-    
+
     public function __construct()
     {
         $this->route = Route::getInstance();
