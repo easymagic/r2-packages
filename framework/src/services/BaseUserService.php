@@ -49,7 +49,7 @@ class BaseUserService
         }
         $user = $this->baseUserRepository->findByEmail($email);
 
-        if ($user->password !== $password) {
+        if (password_verify($password, $user->password)) {
             throw new Exception("Invalid login!");
         }
         return $user;
