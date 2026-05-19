@@ -25,8 +25,14 @@ class BaseUserService
 
     private MailTemplates $mailTemplates;
 
-    function __construct($data, $input, BaseUserRepository $baseUserRepository, BaseUserEntity $baseUserEntity, MailService $mailService, MailTemplates $mailTemplates)
-    {
+    function __construct(
+        $data,
+        $input,
+        BaseUserRepository $baseUserRepository,
+        BaseUserEntity $baseUserEntity,
+        MailService $mailService,
+        MailTemplates $mailTemplates
+    ) {
         $this->data = $data;
         $this->input = $input;
         $this->baseUserRepository = $baseUserRepository;

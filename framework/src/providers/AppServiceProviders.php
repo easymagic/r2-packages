@@ -32,7 +32,7 @@ class AppServiceProviders
         });
 
         Container::getInstance()->set(MailTemplates::class, function($request){
-            return new MailTemplates($request);
+            return new MailTemplates();
         });
 
         Container::getInstance()->set(BaseUserService::class, function($request){
