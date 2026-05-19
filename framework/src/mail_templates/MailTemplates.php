@@ -1,6 +1,6 @@
 <?php
 
-namespace R2Packages\Framework\MailTemplates;
+namespace R2Packages\Framework\mail_templates;
 
 use R2Packages\Framework\Entities\BaseUserEntity;
 
