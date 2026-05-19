@@ -25,7 +25,8 @@ class BaseUserController
         $user = $this->baseUserService->login();
         jsonResponse([
             'message' => 'Login successful',
-            'data' => $user
+            'data' => $user,
+            "success" => true
         ]);
     }
 
@@ -34,7 +35,8 @@ class BaseUserController
         $user = $this->baseUserService->register();
         jsonResponse([
             'message' => 'Registration successful',
-            'data' => $user
+            'data' => $user,
+            "success" => true
         ]);
     }
     
@@ -43,7 +45,8 @@ class BaseUserController
         $user = $this->baseUserService->verifyOtp();
         jsonResponse([
             'message' => 'OTP verification successful',
-            'data' => $user
+            'data' => $user,
+            "success" => true
         ]);
     }
     
@@ -52,7 +55,8 @@ class BaseUserController
         $user = $this->baseUserService->logout();
         jsonResponse([
             'message' => 'Logout successful',
-            'data' => $user
+            'data' => $user,
+            "success" => true
         ]);
     }
     
@@ -62,7 +66,8 @@ class BaseUserController
         $user = $this->baseUserService->requestPasswordReset();
         jsonResponse([
             'message' => 'Password reset request successful',
-            'data' => $user
+            'data' => $user,
+            "success" => true
         ]);
     }
     
@@ -72,7 +77,8 @@ class BaseUserController
         $user = $this->baseUserService->resetPassword();
         jsonResponse([
             'message' => 'Password reset successful',
-            'data' => $user
+            'data' => $user,
+            "success" => true
         ]);
     }
 
