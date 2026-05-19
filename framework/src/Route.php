@@ -180,7 +180,7 @@ class Route
                 try {
 
                     foreach ($callback['middleware'] as $middleware) {
-                        $instance = new $middleware();
+                        $instance = Container::getInstance()->get($middleware, $request);
                         $instance->handle($request);
                     }
     
