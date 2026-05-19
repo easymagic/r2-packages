@@ -44,6 +44,9 @@ class BaseUserService
     {
         $email = $this->data['email'] ?? '';
         $password = $this->data['password'] ?? '';
+        if (empty($email) || empty($password)) {
+            throw new Exception("Email and password are required!");
+        }
         $user = $this->baseUserRepository->findByEmail($email);
 
         if ($user->password !== $password) {
