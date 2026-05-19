@@ -5,10 +5,9 @@ namespace R2Packages\Framework\Services;
 use Exception;
 use R2Packages\Framework\Entities\BaseUserEntity;
 use R2Packages\Framework\MailService;
-use R2Packages\Framework\MailTemplates\MailTemplates;
+use R2Packages\Framework\mail_templates\MailTemplates;
 use R2Packages\Framework\Repositories\BaseUserRepository;
 use R2Packages\Framework\Traits\Publishable;
-use R2Packages\Framework\Traits\WithEvents;
 
 class BaseUserService
 {
