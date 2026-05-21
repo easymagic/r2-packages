@@ -15,7 +15,7 @@ class BaseUserService
 
     protected BaseUserRepository $baseUserRepository;
 
-    private $data = [];
+    protected $data = [];
 
     public BaseUserEntity $baseUserEntity;
 
