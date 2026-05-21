@@ -92,4 +92,14 @@ class BaseUserController
         ]);
     }
 
+    public function getProfile()
+    {
+        $user = $this->baseUserService->getProfile();
+        jsonResponse([
+            'message' => 'Profile fetched successfully',
+            'data' => $user,
+            "success" => true
+        ]);
+    }
+
 }

@@ -198,4 +198,13 @@ class BaseUserService
         $this->baseUserEntity = $this->baseUserRepository->save($id, $this->input);
         return $this->baseUserEntity;
     }
+
+    public function getProfile(){
+        if (!isset($this->data['id']) || empty($this->data['id'])) {
+            throw new Exception("ID is required!");
+        }
+        $id = $this->data['id'];
+        $this->baseUserEntity = $this->baseUserRepository->find($id);
+        return $this->baseUserEntity;
+    }
 }
