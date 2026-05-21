@@ -102,4 +102,14 @@ class BaseUserController
         ]);
     }
 
+    public function create()
+    {
+        $user = $this->baseUserService->create();
+        jsonResponse([
+            'message' => 'User created successfully',
+            'data' => $user,
+            "success" => true
+        ]);
+    }
+
 }
