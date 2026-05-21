@@ -16,6 +16,7 @@ class AuthRoutes
     function registerRoutes(){
         $this->route->post('/login', [BaseUserController::class, 'login']);
         $this->route->post('/register', [BaseUserController::class, 'register']);
+        $this->route->post('/create', [BaseUserController::class, 'create']);
         $this->route->post('/otp', [BaseUserController::class, 'verifyOtp']);
         $this->route->post('/logout', [BaseUserController::class, 'logout']);
         $this->route->post('/request-password-reset', [BaseUserController::class, 'requestPasswordReset']);

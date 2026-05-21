@@ -104,6 +104,62 @@ class BaseUserService
         return $user;
     }
 
+    public function create(){
+
+        if (!isset($this->data['name']) || empty($this->data['name'])) {
+            throw new Exception("Name is required!");
+        }
+
+        //email
+        if (!isset($this->data['email']) || empty($this->data['email'])) {
+            throw new Exception("Email is required!");
+        }
+
+        $userCheck = (new BaseUserRepository())->findByEmail($this->data['email']);
+
+        //phone
+        if (!isset($this->data['phone']) || empty($this->data['phone'])) {
+            throw new Exception("Phone is required!");
+        }
+
+        //password
+        if (!isset($this->data['password']) || empty($this->data['password'])) {
+            throw new Exception("Password is required!");
+        }
+
+        // role
+        if (!isset($this->data['role']) || empty($this->data['role'])) {
+            throw new Exception("Role is required!");
+        }
+
+        // status
+        if (!isset($this->data['status']) || empty($this->data['status'])) {
+            throw new Exception("Status is required!");
+        }
+
+        // if (!isset($this->data['confirm_password']) || $this->data['password'] !== $this->data['confirm_password']) {
+        //     throw new Exception("Password and confirm password do not match!");
+        // }
+
+        $this->baseUserEntity->generateOtp();
+        $this->baseUserEntity->refreshToken();
+
+
+        $this->input['name'] = $this->data['name'];
+        $this->input['email'] = $this->data['email'];
+        $this->input['password'] = password_hash($this->data['password'], PASSWORD_DEFAULT);
+        $this->input['phone'] = $this->data['phone'];
+        $this->input['otp'] = $this->baseUserEntity->otp;
+        $this->input['token'] = $this->baseUserEntity->token;
+        $this->input['role'] = $this->data['role'];
+        $this->input['status'] = $this->data['status'];
+        $this->input['created_at'] = $this->baseUserEntity->created_at;
+        $this->input['updated_at'] = $this->baseUserEntity->updated_at;
+        $user = $this->baseUserRepository->save(0, $this->input);
+        $this->mailService->send($user->email, 'Welcome to our platform', 'noreply@example.com', $this->mailTemplates->registration($user));
+        return $user;
+    }
+
     public function verifyOtp()
     {
         if (!isset($this->data['otp']) || empty($this->data['otp'])) {
