@@ -82,4 +82,14 @@ class BaseUserController
         ]);
     }
 
+    public function updateProfile()
+    {
+        $user = $this->baseUserService->updateProfile();
+        jsonResponse([
+            'message' => 'Profile updated successfully',
+            'data' => $user,
+            "success" => true
+        ]);
+    }
+
 }

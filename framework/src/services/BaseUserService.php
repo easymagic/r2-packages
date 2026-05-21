@@ -181,4 +181,21 @@ class BaseUserService
         ]);
         return $this->baseUserEntity;
     }
+
+    public function updateProfile(){
+        if (!isset($this->data['id']) || empty($this->data['id'])) {
+            throw new Exception("ID is required!");
+        }
+        if (!isset($this->data['name']) || empty($this->data['name'])) {
+            throw new Exception("Name is required!");
+        }
+        if (!isset($this->data['phone']) || empty($this->data['phone'])) {
+            throw new Exception("Phone is required!");
+        }
+        $this->input['name'] = $this->data['name'];
+        $this->input['phone'] = $this->data['phone'];
+        $id = $this->data['id'];
+        $this->baseUserEntity = $this->baseUserRepository->save($id, $this->input);
+        return $this->baseUserEntity;
+    }
 }
