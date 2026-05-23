@@ -24,7 +24,10 @@ class BaseUserService
 
     private MailTemplates $mailTemplates;
 
-    private static BaseUserEntity $user;
+    /*
+     * @var BaseUserEntity
+     */
+    private static $user;
 
     private $authUserId = 0;
 
@@ -367,11 +370,16 @@ class BaseUserService
         self::$user = $user;
     } 
 
+    /*
+     * @return BaseUserEntity
+     */
     static function getLoggedUser(){
         return self::$user;
     }
 
-    // getAuthenticatedUser
+    /*
+     * @return BaseUserEntity
+     */
     static function getAuthenticatedUser(){
         return self::$user;
     }
