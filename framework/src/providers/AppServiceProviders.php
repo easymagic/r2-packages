@@ -11,6 +11,7 @@ use R2Packages\Framework\Entities\BaseUserEntity;
 use R2Packages\Framework\MailService;
 use R2Packages\Framework\mail_templates\MailTemplates;
 use R2Packages\Framework\Controllers\BaseUserController;
+use R2Packages\Framework\middlewares\AdminMiddleware;
 
 class AppServiceProviders
 {
@@ -65,6 +66,13 @@ class AppServiceProviders
 
         Container::getInstance()->set(AuthMiddleware::class, function($request){
             return new AuthMiddleware(
+                $request, 
+                Container::getInstance()->get(BaseUserService::class, $request)
+            );
+        });
+
+        Container::getInstance()->set(AdminMiddleware::class, function($request){
+            return new AdminMiddleware(
                 $request, 
                 Container::getInstance()->get(BaseUserService::class, $request)
             );
