@@ -61,7 +61,7 @@ class AppServiceProviders
 
 
         Container::getInstance()->set(GlobalApiMiddleware::class, function($request){
-            $systemToken = 1234567890;
+            $systemToken = '1234567890';
             return new GlobalApiMiddleware($systemToken,$request);
         });
 
