@@ -3,9 +3,6 @@
   "description": "A simple reusable PHP package",
   "type": "project",
   "license": "MIT",
-  "bin": [
-    "framework/bin/publish"
-  ],
   "autoload": {
     "psr-4": {
       "R2Packages\\Framework\\": "framework/src/"
