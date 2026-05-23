@@ -45,7 +45,7 @@ class BaseUserRepository
         /** @var BaseUserEntity $user */
         $user = new BaseUserEntity($result);
         if ($user->isEmpty()) {
-            throw new Exception("User not found");
+            // throw new Exception("User not found");
         }
         return $user;
     }
