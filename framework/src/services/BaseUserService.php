@@ -24,6 +24,8 @@ class BaseUserService
 
     private MailTemplates $mailTemplates;
 
+    private static BaseUserEntity $user;
+
     function __construct(
         $data,
         $input,
@@ -320,5 +322,22 @@ class BaseUserService
     function fetchAll(){
         $users = $this->baseUserRepository->fetchAll();
         return $users;
+    }
+
+    function find($id){
+        return $this->baseUserRepository->find($id);
+    }
+
+    static function logUser(BaseUserEntity $user){
+        self::$user = $user;
+    } 
+
+    static function getLoggedUser(){
+        return self::$user;
+    }
+
+    // getAuthenticatedUser
+    static function getAuthenticatedUser(){
+        return self::$user;
     }
 }

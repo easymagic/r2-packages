@@ -181,7 +181,7 @@ class Route
 
                     foreach ($callback['middleware'] as $middleware) {
                         $instance = Container::getInstance()->get($middleware, $request);
-                        $instance->handle($request);
+                        $instance->handle();
                     }
     
                     $args = [$request];

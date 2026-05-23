@@ -1,8 +1,12 @@
-<?php 
+<?php
+
 namespace R2Packages\Framework\Routes;
 
+use R2Packages\Framework\middlewares\AuthMiddleware;
+use R2Packages\Framework\middlewares\GlobalApiMiddleware;
 use R2Packages\Framework\Route;
 use R2Packages\Framework\Controllers\BaseUserController;
+use R2Packages\Framework\middlewares\AdminMiddleware;
 
 class AuthRoutes
 {
@@ -13,26 +17,40 @@ class AuthRoutes
         $this->route = Route::getInstance();
     }
 
-    function registerRoutes(){
+    function registerRoutes()
+    {
 
-        $this->route->prefix("accounts",function(Route $route){
+        $this->route->globalMiddleware([
+            GlobalApiMiddleware::class
+        ], function (Route $route) {
 
-            $route->post('/login', [BaseUserController::class, 'login']);
-            $route->post('/register', [BaseUserController::class, 'register']);
-            
-            $route->post('/otp', [BaseUserController::class, 'verifyOtp']);
-            $route->post('/logout', [BaseUserController::class, 'logout']);
-            $route->post('/request-password-reset', [BaseUserController::class, 'requestPasswordReset']);
-            $route->post('/reset-password', [BaseUserController::class, 'resetPassword']);
-            $route->post('/me', [BaseUserController::class, 'updateProfile']);
-            $route->get('/me', [BaseUserController::class, 'getProfile']);
-            
-            $route->post('/user', [BaseUserController::class, 'create']);
-            $route->post('/user/{id}', [BaseUserController::class, 'updateUserProfile']);
-            $route->post('/user/{id}/password', [BaseUserController::class, 'changeUserPassword']);
-            $route->get('/user/{id}', [BaseUserController::class, 'getUserProfile']);
-    
+            $route->prefix("accounts", function (Route $route) {
+
+                $route->post('/login', [BaseUserController::class, 'login']);
+                $route->post('/register', [BaseUserController::class, 'register']);
+
+                $route->post('/otp', [BaseUserController::class, 'verifyOtp']);
+                $route->post('/logout', [BaseUserController::class, 'logout']);
+                $route->post('/request-password-reset', [BaseUserController::class, 'requestPasswordReset']);
+                $route->post('/reset-password', [BaseUserController::class, 'resetPassword']);
+
+                $route->globalMiddleware([
+                    AuthMiddleware::class
+                ], function (Route $route) {
+                    $route->post('/me', [BaseUserController::class, 'updateProfile']);
+                    $route->get('/me', [BaseUserController::class, 'getProfile']);
+                });
+
+                $route->globalMiddleware([
+                    AdminMiddleware::class
+                ], function (Route $route) {
+                    $route->post('/user', [BaseUserController::class, 'create']);
+                    $route->post('/user/{id}', [BaseUserController::class, 'updateUserProfile']);
+                    $route->post('/user/{id}/password', [BaseUserController::class, 'changeUserPassword']);
+                    $route->get('/user/{id}', [BaseUserController::class, 'getUserProfile']);
+                });
+
+            });
         });
-
     }
 }

@@ -2,6 +2,8 @@
 
 namespace R2Packages\Framework\Providers;
 
+use R2Packages\Framework\middlewares\AuthMiddleware;
+use R2Packages\Framework\middlewares\GlobalApiMiddleware;
 use R2Packages\Framework\Container;
 use R2Packages\Framework\Repositories\BaseUserRepository;
 use R2Packages\Framework\Services\BaseUserService;
@@ -52,6 +54,20 @@ class AppServiceProviders
         // BaseUserController
         Container::getInstance()->set(BaseUserController::class, function($request){
             return new BaseUserController($request, Container::getInstance()->get(BaseUserService::class, $request));
+        });
+
+
+        Container::getInstance()->set(GlobalApiMiddleware::class, function($request){
+            $systemToken = 1234567890;
+            return new GlobalApiMiddleware($systemToken,$request);
+        });
+
+
+        Container::getInstance()->set(AuthMiddleware::class, function($request){
+            return new AuthMiddleware(
+                $request, 
+                Container::getInstance()->get(BaseUserService::class, $request)
+            );
         });
     }
 }
