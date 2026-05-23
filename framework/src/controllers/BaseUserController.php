@@ -112,4 +112,55 @@ class BaseUserController
         ]);
     }
 
+    public function updateUserProfile()
+    {
+        $user = $this->baseUserService->updateUserProfile();
+        jsonResponse([
+            'message' => 'User profile updated successfully',
+            'data' => $user,
+            "success" => true
+        ]);
+    }
+
+    public function changeUserPassword()
+    {
+        $user = $this->baseUserService->changeUserPassword();
+        jsonResponse([
+            'message' => 'User password changed successfully',
+            'data' => $user,
+            "success" => true
+        ]);
+    }
+
+    public function fetch()
+    {
+        $users = $this->baseUserService->fetch();
+        jsonResponse([
+            'message' => 'Users fetched successfully',
+            'data' => $users,
+            "success" => true
+        ]);
+    }
+
+    public function fetchAll()
+    {
+        $users = $this->baseUserService->fetchAll();
+        jsonResponse([
+            'message' => 'Users fetched successfully',
+            'data' => $users,
+            "success" => true
+        ]);
+    }
+
+    function getUserProfile()
+    {
+        $user = $this->baseUserService->getProfile();
+        jsonResponse([
+            'message' => 'User profile fetched successfully',
+            'data' => $user,
+            "success" => true
+        ]);
+    }
+
+
 }

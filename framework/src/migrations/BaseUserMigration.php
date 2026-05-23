@@ -4,7 +4,7 @@ namespace R2Packages\Framework\Migrations;
 
 use R2Packages\Framework\Migration;
 
-class UserMigration
+class BaseUserMigration
 {
 
     public function run(){

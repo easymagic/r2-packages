@@ -255,6 +255,37 @@ class BaseUserService
         return $this->baseUserEntity;
     }
 
+
+    public function updateUserProfile(){
+        if (!isset($this->data['id']) || empty($this->data['id'])) {
+            throw new Exception("ID is required!");
+        }
+        if (!isset($this->data['name']) || empty($this->data['name'])) {
+            throw new Exception("Name is required!");
+        }
+        if (!isset($this->data['phone']) || empty($this->data['phone'])) {
+            throw new Exception("Phone is required!");
+        }
+
+        // role 
+        if (!isset($this->data['role']) || empty($this->data['role'])) {
+            throw new Exception("Role is required!");
+        }
+
+        // status
+        if (!isset($this->data['status']) || empty($this->data['status'])) {
+            throw new Exception("Status is required!");
+        }
+
+        $this->input["role"] = $this->data['role'];
+        $this->input["status"] = $this->data['status'];
+        $this->input['name'] = $this->data['name'];
+        $this->input['phone'] = $this->data['phone'];
+        $id = $this->data['id'];
+        $this->baseUserEntity = $this->baseUserRepository->save($id, $this->input);
+        return $this->baseUserEntity;
+    }
+
     public function getProfile(){
         if (!isset($this->data['id']) || empty($this->data['id'])) {
             throw new Exception("ID is required!");
@@ -262,5 +293,32 @@ class BaseUserService
         $id = $this->data['id'];
         $this->baseUserEntity = $this->baseUserRepository->find($id);
         return $this->baseUserEntity;
+    }
+
+    public function changeUserPassword(){
+        if (!isset($this->data['id']) || empty($this->data['id'])) {
+            throw new Exception("ID is required!");
+        }
+
+        if (!isset($this->data['password']) || empty($this->data['password'])) {
+            throw new Exception("Password is required!");
+        }
+
+        $this->baseUserEntity = $this->baseUserRepository->find($this->data['id']);
+
+        $this->baseUserRepository->save($this->baseUserEntity->id, [
+            'password' => password_hash($this->data['password'], PASSWORD_DEFAULT),
+        ]);
+        return $this->baseUserEntity;
+    }
+
+    function fetch(){
+        $users = $this->baseUserRepository->fetch();
+        return $users;
+    }
+
+    function fetchAll(){
+        $users = $this->baseUserRepository->fetchAll();
+        return $users;
     }
 }

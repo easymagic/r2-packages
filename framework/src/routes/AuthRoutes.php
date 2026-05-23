@@ -14,14 +14,25 @@ class AuthRoutes
     }
 
     function registerRoutes(){
-        $this->route->post('/login', [BaseUserController::class, 'login']);
-        $this->route->post('/register', [BaseUserController::class, 'register']);
-        $this->route->post('/create', [BaseUserController::class, 'create']);
-        $this->route->post('/otp', [BaseUserController::class, 'verifyOtp']);
-        $this->route->post('/logout', [BaseUserController::class, 'logout']);
-        $this->route->post('/request-password-reset', [BaseUserController::class, 'requestPasswordReset']);
-        $this->route->post('/reset-password', [BaseUserController::class, 'resetPassword']);
-        $this->route->post('/me', [BaseUserController::class, 'updateProfile']);
-        $this->route->get('/me', [BaseUserController::class, 'getProfile']);
+
+        $this->route->prefix("accounts",function(Route $route){
+
+            $route->post('/login', [BaseUserController::class, 'login']);
+            $route->post('/register', [BaseUserController::class, 'register']);
+            
+            $route->post('/otp', [BaseUserController::class, 'verifyOtp']);
+            $route->post('/logout', [BaseUserController::class, 'logout']);
+            $route->post('/request-password-reset', [BaseUserController::class, 'requestPasswordReset']);
+            $route->post('/reset-password', [BaseUserController::class, 'resetPassword']);
+            $route->post('/me', [BaseUserController::class, 'updateProfile']);
+            $route->get('/me', [BaseUserController::class, 'getProfile']);
+            
+            $route->post('/user', [BaseUserController::class, 'create']);
+            $route->post('/user/{id}', [BaseUserController::class, 'updateUserProfile']);
+            $route->post('/user/{id}/password', [BaseUserController::class, 'changeUserPassword']);
+            $route->get('/user/{id}', [BaseUserController::class, 'getUserProfile']);
+    
+        });
+
     }
 }
