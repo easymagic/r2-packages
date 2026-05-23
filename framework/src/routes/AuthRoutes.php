@@ -38,7 +38,8 @@ class AuthRoutes
                     AuthMiddleware::class
                 ], function (Route $route) {
                     $route->post('/me', [BaseUserController::class, 'updateProfile']);
-                    $route->get('/me', [BaseUserController::class, 'getProfile']);
+                    $route->get('/me', [BaseUserController::class, 'getMyProfile']);
+                    $route->post('/me/password', [BaseUserController::class, 'changeMyPassword']);
                 });
 
                 $route->globalMiddleware([

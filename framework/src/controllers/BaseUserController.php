@@ -102,6 +102,27 @@ class BaseUserController
         ]);
     }
 
+    // change my password
+    public function changeMyPassword()
+    {
+        $user = $this->baseUserService->changeMyPassword();
+        jsonResponse([
+            'message' => 'Password changed successfully',
+            'data' => $user,
+            "success" => true
+        ]);
+    }
+
+    public function getMyProfile()
+    {
+        $user = $this->baseUserService->getMyProfile();
+        jsonResponse([
+            'message' => 'My profile fetched successfully',
+            'data' => $user,
+            "success" => true
+        ]);
+    }
+
     public function create()
     {
         $user = $this->baseUserService->create();
@@ -132,6 +153,7 @@ class BaseUserController
         ]);
     }
 
+    
     public function fetch()
     {
         $users = $this->baseUserService->fetch();

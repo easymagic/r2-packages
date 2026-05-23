@@ -26,7 +26,10 @@ class BaseUserService
 
     private static BaseUserEntity $user;
 
+    private $authUserId = 0;
+
     function __construct(
+        $authUserId,
         $data,
         $input,
         BaseUserRepository $baseUserRepository,
@@ -34,6 +37,7 @@ class BaseUserService
         MailService $mailService,
         MailTemplates $mailTemplates
     ) {
+        $this->authUserId = $authUserId;
         $this->data = $data;
         $this->input = $input;
         $this->baseUserRepository = $baseUserRepository;
@@ -186,10 +190,10 @@ class BaseUserService
 
     public function logout()
     {
-        if (!isset($this->data['id']) || empty($this->data['id'])) {
+        if (!isset($this->authUserId) || empty($this->authUserId)) {
             throw new Exception("ID is required!");
         }
-        $id = $this->data['id'];
+        $id = $this->authUserId;
         $this->baseUserEntity = $this->baseUserRepository->find($id);
         $this->baseUserEntity->refreshToken();
         $this->baseUserEntity = $this->baseUserRepository->save($id, [
@@ -241,8 +245,8 @@ class BaseUserService
     }
 
     public function updateProfile(){
-        if (!isset($this->data['id']) || empty($this->data['id'])) {
-            throw new Exception("ID is required!");
+        if (!isset($this->authUserId) || empty($this->authUserId)) {
+            throw new Exception("ID is required!"); // need to be authenticated user id
         }
         if (!isset($this->data['name']) || empty($this->data['name'])) {
             throw new Exception("Name is required!");
@@ -252,7 +256,7 @@ class BaseUserService
         }
         $this->input['name'] = $this->data['name'];
         $this->input['phone'] = $this->data['phone'];
-        $id = $this->data['id'];
+        $id = $this->authUserId;
         $this->baseUserEntity = $this->baseUserRepository->save($id, $this->input);
         return $this->baseUserEntity;
     }
@@ -297,6 +301,15 @@ class BaseUserService
         return $this->baseUserEntity;
     }
 
+    public function getMyProfile(){
+        if (!isset($this->authUserId) || empty($this->authUserId)) {
+            throw new Exception("ID is required!"); // need to be authenticated user id
+        }
+        $id = $this->authUserId;
+        $this->baseUserEntity = $this->baseUserRepository->find($id);
+        return $this->baseUserEntity;
+    }
+
     public function changeUserPassword(){
         if (!isset($this->data['id']) || empty($this->data['id'])) {
             throw new Exception("ID is required!");
@@ -309,6 +322,28 @@ class BaseUserService
         $this->baseUserEntity = $this->baseUserRepository->find($this->data['id']);
 
         $this->baseUserRepository->save($this->baseUserEntity->id, [
+            'password' => password_hash($this->data['password'], PASSWORD_DEFAULT),
+        ]);
+        return $this->baseUserEntity;
+    }
+
+    public function changeMyPassword(){
+        if (!isset($this->data['password']) || empty($this->data['password'])) {
+            throw new Exception("Password is required!");
+        }
+        // old password
+        if (!isset($this->data['old_password']) || empty($this->data['old_password'])) {
+            throw new Exception("Old password is required!");
+        }
+        // confirm password
+        if (!isset($this->data['confirm_password']) || $this->data['password'] !== $this->data['confirm_password']) {
+            throw new Exception("Password and confirm password do not match!");
+        }
+        $this->baseUserEntity = $this->baseUserRepository->find($this->authUserId);
+        if (!password_verify($this->data['old_password'], $this->baseUserEntity->password)) {
+            throw new Exception("Old password is incorrect!");
+        }
+        $this->baseUserRepository->save($this->authUserId, [
             'password' => password_hash($this->data['password'], PASSWORD_DEFAULT),
         ]);
         return $this->baseUserEntity;

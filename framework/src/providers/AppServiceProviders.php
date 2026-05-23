@@ -42,7 +42,9 @@ class AppServiceProviders
 
             $data = $request;
             $input = [];
+            $user = BaseUserService::getAuthenticatedUser();
             return new BaseUserService(
+                $user?->id ?? 0,
                 $data,
                 $input,
                 Container::getInstance()->get(BaseUserRepository::class, $request),

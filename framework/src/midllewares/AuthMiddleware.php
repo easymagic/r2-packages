@@ -3,7 +3,6 @@
 namespace R2Packages\Framework\middlewares;
 
 use R2Packages\Framework\Services\BaseUserService;
-use services\UserService;
 
 class AuthMiddleware {
 
