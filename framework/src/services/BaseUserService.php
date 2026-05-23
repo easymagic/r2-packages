@@ -56,12 +56,18 @@ class BaseUserService
         if (empty($email) || empty($password)) {
             throw new Exception("Email and password are required!");
         }
-        $user = $this->baseUserRepository->findByEmail($email);
+        $this->baseUserEntity = $this->baseUserRepository->findByEmail($email);
 
-        if (!password_verify($password, $user->password)) {
+        if (!password_verify($password, $this->baseUserEntity->password)) {
             throw new Exception("Invalid login!!");
         }
-        return $user;
+        $this->baseUserEntity->refreshToken();
+        $this->baseUserEntity->generateOtp();
+        $this->baseUserEntity = $this->baseUserRepository->save($this->baseUserEntity->id, [
+            'token' => $this->baseUserEntity->token,
+            'otp' => $this->baseUserEntity->otp
+        ]);
+        return $this->baseUserEntity;
     }
 
 
