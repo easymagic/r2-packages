@@ -65,7 +65,7 @@ class BaseUserController
     {
         $user = $this->baseUserService->requestPasswordReset();
         jsonResponse([
-            'message' => 'Password reset request successful',
+            'message' => 'Password reset request successful, please check your email for OTP verification sent to you.',
             'data' => $user,
             "success" => true
         ]);
