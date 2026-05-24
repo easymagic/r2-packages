@@ -27,7 +27,6 @@ class AuthRoutes
             $route->prefix("accounts", function (Route $route) {
 
                 $route->post('/login', [BaseUserController::class, 'login']);
-                $route->delete('/login', [BaseUserController::class, 'logout']);
 
                 $route->post('/register', [BaseUserController::class, 'register']);
 
@@ -38,6 +37,7 @@ class AuthRoutes
                 $route->globalMiddleware([
                     AuthMiddleware::class
                 ], function (Route $route) {
+                    $route->delete('/login', [BaseUserController::class, 'logout']);
                     $route->post('/me', [BaseUserController::class, 'updateProfile']);
                     $route->get('/me', [BaseUserController::class, 'getMyProfile']);
                     $route->post('/me/password', [BaseUserController::class, 'changeMyPassword']);
