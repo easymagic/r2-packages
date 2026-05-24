@@ -27,10 +27,11 @@ class AuthRoutes
             $route->prefix("accounts", function (Route $route) {
 
                 $route->post('/login', [BaseUserController::class, 'login']);
+                $route->delete('/login', [BaseUserController::class, 'logout']);
+
                 $route->post('/register', [BaseUserController::class, 'register']);
 
                 $route->post('/otp', [BaseUserController::class, 'verifyOtp']);
-                $route->post('/logout', [BaseUserController::class, 'logout']);
                 $route->post('/request-password-reset', [BaseUserController::class, 'requestPasswordReset']);
                 $route->post('/reset-password', [BaseUserController::class, 'resetPassword']);
 
