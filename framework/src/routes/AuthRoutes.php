@@ -46,6 +46,7 @@ class AuthRoutes
                 $route->globalMiddleware([
                     AdminMiddleware::class
                 ], function (Route $route) {
+                    $route->get('/user', [BaseUserController::class, 'fetch']);
                     $route->post('/user', [BaseUserController::class, 'create']);
                     $route->post('/user/{id}', [BaseUserController::class, 'updateUserProfile']);
                     $route->post('/user/{id}/password', [BaseUserController::class, 'changeUserPassword']);
