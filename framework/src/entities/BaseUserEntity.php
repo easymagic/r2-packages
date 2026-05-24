@@ -60,7 +60,8 @@ class BaseUserEntity
     }
 
     function hydrate($data){
-        return new self($data);
+        $cls = get_called_class();
+        return new $cls($data);
     }
 
     public function isEmpty(){
