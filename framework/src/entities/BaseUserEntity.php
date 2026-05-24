@@ -59,6 +59,10 @@ class BaseUserEntity
 
     }
 
+    function hydrate($data){
+        return new self($data);
+    }
+
     public function isEmpty(){
         return empty($this->id);
     }

@@ -23,7 +23,8 @@ class AppServiceProviders
             $size = 11;
             $sql = '';
             $params = [];
-            return new BaseUserRepository($filters, $size, $sql, $params);
+            $baseUserEntity = Container::getInstance()->get(BaseUserEntity::class, []);
+            return new BaseUserRepository($baseUserEntity,$filters, $size, $sql, $params);
         });
 
         Container::getInstance()->set(BaseUserEntity::class, function($request){

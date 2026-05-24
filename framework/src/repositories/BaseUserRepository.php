@@ -18,8 +18,11 @@ class BaseUserRepository
     protected $sql = '';
     protected $params = [];
 
-    function __construct($filters = [],$size = 11,$sql = '',$params = [])
+    protected BaseUserEntity $baseUserEntity;
+
+    function __construct(BaseUserEntity $baseUserEntity,$filters = [],$size = 11,$sql = '',$params = [])
     {
+        $this->baseUserEntity = $baseUserEntity;
         $this->filters = $filters;
         $this->size = $size;
         if (!empty($sql)) {
@@ -43,7 +46,7 @@ class BaseUserRepository
     {
         $result = dbFetchOne("SELECT * FROM users WHERE email = ?", [$email]);
         /** @var BaseUserEntity $user */
-        $user = new BaseUserEntity($result);
+        $user = $this->baseUserEntity->hydrate($result);
         if ($user->isEmpty()) {
             // throw new Exception("User not found");
         }
@@ -60,7 +63,7 @@ class BaseUserRepository
     {
         $result = dbFetchOne("SELECT * FROM users WHERE id = ?", [$id]);
         /** @var BaseUserEntity $user */
-        $user = new BaseUserEntity($result);
+        $user = $this->baseUserEntity->hydrate($result);
         if ($user->isEmpty()) {
             throw new Exception("User not found");
         }
@@ -107,11 +110,17 @@ class BaseUserRepository
     }
 
     function fetchAll(){
-        return dbFetchAll($this->sql, $this->params);
+        $results = dbFetchAll($this->sql, $this->params);
+        return array_map(function($result){
+            return $this->baseUserEntity->hydrate($result);
+        }, $results);
     }
 
     function fetch(){
-        return dbPaginate($this->sql, $this->size, $this->params);
+        $results = dbPaginate($this->sql, $this->size, $this->params);
+        return array_map(function($result){
+            return $this->baseUserEntity->hydrate($result);
+        }, $results);
     }
 
     function count(){
@@ -137,6 +146,5 @@ class BaseUserRepository
             return $this->find($id);
         }
     }
-
 
 }
