@@ -34,7 +34,7 @@ class BaseUserController
     {
         $user = $this->baseUserService->register();
         jsonResponse([
-            'message' => 'Registration successful',
+            'message' => 'Registration successful , please check your email for OTP verification sent to you.',
             'data' => $user,
             "success" => true
         ]);
