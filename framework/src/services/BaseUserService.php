@@ -194,7 +194,7 @@ class BaseUserService
         if ($this->baseUserEntity->otp !== $otp) {
             throw new Exception("Invalid OTP!");
         }
-        $this->baseUserRepository->save($id, [
+        $this->baseUserEntity = $this->baseUserRepository->save($id, [
             'status' => BaseUserEntity::STATUS_ACTIVE
         ]);
         return $this->baseUserEntity;
