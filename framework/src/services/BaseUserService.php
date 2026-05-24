@@ -85,6 +85,9 @@ class BaseUserService
         }
 
         $userCheck = (new BaseUserRepository())->findByEmail($this->data['email']);
+        if (!$userCheck->isEmpty()) {
+            throw new Exception("User already exists!");
+        }
 
         //phone
         if (!isset($this->data['phone']) || empty($this->data['phone'])) {
