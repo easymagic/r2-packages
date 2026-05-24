@@ -29,7 +29,7 @@ class BaseUserService
      */
     private static $user;
 
-    private $authUserId = 0;
+    protected $authUserId = 0;
 
     function __construct(
         $authUserId,
@@ -74,7 +74,6 @@ class BaseUserService
     public function register()
     {
 
-
         if (!isset($this->data['name']) || empty($this->data['name'])) {
             throw new Exception("Name is required!");
         }
@@ -84,7 +83,7 @@ class BaseUserService
             throw new Exception("Email is required!");
         }
 
-        $userCheck = (new BaseUserRepository())->findByEmail($this->data['email']);
+        $userCheck = $this->baseUserRepository->findByEmail($this->data['email']);
         if (!$userCheck->isEmpty()) {
             throw new Exception("User already exists!");
         }
@@ -133,7 +132,10 @@ class BaseUserService
             throw new Exception("Email is required!");
         }
 
-        $userCheck = (new BaseUserRepository())->findByEmail($this->data['email']);
+        $userCheck = $this->baseUserRepository->findByEmail($this->data['email']);
+        if (!$userCheck->isEmpty()) {
+            throw new Exception("User already exists!");
+        }
 
         //phone
         if (!isset($this->data['phone']) || empty($this->data['phone'])) {
