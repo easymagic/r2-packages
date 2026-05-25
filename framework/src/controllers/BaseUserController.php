@@ -39,6 +39,19 @@ class BaseUserController
             "success" => true
         ]);
     }
+
+    public function resendOtp()
+    {
+        $user = $this->baseUserService->resendOtp();
+        jsonResponse([
+            'message' => 'OTP resent successfully',
+            'data' => [
+                "id" => $user->id,
+                "email" => $user->email
+            ],
+            "success" => true
+        ]);
+    }
     
     public function verifyOtp()
     {

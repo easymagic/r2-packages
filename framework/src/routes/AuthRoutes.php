@@ -31,6 +31,7 @@ class AuthRoutes
                 $route->post('/register', [BaseUserController::class, 'register']);
 
                 $route->post('/otp', [BaseUserController::class, 'verifyOtp']);
+                $route->post('/resend-otp', [BaseUserController::class, 'resendOtp']);
                 $route->post('/request-password-reset', [BaseUserController::class, 'requestPasswordReset']);
                 $route->post('/reset-password', [BaseUserController::class, 'resetPassword']);
 

@@ -124,6 +124,21 @@ class BaseUserService
         return $user;
     }
 
+    function resendOtp(){
+        if (!isset($this->data['id']) || empty($this->data['id'])) {
+            throw new Exception("ID is required!");
+        }
+        $this->baseUserEntity = $this->baseUserRepository->find($this->data['id']);
+        $this->baseUserEntity->generateOtp();
+        $this->baseUserEntity->refreshToken();
+        $this->baseUserEntity = $this->baseUserRepository->save($this->baseUserEntity->id, [
+            'otp' => $this->baseUserEntity->otp,
+            'token' => $this->baseUserEntity->token,
+        ]);
+        $this->mailService->send($this->baseUserEntity->email, 'Welcome to our platform', 'noreply@example.com', $this->mailTemplates->registration($this->baseUserEntity));
+        return $this->baseUserEntity;
+    }
+
     public function create(){
 
         if (!isset($this->data['name']) || empty($this->data['name'])) {
