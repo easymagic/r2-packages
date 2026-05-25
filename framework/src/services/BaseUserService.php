@@ -61,6 +61,9 @@ class BaseUserService
         if (!password_verify($password, $this->baseUserEntity->password)) {
             throw new Exception("Invalid login!!");
         }
+        if ($this->baseUserEntity->status !== BaseUserEntity::STATUS_ACTIVE) {
+            throw new Exception("Inactive account, please activate your account from the OTP sent to your email!");
+        }
         $this->baseUserEntity->refreshToken();
         $this->baseUserEntity->generateOtp();
         $this->baseUserEntity = $this->baseUserRepository->save($this->baseUserEntity->id, [
