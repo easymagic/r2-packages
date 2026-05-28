@@ -19,10 +19,13 @@ class BaseUserRepository
     protected $params = [];
 
     protected BaseUserEntity $baseUserEntity;
+    protected DbRepository $dbRepository;
+    
 
-    function __construct(BaseUserEntity $baseUserEntity,$filters = [],$size = 11,$sql = '',$params = [])
+    function __construct(BaseUserEntity $baseUserEntity,DbRepository $dbRepository,$filters = [],$size = 11,$sql = '',$params = [])
     {
         $this->baseUserEntity = $baseUserEntity;
+        $this->dbRepository = $dbRepository;
         $this->filters = $filters;
         $this->size = $size;
         if (!empty($sql)) {
@@ -44,13 +47,17 @@ class BaseUserRepository
      */
     public function findByEmail($email)
     {
-        $result = dbFetchOne("SELECT * FROM users WHERE email = ?", [$email]);
+        $result = $this->dbRepository->fetchOne("SELECT * FROM users WHERE email = ?", [$email]);
         /** @var BaseUserEntity $user */
-        $user = $this->baseUserEntity->hydrate($result);
+        $user = $this->hydrate($result);
         if ($user->isEmpty()) {
             // throw new Exception("User not found");
         }
         return $user;
+    }
+
+    public function hydrate($data){
+        return $this->baseUserEntity->newInstance($data);
     }
 
     /**
@@ -61,9 +68,9 @@ class BaseUserRepository
      */
     function find($id)
     {
-        $result = dbFetchOne("SELECT * FROM users WHERE id = ?", [$id]);
+        $result = $this->dbRepository->fetchOne("SELECT * FROM users WHERE id = ?", [$id]);
         /** @var BaseUserEntity $user */
-        $user = $this->baseUserEntity->hydrate($result);
+        $user = $this->hydrate($result);
         if ($user->isEmpty()) {
             throw new Exception("User not found");
         }
@@ -110,21 +117,21 @@ class BaseUserRepository
     }
 
     function fetchAll(){
-        $results = dbFetchAll($this->sql, $this->params);
+        $results = $this->dbRepository->fetchAll($this->sql, $this->params);
         return array_map(function($result){
-            return $this->baseUserEntity->hydrate($result);
+            return $this->hydrate($result);
         }, $results);
     }
 
     function fetch(){
-        $results = dbPaginate($this->sql, $this->size, $this->params);
+        $results = $this->dbRepository->paginate($this->sql, $this->size, $this->params);
         return array_map(function($result){
-            return $this->baseUserEntity->hydrate($result);
+            return $this->hydrate($result);
         }, $results);
     }
 
     function count(){
-        return dbCount($this->sql, $this->params);
+        return $this->dbRepository->count($this->sql, $this->params);
     }
 
 
@@ -139,10 +146,10 @@ class BaseUserRepository
     function save($id, $data)
     {
         if ($id > 0) {
-            dbUpdate("users", $data, ["id" => $id]);
+            $this->dbRepository->update("users", $data, ["id" => $id]);
             return $this->find($id);
         } else {
-            $id = dbInsert("users", $data);
+            $id = $this->dbRepository->insert("users", $data);
             return $this->find($id);
         }
     }

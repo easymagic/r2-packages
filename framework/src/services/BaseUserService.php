@@ -49,6 +49,16 @@ class BaseUserService
         $this->mailTemplates = $mailTemplates;
     }
 
+    public function generateOtp(){
+        return rand(100000, 999999);
+    }
+
+    function refreshToken($id){
+        $token = $id . '_' . bin2hex(random_bytes(32));
+        return $token;
+    }
+
+
     public function login()
     {
         $email = $this->data['email'] ?? '';
@@ -64,13 +74,13 @@ class BaseUserService
         if ($this->baseUserEntity->status !== BaseUserEntity::STATUS_ACTIVE) {
             throw new Exception("Inactive account, please activate your account from the OTP sent to your email!");
         }
-        $this->baseUserEntity->refreshToken();
-        $this->baseUserEntity->generateOtp();
-        $this->baseUserEntity = $this->baseUserRepository->save($this->baseUserEntity->id, [
-            'token' => $this->baseUserEntity->token,
-            'otp' => $this->baseUserEntity->otp
+        $token = $this->refreshToken($this->baseUserEntity->id);
+        $otp = $this->generateOtp();
+        $user = $this->baseUserRepository->save($this->baseUserEntity->id, [
+            'token' => $token,
+            'otp' => $otp
         ]);
-        return $this->baseUserEntity;
+        return $user;
     }
 
 
@@ -105,20 +115,20 @@ class BaseUserService
             throw new Exception("Password and confirm password do not match!");
         }
 
-        $this->baseUserEntity->generateOtp();
-        $this->baseUserEntity->refreshToken();
+        $otp = $this->generateOtp();
+        $token = $this->refreshToken(0);
 
 
         $this->input['name'] = $this->data['name'];
         $this->input['email'] = $this->data['email'];
         $this->input['password'] = password_hash($this->data['password'], PASSWORD_DEFAULT);
         $this->input['phone'] = $this->data['phone'];
-        $this->input['otp'] = $this->baseUserEntity->otp;
-        $this->input['token'] = $this->baseUserEntity->token;
-        $this->input['role'] = $this->baseUserEntity->role;
-        $this->input['status'] = $this->baseUserEntity->status;
-        $this->input['created_at'] = $this->baseUserEntity->created_at;
-        $this->input['updated_at'] = $this->baseUserEntity->updated_at;
+        $this->input['otp'] = $otp;
+        $this->input['token'] = $token;
+        $this->input['role'] = 'customer';
+        $this->input['status'] = 'inactive';
+        $this->input['created_at'] = date('Y-m-d H:i:s');
+        $this->input['updated_at'] = date('Y-m-d H:i:s');
         $user = $this->baseUserRepository->save(0, $this->input);
         $this->mailService->send($user->email, 'Welcome to our platform', 'noreply@example.com', $this->mailTemplates->registration($user));
         return $user;
@@ -129,11 +139,11 @@ class BaseUserService
             throw new Exception("ID is required!");
         }
         $this->baseUserEntity = $this->baseUserRepository->find($this->data['id']);
-        $this->baseUserEntity->generateOtp();
-        $this->baseUserEntity->refreshToken();
+        $otp = $this->generateOtp();
+        $token = $this->refreshToken($this->baseUserEntity->id);
         $this->baseUserEntity = $this->baseUserRepository->save($this->baseUserEntity->id, [
-            'otp' => $this->baseUserEntity->otp,
-            'token' => $this->baseUserEntity->token,
+            'otp' => $otp,
+            'token' => $token,
         ]);
         $this->mailService->send($this->baseUserEntity->email, 'Welcome to our platform', 'noreply@example.com', $this->mailTemplates->registration($this->baseUserEntity));
         return $this->baseUserEntity;
@@ -179,20 +189,20 @@ class BaseUserService
         //     throw new Exception("Password and confirm password do not match!");
         // }
 
-        $this->baseUserEntity->generateOtp();
-        $this->baseUserEntity->refreshToken();
+        $otp = $this->generateOtp();
+        $token = $this->refreshToken(0);
 
 
         $this->input['name'] = $this->data['name'];
         $this->input['email'] = $this->data['email'];
         $this->input['password'] = password_hash($this->data['password'], PASSWORD_DEFAULT);
         $this->input['phone'] = $this->data['phone'];
-        $this->input['otp'] = $this->baseUserEntity->otp;
-        $this->input['token'] = $this->baseUserEntity->token;
+        $this->input['otp'] = $otp;
+        $this->input['token'] = $token;
         $this->input['role'] = $this->data['role'];
         $this->input['status'] = $this->data['status'];
-        $this->input['created_at'] = $this->baseUserEntity->created_at;
-        $this->input['updated_at'] = $this->baseUserEntity->updated_at;
+        $this->input['created_at'] = date('Y-m-d H:i:s');
+        $this->input['updated_at'] = date('Y-m-d H:i:s');
         $user = $this->baseUserRepository->save(0, $this->input);
         $this->mailService->send($user->email, 'Welcome to our platform', 'noreply@example.com', $this->mailTemplates->registration($user));
         return $user;
@@ -227,9 +237,9 @@ class BaseUserService
         }
         $id = $this->authUserId;
         $this->baseUserEntity = $this->baseUserRepository->find($id);
-        $this->baseUserEntity->refreshToken();
+        $token = $this->refreshToken($id);
         $this->baseUserEntity = $this->baseUserRepository->save($id, [
-            'token' => $this->baseUserEntity->token
+            'token' => $token
         ]);
         return $this->baseUserEntity;
     }
@@ -240,11 +250,11 @@ class BaseUserService
             throw new Exception("Email is required!");
         }
         $this->baseUserEntity = $this->baseUserRepository->findByEmail($this->data['email']);
-        $this->baseUserEntity->generateOtp();
-        $this->baseUserEntity->refreshToken();
+        $otp = $this->generateOtp();
+        $token = $this->refreshToken($this->baseUserEntity->id);
         $this->baseUserEntity = $this->baseUserRepository->save($this->baseUserEntity->id, [
-            'token' => $this->baseUserEntity->token,
-            'otp' => $this->baseUserEntity->otp,
+            'token' => $token,
+            'otp' => $otp,
         ]);
 
         $this->mailService->send($this->baseUserEntity->email, 'Password Reset', 'noreply@example.com', $this->mailTemplates->passwordResetRequest($this->baseUserEntity));

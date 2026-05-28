@@ -12,34 +12,46 @@ use R2Packages\Framework\MailService;
 use R2Packages\Framework\mail_templates\MailTemplates;
 use R2Packages\Framework\Controllers\BaseUserController;
 use R2Packages\Framework\middlewares\AdminMiddleware;
+use R2Packages\Framework\Repositories\DbRepository;
 
 class AppServiceProviders
 {
     public function register()
     {
 
-        Container::getInstance()->set(BaseUserRepository::class, function($request){
+        Container::getInstance()->set(DbRepository::class, function ($request) {
+            return new DbRepository();
+        });
+
+        Container::getInstance()->set(BaseUserRepository::class, function ($request) {
             $filters = $request;
             $size = 11;
             $sql = '';
             $params = [];
             $baseUserEntity = Container::getInstance()->get(BaseUserEntity::class, []);
-            return new BaseUserRepository($baseUserEntity,$filters, $size, $sql, $params);
+            return new BaseUserRepository(
+                $baseUserEntity,
+                Container::getInstance()->get(DbRepository::class, $request),
+                $filters,
+                $size,
+                $sql,
+                $params
+            );
         });
 
-        Container::getInstance()->set(BaseUserEntity::class, function($request){
+        Container::getInstance()->set(BaseUserEntity::class, function ($request) {
             return new BaseUserEntity($request);
         });
 
-        Container::getInstance()->set(MailService::class, function($request){
+        Container::getInstance()->set(MailService::class, function ($request) {
             return new MailService($request);
         });
 
-        Container::getInstance()->set(MailTemplates::class, function($request){
+        Container::getInstance()->set(MailTemplates::class, function ($request) {
             return new MailTemplates();
         });
 
-        Container::getInstance()->set(BaseUserService::class, function($request){
+        Container::getInstance()->set(BaseUserService::class, function ($request) {
 
             $data = $request;
             $input = [];
@@ -56,27 +68,27 @@ class AppServiceProviders
         });
 
         // BaseUserController
-        Container::getInstance()->set(BaseUserController::class, function($request){
+        Container::getInstance()->set(BaseUserController::class, function ($request) {
             return new BaseUserController($request, Container::getInstance()->get(BaseUserService::class, $request));
         });
 
 
-        Container::getInstance()->set(GlobalApiMiddleware::class, function($request){
+        Container::getInstance()->set(GlobalApiMiddleware::class, function ($request) {
             $systemToken = '1234567890';
-            return new GlobalApiMiddleware($systemToken,$request);
+            return new GlobalApiMiddleware($systemToken, $request);
         });
 
 
-        Container::getInstance()->set(AuthMiddleware::class, function($request){
+        Container::getInstance()->set(AuthMiddleware::class, function ($request) {
             return new AuthMiddleware(
-                $request, 
+                $request,
                 Container::getInstance()->get(BaseUserService::class, $request)
             );
         });
 
-        Container::getInstance()->set(AdminMiddleware::class, function($request){
+        Container::getInstance()->set(AdminMiddleware::class, function ($request) {
             return new AdminMiddleware(
-                $request, 
+                $request,
                 Container::getInstance()->get(BaseUserService::class, $request)
             );
         });
