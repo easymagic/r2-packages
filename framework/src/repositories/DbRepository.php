@@ -72,18 +72,18 @@ class DbRepository
         return dbSave($table, $data);
     }
 
-    public function paginate($table, $data = [], $where = [])
+    public function paginate($sql, $size, $params = [])
     {
-        return dbPaginate($table, $data, $where);
+        return dbPaginate($sql, $size, $params);
     }
 
-    public function count($table, $data = [], $where = [])
+    public function count($sql, $params = [])
     {
-        return dbCount($table, $data, $where);
+        return dbCount($sql, $params);
     }
 
-    public function sum($table, $data = [], $where = [])
+    public function sum($sql, $column, $params = [])
     {
-        return dbSum($table, $data, $where);
+        return dbSum($sql, $column, $params);
     }
 }
