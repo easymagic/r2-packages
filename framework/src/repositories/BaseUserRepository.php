@@ -20,17 +20,23 @@ class BaseUserRepository
 
     protected BaseUserEntity $baseUserEntity;
     protected DbRepository $dbRepository;
-    
 
-    function __construct(BaseUserEntity $baseUserEntity,DbRepository $dbRepository,$filters = [],$size = 11,$sql = '',$params = [])
-    {
+
+    function __construct(
+        BaseUserEntity $baseUserEntity,
+        DbRepository $dbRepository,
+        $filters = [],
+        $size = 11,
+        $sql = '',
+        $params = []
+    ) {
         $this->baseUserEntity = $baseUserEntity;
         $this->dbRepository = $dbRepository;
         $this->filters = $filters;
         $this->size = $size;
         if (!empty($sql)) {
             $this->sql = $sql;
-        }else{
+        } else {
             $this->sql = "SELECT * FROM {$this->table} WHERE 1=1";
         }
         if (!empty($params)) {
@@ -56,7 +62,8 @@ class BaseUserRepository
         return $user;
     }
 
-    public function hydrate($data){
+    public function hydrate($data)
+    {
         return $this->baseUserEntity->newInstance($data);
     }
 
@@ -77,36 +84,36 @@ class BaseUserRepository
         return $user;
     }
 
-    protected function commonFilters(){
+    protected function commonFilters()
+    {
         $sql = $this->sql;
         $params = $this->params;
-        if(count($this->filters) > 0){
+        if (count($this->filters) > 0) {
 
-            if(isset($this->filters['email'])){
+            if (isset($this->filters['email'])) {
                 $sql .= " AND email = ?";
                 $params[] = $this->filters['email'];
             }
-            if(isset($this->filters['phone'])){
+            if (isset($this->filters['phone'])) {
                 $sql .= " AND phone = ?";
                 $params[] = $this->filters['phone'];
             }
-            if(isset($this->filters['status'])){
+            if (isset($this->filters['status'])) {
                 $sql .= " AND status = ?";
                 $params[] = $this->filters['status'];
             }
-            if(isset($this->filters['role'])){
+            if (isset($this->filters['role'])) {
                 $sql .= " AND role = ?";
                 $params[] = $this->filters['role'];
             }
-            if(isset($this->filters['created_at'])){
+            if (isset($this->filters['created_at'])) {
                 $sql .= " AND created_at = ?";
                 $params[] = $this->filters['created_at'];
             }
-            if(isset($this->filters['updated_at'])){
+            if (isset($this->filters['updated_at'])) {
                 $sql .= " AND updated_at = ?";
                 $params[] = $this->filters['updated_at'];
             }
-
         }
 
         $this->sql = $sql;
@@ -116,21 +123,24 @@ class BaseUserRepository
         return $this;
     }
 
-    function fetchAll(){
+    function fetchAll()
+    {
         $results = $this->dbRepository->fetchAll($this->sql, $this->params);
-        return array_map(function($result){
+        return array_map(function ($result) {
             return $this->hydrate($result);
         }, $results);
     }
 
-    function fetch(){
+    function fetch()
+    {
         $results = $this->dbRepository->paginate($this->sql, $this->size, $this->params);
-        return array_map(function($result){
+        return array_map(function ($result) {
             return $this->hydrate($result);
         }, $results);
     }
 
-    function count(){
+    function count()
+    {
         return $this->dbRepository->count($this->sql, $this->params);
     }
 
@@ -153,5 +163,4 @@ class BaseUserRepository
             return $this->find($id);
         }
     }
-
 }

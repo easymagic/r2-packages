@@ -18,6 +18,8 @@ class AppServiceProviders
 {
     public function register()
     {
+        // auth user 
+        Container::getInstance()->set(AuthMiddleware::AUTH_USER, new BaseUserEntity([])); // dummy user
 
         Container::getInstance()->set(DbRepository::class, function ($request) {
             return new DbRepository();
@@ -54,16 +56,13 @@ class AppServiceProviders
         Container::getInstance()->set(BaseUserService::class, function ($request) {
 
             $data = $request;
-            $input = [];
-            $user = BaseUserService::getAuthenticatedUser();
+            $user = Container::getInstance()->get(AuthMiddleware::AUTH_USER, []);
             return new BaseUserService(
-                $user?->id ?? 0,
                 $data,
-                $input,
+                $user,
                 Container::getInstance()->get(BaseUserRepository::class, $request),
-                Container::getInstance()->get(BaseUserEntity::class, $request),
                 Container::getInstance()->get(MailService::class, $request),
-                Container::getInstance()->get(MailTemplates::class, $request)
+                Container::getInstance()->get(MailTemplates::class, $request),
             );
         });
 
@@ -82,14 +81,18 @@ class AppServiceProviders
         Container::getInstance()->set(AuthMiddleware::class, function ($request) {
             return new AuthMiddleware(
                 $request,
-                Container::getInstance()->get(BaseUserService::class, $request)
+                Container::getInstance()->get(BaseUserService::class, $request),
+                Container::getInstance(),
+                Container::getInstance()->get(AuthMiddleware::AUTH_USER, [])
             );
         });
 
         Container::getInstance()->set(AdminMiddleware::class, function ($request) {
             return new AdminMiddleware(
                 $request,
-                Container::getInstance()->get(BaseUserService::class, $request)
+                Container::getInstance()->get(BaseUserService::class, $request),
+                Container::getInstance(),
+                Container::getInstance()->get(AuthMiddleware::AUTH_USER, [])
             );
         });
     }

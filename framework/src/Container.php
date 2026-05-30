@@ -23,7 +23,12 @@ class Container
 
     public function get($service, $args = []){
         if(isset($this->services[$service])){
-            return $this->services[$service]($args);
+            if (is_object($this->services[$service])){
+                return $this->services[$service];
+            }
+            if (is_callable($this->services[$service])){
+                return $this->services[$service]($args);
+            }
         }
         if(class_exists($service)){
             return new $service($args);
@@ -33,6 +38,11 @@ class Container
 
     public function set($service, $instance){
         $this->services[$service] = $instance;
+        return $this;
+    }
+
+    public function unset($service){
+        unset($this->services[$service]);
         return $this;
     }
 

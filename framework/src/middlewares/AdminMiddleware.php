@@ -7,11 +7,13 @@ use R2Packages\Framework\Services\BaseUserService;
 
 class AdminMiddleware extends AuthMiddleware {
 
-    function handle(){
+    function handle()
+    {
         parent::handle();
-        $user = BaseUserService::getAuthenticatedUser();
+        $user = $this->authUser;
         if ($user->role !== 'admin'){
             jsonResponse(['success' => false, 'message' => 'Unauthorized'], 401);
+            $this->container->unset(AuthMiddleware::AUTH_USER);
             exit;
         }
         return true;

@@ -3,6 +3,7 @@
 namespace R2Packages\Framework\Services;
 
 use Exception;
+use R2Packages\Framework\Container;
 use R2Packages\Framework\Entities\BaseUserEntity;
 use R2Packages\Framework\MailService;
 use R2Packages\Framework\mail_templates\MailTemplates;
@@ -17,8 +18,6 @@ class BaseUserService
 
     protected $data = [];
 
-    public BaseUserEntity $baseUserEntity;
-
     private MailService $mailService;
     protected $input = [];
 
@@ -29,22 +28,27 @@ class BaseUserService
      */
     private static $user;
 
-    protected $authUserId = 0;
+    // protected $authUserId = 0;
+
+    // private Container $container;
+    private BaseUserEntity $authUser;
 
     function __construct(
-        $authUserId,
+        // $authUserId,
         $data,
-        $input,
+        // $input,
+        // Container $container,
+        BaseUserEntity $authUser,
         BaseUserRepository $baseUserRepository,
-        BaseUserEntity $baseUserEntity,
         MailService $mailService,
         MailTemplates $mailTemplates
     ) {
-        $this->authUserId = $authUserId;
+        // $this->container = $container;
+        $this->authUser = $authUser;
+        // $this->authUserId = $authUserId;
         $this->data = $data;
-        $this->input = $input;
+        // $this->input = $input;
         $this->baseUserRepository = $baseUserRepository;
-        $this->baseUserEntity = $baseUserEntity;
         $this->mailService = $mailService;
         $this->mailTemplates = $mailTemplates;
     }
@@ -66,20 +70,21 @@ class BaseUserService
         if (empty($email) || empty($password)) {
             throw new Exception("Email and password are required!");
         }
-        $this->baseUserEntity = $this->baseUserRepository->findByEmail($email);
+        $user = $this->baseUserRepository->findByEmail($email);
 
-        if (!password_verify($password, $this->baseUserEntity->password)) {
+        if (!password_verify($password, $user->password)) {
             throw new Exception("Invalid login!!");
         }
-        if ($this->baseUserEntity->status !== BaseUserEntity::STATUS_ACTIVE) {
+        if ($user->status !== BaseUserEntity::STATUS_ACTIVE) {
             throw new Exception("Inactive account, please activate your account from the OTP sent to your email!");
         }
-        $token = $this->refreshToken($this->baseUserEntity->id);
+        $token = $this->refreshToken($user->id);
         $otp = $this->generateOtp();
-        $user = $this->baseUserRepository->save($this->baseUserEntity->id, [
+        $user = $this->baseUserRepository->save($user->id, [
             'token' => $token,
             'otp' => $otp
         ]);
+        // $this->container->set("auth-user", $user);
         return $user;
     }
 
@@ -138,15 +143,15 @@ class BaseUserService
         if (!isset($this->data['id']) || empty($this->data['id'])) {
             throw new Exception("ID is required!");
         }
-        $this->baseUserEntity = $this->baseUserRepository->find($this->data['id']);
+        $user = $this->baseUserRepository->find($this->data['id']);
         $otp = $this->generateOtp();
-        $token = $this->refreshToken($this->baseUserEntity->id);
-        $this->baseUserEntity = $this->baseUserRepository->save($this->baseUserEntity->id, [
+        $token = $this->refreshToken($user->id);
+        $user = $this->baseUserRepository->save($user->id, [
             'otp' => $otp,
             'token' => $token,
         ]);
-        $this->mailService->send($this->baseUserEntity->email, 'Welcome to our platform', 'noreply@example.com', $this->mailTemplates->registration($this->baseUserEntity));
-        return $this->baseUserEntity;
+        $this->mailService->send($user->email, 'Welcome to our platform', 'noreply@example.com', $this->mailTemplates->registration($user));
+        return $user;
     }
 
     public function create(){
@@ -220,28 +225,28 @@ class BaseUserService
 
         $id = $this->data['id'];
         $otp = $this->data['otp'];
-        $this->baseUserEntity = $this->baseUserRepository->find($id);
-        if ($this->baseUserEntity->otp !== $otp) {
+        $user = $this->baseUserRepository->find($id);
+        if ($user->otp !== $otp) {
             throw new Exception("Invalid OTP!");
         }
-        $this->baseUserEntity = $this->baseUserRepository->save($id, [
+        $user = $this->baseUserRepository->save($id, [
             'status' => BaseUserEntity::STATUS_ACTIVE
         ]);
-        return $this->baseUserEntity;
+        return $user;
     }
 
     public function logout()
     {
-        if (!isset($this->authUserId) || empty($this->authUserId)) {
+        if (!isset($this->authUser->id) || empty($this->authUser->id)) {
             throw new Exception("ID is required!");
         }
-        $id = $this->authUserId;
-        $this->baseUserEntity = $this->baseUserRepository->find($id);
+        $id = $this->authUser->id;
+        $user = $this->baseUserRepository->find($id);
         $token = $this->refreshToken($id);
-        $this->baseUserEntity = $this->baseUserRepository->save($id, [
+        $user = $this->baseUserRepository->save($id, [
             'token' => $token
         ]);
-        return $this->baseUserEntity;
+        return $user;
     }
 
     function requestPasswordReset()
@@ -249,16 +254,16 @@ class BaseUserService
         if (!isset($this->data['email']) || empty($this->data['email'])) {
             throw new Exception("Email is required!");
         }
-        $this->baseUserEntity = $this->baseUserRepository->findByEmail($this->data['email']);
+        $user = $this->baseUserRepository->findByEmail($this->data['email']);
         $otp = $this->generateOtp();
-        $token = $this->refreshToken($this->baseUserEntity->id);
-        $this->baseUserEntity = $this->baseUserRepository->save($this->baseUserEntity->id, [
+        $token = $this->refreshToken($user->id);
+        $user = $this->baseUserRepository->save($user->id, [
             'token' => $token,
             'otp' => $otp,
         ]);
 
-        $this->mailService->send($this->baseUserEntity->email, 'Password Reset', 'noreply@example.com', $this->mailTemplates->passwordResetRequest($this->baseUserEntity));
-        return $this->baseUserEntity;
+        $this->mailService->send($user->email, 'Password Reset', 'noreply@example.com', $this->mailTemplates->passwordResetRequest($user));
+        return $user;
     }
 
     function resetPassword()
@@ -276,18 +281,18 @@ class BaseUserService
         if (!isset($this->data['confirm_password']) || $this->data['password'] !== $this->data['confirm_password']) {
             throw new Exception("Password and confirm password do not match!");
         }
-        $this->baseUserEntity = $this->baseUserRepository->find($this->data['id']);
-        if ($this->baseUserEntity->otp !== $this->data['otp']) {
+        $user = $this->baseUserRepository->find($this->data['id']);
+        if ($user->otp !== $this->data['otp']) {
             throw new Exception("Invalid OTP!");
         }
-        $this->baseUserRepository->save($this->baseUserEntity->id, [
+        $user = $this->baseUserRepository->save($user->id, [
             'password' => password_hash($this->data['password'], PASSWORD_DEFAULT),
         ]);
-        return $this->baseUserEntity;
+        return $user;
     }
 
     public function updateProfile(){
-        if (!isset($this->authUserId) || empty($this->authUserId)) {
+        if (!isset($this->authUser->id) || empty($this->authUser->id)) {
             throw new Exception("ID is required!"); // need to be authenticated user id
         }
         if (!isset($this->data['name']) || empty($this->data['name'])) {
@@ -298,9 +303,9 @@ class BaseUserService
         }
         $this->input['name'] = $this->data['name'];
         $this->input['phone'] = $this->data['phone'];
-        $id = $this->authUserId;
-        $this->baseUserEntity = $this->baseUserRepository->save($id, $this->input);
-        return $this->baseUserEntity;
+        $id = $this->authUser->id;
+        $user = $this->baseUserRepository->save($id, $this->input);
+        return $user;
     }
 
 
@@ -330,8 +335,8 @@ class BaseUserService
         $this->input['name'] = $this->data['name'];
         $this->input['phone'] = $this->data['phone'];
         $id = $this->data['id'];
-        $this->baseUserEntity = $this->baseUserRepository->save($id, $this->input);
-        return $this->baseUserEntity;
+        $user = $this->baseUserRepository->save($id, $this->input);
+        return $user;
     }
 
     public function getProfile(){
@@ -339,17 +344,17 @@ class BaseUserService
             throw new Exception("ID is required!");
         }
         $id = $this->data['id'];
-        $this->baseUserEntity = $this->baseUserRepository->find($id);
-        return $this->baseUserEntity;
+        $user = $this->baseUserRepository->find($id);
+        return $user;
     }
 
     public function getMyProfile(){
-        if (!isset($this->authUserId) || empty($this->authUserId)) {
+        if (!isset($this->authUser->id) || empty($this->authUser->id)) {
             throw new Exception("ID is required!"); // need to be authenticated user id
         }
-        $id = $this->authUserId;
-        $this->baseUserEntity = $this->baseUserRepository->find($id);
-        return $this->baseUserEntity;
+        $id = $this->authUser->id;
+        $user = $this->baseUserRepository->find($id);
+        return $user;
     }
 
     public function changeUserPassword(){
@@ -361,12 +366,12 @@ class BaseUserService
             throw new Exception("Password is required!");
         }
 
-        $this->baseUserEntity = $this->baseUserRepository->find($this->data['id']);
+        $user = $this->baseUserRepository->find($this->data['id']);
 
-        $this->baseUserRepository->save($this->baseUserEntity->id, [
+        $user = $this->baseUserRepository->save($user->id, [
             'password' => password_hash($this->data['password'], PASSWORD_DEFAULT),
         ]);
-        return $this->baseUserEntity;
+        return $user;
     }
 
     public function changeMyPassword(){
@@ -381,14 +386,14 @@ class BaseUserService
         if (!isset($this->data['confirm_password']) || $this->data['password'] !== $this->data['confirm_password']) {
             throw new Exception("Password and confirm password do not match!");
         }
-        $this->baseUserEntity = $this->baseUserRepository->find($this->authUserId);
-        if (!password_verify($this->data['old_password'], $this->baseUserEntity->password)) {
+        $user = $this->baseUserRepository->find($this->authUser->id);
+        if (!password_verify($this->data['old_password'], $user->password)) {
             throw new Exception("Old password is incorrect!");
         }
-        $this->baseUserRepository->save($this->authUserId, [
+        $user = $this->baseUserRepository->save($this->authUser->id, [
             'password' => password_hash($this->data['password'], PASSWORD_DEFAULT),
         ]);
-        return $this->baseUserEntity;
+        return $user;
     }
 
     function fetch(){
@@ -402,24 +407,8 @@ class BaseUserService
     }
 
     function find($id){
-        return $this->baseUserRepository->find($id);
+        $user = $this->baseUserRepository->find($id);
+        return $user;
     }
 
-    static function logUser(BaseUserEntity $user){
-        self::$user = $user;
-    } 
-
-    /*
-     * @return BaseUserEntity
-     */
-    static function getLoggedUser(){
-        return self::$user;
-    }
-
-    /*
-     * @return BaseUserEntity
-     */
-    static function getAuthenticatedUser(){
-        return self::$user;
-    }
 }
