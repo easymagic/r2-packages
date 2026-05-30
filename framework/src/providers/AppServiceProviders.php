@@ -30,6 +30,17 @@ class AppServiceProviders
             $size = 11;
             $sql = '';
             $params = [];
+            /** @var BaseUserEntity $authUser */
+            $authUser = Container::getInstance()->get(AuthMiddleware::AUTH_USER, []);
+            if(!$authUser->isEmpty()){
+                $role = $authUser->role;
+                // if role contains admin, then add admin filter
+                if(strpos($role, 'admin') !== false){
+                    // do nothing , admin can see all users
+                }else{
+                    $filters['id'] = $authUser->id; // only show the user's own data
+                }
+            }
             $baseUserEntity = Container::getInstance()->get(BaseUserEntity::class, []);
             return new BaseUserRepository(
                 $baseUserEntity,
