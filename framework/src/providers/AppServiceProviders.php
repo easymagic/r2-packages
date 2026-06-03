@@ -11,6 +11,7 @@ use R2Packages\Framework\Entities\BaseUserEntity;
 use R2Packages\Framework\MailService;
 use R2Packages\Framework\mail_templates\MailTemplates;
 use R2Packages\Framework\Controllers\BaseUserController;
+use R2Packages\Framework\Criteria\BaseUserFilterCriteria;
 use R2Packages\Framework\middlewares\AdminMiddleware;
 use R2Packages\Framework\PaginationMetta;
 use R2Packages\Framework\Repositories\DbRepository;
@@ -39,25 +40,20 @@ class AppServiceProviders
             return new DbRepository();
         });
 
+        /**
+         * BaseUserFilterCriteria
+         */
+        Container::getInstance()->set(BaseUserFilterCriteria::class, function ($request) {
+            return new BaseUserFilterCriteria($request, Container::getInstance()->get(AuthMiddleware::AUTH_USER, []));
+        });
+
         Container::getInstance()->set(BaseUserRepository::class, function ($request) {
-            $filters = $request;
-            /** @var BaseUserEntity $authUser */
-            $authUser = Container::getInstance()->get(AuthMiddleware::AUTH_USER, []);
-            if(!$authUser->isEmpty()){
-                $role = $authUser->role;
-                // if role contains admin, then add admin filter
-                if(strpos($role, 'admin') !== false){
-                    // do nothing , admin can see all users
-                }else{
-                    $filters['id'] = $authUser->id; // only show the user's own data
-                }
-            }
             $baseUserEntity = Container::getInstance()->get(BaseUserEntity::class, []);
             return new BaseUserRepository(
                 $baseUserEntity,
                 Container::getInstance()->get(DbRepository::class, $request),
                 Container::getInstance()->get(PaginationMetta::class, $request),
-                Container::getInstance()->get(Request::class,$filters)
+                Container::getInstance()->get(BaseUserFilterCriteria::class, $request)
             );
         });
 

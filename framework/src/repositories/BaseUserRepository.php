@@ -4,6 +4,7 @@ namespace R2Packages\Framework\Repositories;
 
 use Exception;
 use R2Packages\Framework\Container;
+use R2Packages\Framework\Criteria\BaseUserFilterCriteria;
 use R2Packages\Framework\Entities\BaseUserEntity;
 use R2Packages\Framework\Event;
 use R2Packages\Framework\Traits\WithEvents;
@@ -28,11 +29,11 @@ class BaseUserRepository
         BaseUserEntity $baseUserEntity,
         DbRepository $dbRepository,
         PaginationMetta $paginationMetta,
-        Request $request
+        BaseUserFilterCriteria $baseUserFilterCriteria
     ) {
         $this->baseUserEntity = $baseUserEntity;
         $this->dbRepository = $dbRepository;
-        $this->filters = $request->data;
+        $this->filters = $baseUserFilterCriteria->data;
         $this->size = $paginationMetta->limit;
         $this->sql = "SELECT * FROM {$this->table} WHERE 1=1";
         $this->params = [];
