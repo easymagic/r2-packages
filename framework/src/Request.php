@@ -17,4 +17,9 @@ class Request
     {
         return $this->data;
     }
+
+    function newInstance($data = [])
+    {
+        return new self($data);
+    }
 }
