@@ -2,7 +2,6 @@
 
 namespace R2Packages\Framework\Controllers;
 
-use R2Packages\Framework\Response;
 use R2Packages\Framework\Services\BaseUserService;
 use R2Packages\Framework\Traits\Publishable;
 
@@ -12,11 +11,8 @@ class BaseUserController
 
     private BaseUserService $baseUserService;
 
-    private $request = [];
-
-    function __construct($request, BaseUserService $baseUserService)
+    function __construct(BaseUserService $baseUserService)
     {
-        $this->request = $request;
         $this->baseUserService = $baseUserService;
     }
 

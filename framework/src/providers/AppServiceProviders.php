@@ -12,12 +12,26 @@ use R2Packages\Framework\MailService;
 use R2Packages\Framework\mail_templates\MailTemplates;
 use R2Packages\Framework\Controllers\BaseUserController;
 use R2Packages\Framework\middlewares\AdminMiddleware;
+use R2Packages\Framework\PaginationMetta;
 use R2Packages\Framework\Repositories\DbRepository;
+use R2Packages\Framework\Request;
 
 class AppServiceProviders
 {
     public function register()
     {
+
+        // request
+        Container::getInstance()->set(Request::class, function ($data) {
+            return new Request($data);
+        });
+
+        // pagination meta
+        Container::getInstance()->set(PaginationMetta::class, function ($data) {
+            return new PaginationMetta($data);
+        });
+
+
         // auth user 
         Container::getInstance()->set(AuthMiddleware::AUTH_USER, new BaseUserEntity([])); // dummy user
 
@@ -27,9 +41,6 @@ class AppServiceProviders
 
         Container::getInstance()->set(BaseUserRepository::class, function ($request) {
             $filters = $request;
-            $size = 11;
-            $sql = '';
-            $params = [];
             /** @var BaseUserEntity $authUser */
             $authUser = Container::getInstance()->get(AuthMiddleware::AUTH_USER, []);
             if(!$authUser->isEmpty()){
@@ -45,10 +56,8 @@ class AppServiceProviders
             return new BaseUserRepository(
                 $baseUserEntity,
                 Container::getInstance()->get(DbRepository::class, $request),
-                $filters,
-                $size,
-                $sql,
-                $params
+                Container::getInstance()->get(PaginationMetta::class, $request),
+                Container::getInstance()->get(Request::class,$filters)
             );
         });
 
@@ -69,7 +78,7 @@ class AppServiceProviders
             $data = $request;
             $user = Container::getInstance()->get(AuthMiddleware::AUTH_USER, []);
             return new BaseUserService(
-                $data,
+                Container::getInstance()->get(Request::class, $data),
                 $user,
                 Container::getInstance()->get(BaseUserRepository::class, $request),
                 Container::getInstance()->get(MailService::class, $request),
@@ -79,19 +88,19 @@ class AppServiceProviders
 
         // BaseUserController
         Container::getInstance()->set(BaseUserController::class, function ($request) {
-            return new BaseUserController($request, Container::getInstance()->get(BaseUserService::class, $request));
+            return new BaseUserController(Container::getInstance()->get(BaseUserService::class, $request));
         });
 
 
         Container::getInstance()->set(GlobalApiMiddleware::class, function ($request) {
             $systemToken = '1234567890';
-            return new GlobalApiMiddleware($systemToken, $request);
+            return new GlobalApiMiddleware($systemToken, Container::getInstance()->get(Request::class, $request));
         });
 
 
         Container::getInstance()->set(AuthMiddleware::class, function ($request) {
             return new AuthMiddleware(
-                $request,
+                Container::getInstance()->get(Request::class, $request),
                 Container::getInstance()->get(BaseUserService::class, $request),
                 Container::getInstance(),
                 Container::getInstance()->get(AuthMiddleware::AUTH_USER, [])
@@ -100,7 +109,7 @@ class AppServiceProviders
 
         Container::getInstance()->set(AdminMiddleware::class, function ($request) {
             return new AdminMiddleware(
-                $request,
+                Container::getInstance()->get(Request::class, $request),
                 Container::getInstance()->get(BaseUserService::class, $request),
                 Container::getInstance(),
                 Container::getInstance()->get(AuthMiddleware::AUTH_USER, [])

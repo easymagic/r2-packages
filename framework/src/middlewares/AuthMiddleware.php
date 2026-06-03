@@ -4,12 +4,13 @@ namespace R2Packages\Framework\middlewares;
 
 use R2Packages\Framework\Container;
 use R2Packages\Framework\Entities\BaseUserEntity;
+use R2Packages\Framework\Request;
 use R2Packages\Framework\Services\BaseUserService;
 
 class AuthMiddleware
 {
 
-    private $request = [];
+    private Request $request;
     private BaseUserService $baseUserService;
     protected Container $container;
 
@@ -17,12 +18,12 @@ class AuthMiddleware
     protected BaseUserEntity $authUser;
 
     function __construct(
-        &$request,
+        Request $request,
         BaseUserService $baseUserService,
         Container $container,
         BaseUserEntity $authUser
     ) {
-        $this->request = &$request;
+        $this->request = $request;
         $this->baseUserService = $baseUserService;
         $this->container = $container;
         $this->authUser = $authUser;
@@ -30,8 +31,8 @@ class AuthMiddleware
 
     function handle()
     {
-        $user_id = $this->request['x-user-id'] ?? null;
-        $token = $this->request['x-user-token'] ?? null;
+        $user_id = $this->request->data['x-user-id'] ?? null;
+        $token = $this->request->data['x-user-token'] ?? null;
         if (empty($token)) {
             jsonResponse(['success' => false, 'message' => 'Unauthorized'], 401);
             exit;
@@ -44,8 +45,7 @@ class AuthMiddleware
         $user_id = explode('_', $token)[0];
         // $token = explode('_', $token)[1];
         $user = $this->baseUserService->find($user_id);
-        // dd($user);
-        $this->request['user'] = $user;
+        
         if ($user->isEmpty()) {
             jsonResponse(['success' => false, 'message' => 'User not found'], 404);
             exit;

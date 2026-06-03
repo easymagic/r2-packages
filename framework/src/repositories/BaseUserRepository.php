@@ -7,6 +7,8 @@ use R2Packages\Framework\Container;
 use R2Packages\Framework\Entities\BaseUserEntity;
 use R2Packages\Framework\Event;
 use R2Packages\Framework\Traits\WithEvents;
+use R2Packages\Framework\PaginationMetta;
+use R2Packages\Framework\Request;
 
 class BaseUserRepository
 {
@@ -25,23 +27,15 @@ class BaseUserRepository
     function __construct(
         BaseUserEntity $baseUserEntity,
         DbRepository $dbRepository,
-        $filters = [],
-        $size = 11,
-        $sql = '',
-        $params = []
+        PaginationMetta $paginationMetta,
+        Request $request
     ) {
         $this->baseUserEntity = $baseUserEntity;
         $this->dbRepository = $dbRepository;
-        $this->filters = $filters;
-        $this->size = $size;
-        if (!empty($sql)) {
-            $this->sql = $sql;
-        } else {
-            $this->sql = "SELECT * FROM {$this->table} WHERE 1=1";
-        }
-        if (!empty($params)) {
-            $this->params = $params;
-        }
+        $this->filters = $request->data;
+        $this->size = $paginationMetta->limit;
+        $this->sql = "SELECT * FROM {$this->table} WHERE 1=1";
+        $this->params = [];
         $this->commonFilters();
     }
 
@@ -89,6 +83,11 @@ class BaseUserRepository
         $sql = $this->sql;
         $params = $this->params;
         if (count($this->filters) > 0) {
+
+            if (isset($this->filters['id'])) {
+                $sql .= " AND id = ?";
+                $params[] = $this->filters['id'];
+            }
 
             if (isset($this->filters['email'])) {
                 $sql .= " AND email = ?";
