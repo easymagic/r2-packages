@@ -23,11 +23,12 @@ class Container
 
     public function get($service, $args = []){
         if(isset($this->services[$service])){
-            if (is_object($this->services[$service])){
-                return $this->services[$service];
-            }
             if (is_callable($this->services[$service])){
                 return $this->services[$service]($args);
+            }
+
+            if (is_object($this->services[$service])){
+                return $this->services[$service];
             }
         }
         if(class_exists($service)){
