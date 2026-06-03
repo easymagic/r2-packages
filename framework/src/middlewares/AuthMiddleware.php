@@ -54,6 +54,7 @@ class AuthMiddleware
             jsonResponse(['success' => false, 'message' => 'Token is invalid'], 401);
             exit;
         }
+        $this->authUser = $user;
         $this->container->set(self::AUTH_USER, $user);
         return true;
     }
