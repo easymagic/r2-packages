@@ -4,6 +4,7 @@ namespace R2Packages\Framework\middlewares;
 
 use R2Packages\Framework\Container;
 use R2Packages\Framework\Entities\BaseUserEntity;
+use R2Packages\Framework\Repositories\BaseUserRepository;
 use R2Packages\Framework\Request;
 use R2Packages\Framework\Services\BaseUserService;
 
@@ -16,13 +17,16 @@ class AuthMiddleware
 
     const AUTH_USER = "auth-user";
     protected BaseUserEntity $authUser;
+    protected BaseUserRepository $baseUserRepository;
 
     function __construct(
         Request $request,
         BaseUserService $baseUserService,
         Container $container,
-        BaseUserEntity $authUser
+        BaseUserEntity $authUser,
+        BaseUserRepository $baseUserRepository
     ) {
+        $this->baseUserRepository = $baseUserRepository;
         $this->request = $request;
         $this->baseUserService = $baseUserService;
         $this->container = $container;
@@ -44,7 +48,7 @@ class AuthMiddleware
         }
         $user_id = explode('_', $token)[0];
         // $token = explode('_', $token)[1];
-        $user = $this->baseUserService->find($user_id);
+        $user = $this->baseUserRepository->find($user_id);
         
         if ($user->isEmpty()) {
             jsonResponse(['success' => false, 'message' => 'User not found'], 404);

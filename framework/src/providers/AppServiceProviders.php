@@ -103,7 +103,8 @@ class AppServiceProviders
                 Container::getInstance()->get(Request::class, $request),
                 Container::getInstance()->get(BaseUserService::class, $request),
                 Container::getInstance(),
-                Container::getInstance()->get(AuthMiddleware::AUTH_USER, [])
+                Container::getInstance()->get(AuthMiddleware::AUTH_USER, []),
+                Container::getInstance()->get(BaseUserRepository::class, $request)
             );
         });
 
@@ -112,7 +113,8 @@ class AppServiceProviders
                 Container::getInstance()->get(Request::class, $request),
                 Container::getInstance()->get(BaseUserService::class, $request),
                 Container::getInstance(),
-                Container::getInstance()->get(AuthMiddleware::AUTH_USER, [])
+                Container::getInstance()->get(AuthMiddleware::AUTH_USER, []),
+                Container::getInstance()->get(BaseUserRepository::class, $request)
             );
         });
     }
