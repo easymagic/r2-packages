@@ -29,14 +29,25 @@ class BaseUserRepository
         BaseUserEntity $baseUserEntity,
         DbRepository $dbRepository,
         PaginationMetta $paginationMetta,
-        BaseUserFilterCriteria $baseUserFilterCriteria
+        Request $request
     ) {
         $this->baseUserEntity = $baseUserEntity;
         $this->dbRepository = $dbRepository;
-        $this->filters = $baseUserFilterCriteria->data;
+        $this->filters = $request->data;
         $this->size = $paginationMetta->limit;
         $this->sql = "SELECT * FROM {$this->table} WHERE 1=1";
         $this->params = [];
+
+        if(!$this->baseUserEntity->isEmpty()){
+            $role = $this->baseUserEntity->role;
+            // if role contains admin, then add admin filter
+            if(strpos($role, 'admin') !== false){
+                // do nothing , admin can see all users
+            }else{
+                $this->filterById($this->baseUserEntity->id); // only show the user's own data
+            }
+        }
+
         $this->commonFilters();
     }
 
@@ -57,6 +68,11 @@ class BaseUserRepository
         return $user;
     }
 
+    /**
+     * Hydrate a user
+     * @param array $data
+     * @return BaseUserEntity
+     */
     public function hydrate($data)
     {
         return $this->baseUserEntity->newInstance($data);
@@ -86,33 +102,26 @@ class BaseUserRepository
         if (count($this->filters) > 0) {
 
             if (isset($this->filters['id'])) {
-                $sql .= " AND id = ?";
-                $params[] = $this->filters['id'];
+                $this->filterById($this->filters['id']);
             }
 
             if (isset($this->filters['email'])) {
-                $sql .= " AND email = ?";
-                $params[] = $this->filters['email'];
+                $this->filterByEmail($this->filters['email']);
             }
             if (isset($this->filters['phone'])) {
-                $sql .= " AND phone = ?";
-                $params[] = $this->filters['phone'];
+                $this->filterByPhone($this->filters['phone']);
             }
             if (isset($this->filters['status'])) {
-                $sql .= " AND status = ?";
-                $params[] = $this->filters['status'];
+                $this->filterByStatus($this->filters['status']);
             }
             if (isset($this->filters['role'])) {
-                $sql .= " AND role = ?";
-                $params[] = $this->filters['role'];
+                $this->filterByRole($this->filters['role']);
             }
             if (isset($this->filters['created_at'])) {
-                $sql .= " AND created_at = ?";
-                $params[] = $this->filters['created_at'];
+                $this->filterByCreatedAt($this->filters['created_at']);
             }
             if (isset($this->filters['updated_at'])) {
-                $sql .= " AND updated_at = ?";
-                $params[] = $this->filters['updated_at'];
+                $this->filterByUpdatedAt($this->filters['updated_at']);
             }
         }
 
@@ -120,6 +129,90 @@ class BaseUserRepository
         $this->params = $params;
 
         // return [$sql, $params];
+        return $this;
+    }
+
+    /**
+     * Filter by id
+     * @param int $id
+     * @return $this
+     */
+    function filterById($id)
+    {
+        $this->sql .= " AND id = ?";
+        $this->params[] = $id;
+        return $this;
+    }
+
+    /**
+     * Filter by email
+     * @param string $email
+     * @return $this
+     */
+    function filterByEmail($email)
+    {
+        $this->sql .= " AND email = ?";
+        $this->params[] = $email;
+        return $this;
+    }
+
+    /**
+     * Filter by phone
+     * @param string $phone
+     * @return $this
+     */
+    function filterByPhone($phone)
+    {
+        $this->sql .= " AND phone = ?";
+        $this->params[] = $phone;
+        return $this;
+    }
+
+    /**
+     * Filter by status
+     * @param string $status
+     * @return $this
+     */
+    function filterByStatus($status)
+    {
+        $this->sql .= " AND status = ?";
+        $this->params[] = $status;
+        return $this;
+    }
+
+    /**
+     * Filter by role
+     * @param string $role
+     * @return $this
+     */
+    function filterByRole($role)
+    {
+        $this->sql .= " AND role = ?";
+        $this->params[] = $role;
+        return $this;
+    }
+
+    /**
+     * Filter by created at
+     * @param string $createdAt
+     * @return $this
+     */
+    function filterByCreatedAt($createdAt)
+    {
+        $this->sql .= " AND created_at >= ?";
+        $this->params[] = $createdAt;
+        return $this;
+    }
+
+    /**
+     * Filter by updated at
+     * @param string $updatedAt
+     * @return $this
+     */
+    function filterByUpdatedAt($updatedAt)
+    {
+        $this->sql .= " AND updated_at >= ?";
+        $this->params[] = $updatedAt;
         return $this;
     }
 
@@ -143,8 +236,6 @@ class BaseUserRepository
     {
         return $this->dbRepository->count($this->sql, $this->params);
     }
-
-
 
     /**
      * Save a user

@@ -53,9 +53,11 @@ class AppServiceProviders
                 $baseUserEntity,
                 Container::getInstance()->get(DbRepository::class, $request),
                 Container::getInstance()->get(PaginationMetta::class, $request),
-                Container::getInstance()->get(BaseUserFilterCriteria::class, $request)
+                Container::getInstance()->get(Request::class, $request)
             );
         });
+
+        
 
         Container::getInstance()->set(BaseUserEntity::class, function ($request) {
             return new BaseUserEntity($request);
@@ -70,12 +72,9 @@ class AppServiceProviders
         });
 
         Container::getInstance()->set(BaseUserService::class, function ($request) {
-
             $data = $request;
-            $user = Container::getInstance()->get(AuthMiddleware::AUTH_USER, []);
             return new BaseUserService(
                 Container::getInstance()->get(Request::class, $data),
-                $user,
                 Container::getInstance()->get(BaseUserRepository::class, $request),
                 Container::getInstance()->get(MailService::class, $request),
                 Container::getInstance()->get(MailTemplates::class, $request),
@@ -84,7 +83,12 @@ class AppServiceProviders
 
         // BaseUserController
         Container::getInstance()->set(BaseUserController::class, function ($request) {
-            return new BaseUserController(Container::getInstance()->get(BaseUserService::class, $request));
+            return new BaseUserController(
+                Container::getInstance()->get(BaseUserService::class, $request),
+                Container::getInstance()->get(Request::class, $request),
+                Container::getInstance()->get(AuthMiddleware::AUTH_USER, []),
+                Container::getInstance()->get(BaseUserRepository::class, $request)
+            );
         });
 
 
