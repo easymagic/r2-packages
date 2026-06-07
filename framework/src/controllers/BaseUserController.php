@@ -191,6 +191,7 @@ class BaseUserController
         jsonResponse([
             'message' => 'Users fetched successfully',
             'data' => $users,
+            "count" => $this->baseUserRepository->count(),
             "success" => true
         ]);
     }
