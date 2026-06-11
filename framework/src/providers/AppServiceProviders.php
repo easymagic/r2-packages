@@ -16,6 +16,7 @@ use R2Packages\Framework\middlewares\AdminMiddleware;
 use R2Packages\Framework\PaginationMetta;
 use R2Packages\Framework\Repositories\DbRepository;
 use R2Packages\Framework\Request;
+use R2Packages\Framework\Services\UtilService;
 
 class AppServiceProviders
 {
@@ -71,6 +72,10 @@ class AppServiceProviders
             return new MailTemplates();
         });
 
+        Container::getInstance()->set(UtilService::class, function ($request) {
+            return new UtilService();
+        });
+
         Container::getInstance()->set(BaseUserService::class, function ($request) {
             $data = $request;
             return new BaseUserService(
@@ -78,6 +83,7 @@ class AppServiceProviders
                 Container::getInstance()->get(BaseUserRepository::class, $request),
                 Container::getInstance()->get(MailService::class, $request),
                 Container::getInstance()->get(MailTemplates::class, $request),
+                Container::getInstance()->get(UtilService::class, $request)
             );
         });
 

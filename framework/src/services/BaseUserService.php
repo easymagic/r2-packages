@@ -11,8 +11,7 @@ use R2Packages\Framework\Repositories\BaseUserRepository;
 use R2Packages\Framework\Request;
 
 class BaseUserService
-{
-    
+{   
 
     protected BaseUserRepository $baseUserRepository;
 
@@ -22,35 +21,22 @@ class BaseUserService
 
     protected Request $request;
 
+    private UtilService $utilService;
+
     function __construct(
         Request $request,
         BaseUserRepository $baseUserRepository,
         MailService $mailService,
-        MailTemplates $mailTemplates
+        MailTemplates $mailTemplates,
+        UtilService $utilService
     ) {
         $this->request = $request;
         $this->baseUserRepository = $baseUserRepository;
         $this->mailService = $mailService;
         $this->mailTemplates = $mailTemplates;
+        $this->utilService = $utilService;
     }
 
-    /**
-     * Generate OTP
-     * @return int
-     */
-    public function generateOtp(){
-        return rand(100000, 999999);
-    }
-
-    /**
-     * Refresh token
-     * @param int $id
-     * @return string
-     */
-    function refreshToken($id){
-        $token = $id . '_' . bin2hex(random_bytes(32));
-        return $token;
-    }
 
 
     public function login(Request $request)
@@ -68,8 +54,8 @@ class BaseUserService
         if ($user->status !== BaseUserEntity::STATUS_ACTIVE) {
             throw new Exception("Inactive account, please activate your account from the OTP sent to your email!");
         }
-        $token = $this->refreshToken($user->id);
-        $otp = $this->generateOtp();
+        $token = $this->utilService->refreshToken($user->id);
+        $otp = $this->utilService->generateOtp();
         $request->input['token'] = $token;
         $request->input['otp'] = $otp;
         $user = $this->baseUserRepository->save($user->id, $request->input);
@@ -109,8 +95,8 @@ class BaseUserService
             throw new Exception("Password and confirm password do not match!");
         }
 
-        $otp = $this->generateOtp();
-        $token = $this->refreshToken(0);
+        $otp = $this->utilService->generateOtp();
+        $token = $this->utilService->refreshToken(0);
 
 
         $request->input['name'] = $request->data['name'];
@@ -133,8 +119,8 @@ class BaseUserService
             throw new Exception("ID is required!");
         }
         $user = $this->baseUserRepository->find($request->data['id']);
-        $otp = $this->generateOtp();
-        $token = $this->refreshToken($user->id);
+        $otp = $this->utilService->generateOtp();
+        $token = $this->utilService->refreshToken($user->id);
         $request->input['otp'] = $otp;
         $request->input['token'] = $token;
         $user = $this->baseUserRepository->save($user->id, $request->input);
@@ -178,8 +164,8 @@ class BaseUserService
             throw new Exception("Status is required!");
         }
 
-        $otp = $this->generateOtp();
-        $token = $this->refreshToken(0);
+        $otp = $this->utilService->generateOtp();
+        $token = $this->utilService->refreshToken(0);
 
 
         $request->input['name'] = $request->data['name'];
@@ -225,7 +211,7 @@ class BaseUserService
         }
         $id = $authUser->id;
         $user = $this->baseUserRepository->find($id);
-        $token = $this->refreshToken($id);
+        $token = $this->utilService->refreshToken($id);
         $request->input['token'] = $token;
         $user = $this->baseUserRepository->save($id, $request->input);
         return $user;
@@ -237,8 +223,8 @@ class BaseUserService
             throw new Exception("Email is required!");
         }
         $user = $this->baseUserRepository->findByEmail($request->data['email']);
-        $otp = $this->generateOtp();
-        $token = $this->refreshToken($user->id);
+        $otp = $this->utilService->generateOtp();
+        $token = $this->utilService->refreshToken($user->id);
         $request->input['token'] = $token;
         $request->input['otp'] = $otp;
         $user = $this->baseUserRepository->save($user->id, $request->input);
