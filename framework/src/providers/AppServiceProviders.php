@@ -16,6 +16,7 @@ use R2Packages\Framework\middlewares\AdminMiddleware;
 use R2Packages\Framework\PaginationMetta;
 use R2Packages\Framework\Repositories\DbRepository;
 use R2Packages\Framework\Request;
+use R2Packages\Framework\Services\ApiCredentialService;
 use R2Packages\Framework\Services\UtilService;
 
 class AppServiceProviders
@@ -97,30 +98,31 @@ class AppServiceProviders
             );
         });
 
+        // ApiCredentialService
+        Container::getInstance()->set(ApiCredentialService::class, function ($request) {
+            return new ApiCredentialService(
+                Container::getInstance()->get(Request::class, $request),
+                Container::getInstance()->get(BaseUserRepository::class, $request)
+            );
+        });
+
 
         Container::getInstance()->set(GlobalApiMiddleware::class, function ($request) {
-            $systemToken = '1234567890';
-            return new GlobalApiMiddleware($systemToken, Container::getInstance()->get(Request::class, $request));
+            return new GlobalApiMiddleware(Container::getInstance()->get(ApiCredentialService::class, $request));
         });
 
 
         Container::getInstance()->set(AuthMiddleware::class, function ($request) {
             return new AuthMiddleware(
-                Container::getInstance()->get(Request::class, $request),
-                Container::getInstance()->get(BaseUserService::class, $request),
-                Container::getInstance(),
-                Container::getInstance()->get(AuthMiddleware::AUTH_USER, []),
-                Container::getInstance()->get(BaseUserRepository::class, $request)
+                Container::getInstance()->get(ApiCredentialService::class, $request),
+                Container::getInstance()
             );
         });
 
         Container::getInstance()->set(AdminMiddleware::class, function ($request) {
             return new AdminMiddleware(
-                Container::getInstance()->get(Request::class, $request),
-                Container::getInstance()->get(BaseUserService::class, $request),
-                Container::getInstance(),
-                Container::getInstance()->get(AuthMiddleware::AUTH_USER, []),
-                Container::getInstance()->get(BaseUserRepository::class, $request)
+                Container::getInstance()->get(ApiCredentialService::class, $request),
+                Container::getInstance()
             );
         });
     }

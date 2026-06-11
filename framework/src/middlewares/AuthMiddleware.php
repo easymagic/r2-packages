@@ -6,58 +6,35 @@ use R2Packages\Framework\Container;
 use R2Packages\Framework\Entities\BaseUserEntity;
 use R2Packages\Framework\Repositories\BaseUserRepository;
 use R2Packages\Framework\Request;
+use R2Packages\Framework\Services\ApiCredentialService;
 use R2Packages\Framework\Services\BaseUserService;
 
 class AuthMiddleware
 {
 
-    private Request $request;
-    private BaseUserService $baseUserService;
     protected Container $container;
 
     const AUTH_USER = "auth-user";
     protected BaseUserEntity $authUser;
-    protected BaseUserRepository $baseUserRepository;
+
+    protected ApiCredentialService $apiCredentialService;
 
     function __construct(
-        Request $request,
-        BaseUserService $baseUserService,
-        Container $container,
-        BaseUserEntity $authUser,
-        BaseUserRepository $baseUserRepository
+        ApiCredentialService $apiCredentialService,
+        Container $container
     ) {
-        $this->baseUserRepository = $baseUserRepository;
-        $this->request = $request;
-        $this->baseUserService = $baseUserService;
+        $this->apiCredentialService = $apiCredentialService;
         $this->container = $container;
-        $this->authUser = $authUser;
     }
 
     function handle()
     {
-        $user_id = $this->request->data['x-user-id'] ?? null;
-        $token = $this->request->data['x-user-token'] ?? null;
-        if (empty($token)) {
+        if (!$this->apiCredentialService->userTokenIsValid()) {
             jsonResponse(['success' => false, 'message' => 'Unauthorized'], 401);
             exit;
         }
-        $countCheck = count(explode('_', $token));
-        if ($countCheck !== 2) {
-            jsonResponse(['success' => false, 'message' => 'Invalid token'], 401);
-            exit;
-        }
-        $user_id = explode('_', $token)[0];
-        // $token = explode('_', $token)[1];
-        $user = $this->baseUserRepository->find($user_id);
+        $user = $this->apiCredentialService->getAuthUser();
         
-        if ($user->isEmpty()) {
-            jsonResponse(['success' => false, 'message' => 'User not found'], 404);
-            exit;
-        }
-        if ($user->token !== $token) {
-            jsonResponse(['success' => false, 'message' => 'Token is invalid'], 401);
-            exit;
-        }
         $this->authUser = $user;
         $this->container->set(self::AUTH_USER, $user);
         return true;

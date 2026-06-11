@@ -3,27 +3,25 @@
 namespace R2Packages\Framework\middlewares;
 
 use R2Packages\Framework\Request;
+use R2Packages\Framework\Services\ApiCredentialService;
 
 class GlobalApiMiddleware {
 
 
-    private $systemToken = '';
-    private Request $request;
+    // private $systemToken = '';
+    private ApiCredentialService $apiCredentialService;
 
 
     /**
-     * @param string $systemToken
-     * @param Request $request
+     * @param ApiCredentialService $apiCredentialService
      */
-    function __construct($systemToken,Request $request){
-        $this->systemToken = $systemToken;
-        $this->request = $request;
+    function __construct(ApiCredentialService $apiCredentialService){
+        $this->apiCredentialService = $apiCredentialService;
     }
 
 
     function handle(){
-        $token = $this->request->data['x-token'] ?? null;
-        if ($token !== $this->systemToken) {
+        if (!$this->apiCredentialService->globalTokenIsValid()) {
             jsonResponse(['success' => false, 'message' => 'Unauthorized'], 401);
             exit;
         }

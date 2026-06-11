@@ -10,8 +10,8 @@ class AdminMiddleware extends AuthMiddleware {
     function handle()
     {
         parent::handle();
-        $user = $this->authUser;
-        if ($user->role !== 'admin'){
+        $user = $this->apiCredentialService->getAuthUser();
+        if ( strpos(strtolower($user->role), 'admin') === false){
             jsonResponse(['success' => false, 'message' => 'Unauthorized'], 401);
             $this->container->unset(AuthMiddleware::AUTH_USER);
             exit;
