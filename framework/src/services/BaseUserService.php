@@ -67,12 +67,12 @@ class BaseUserService
     public function register(Request $request)
     {
 
-        if (!isset($request->data['name']) || empty($request->data['name'])) {
+        if ($request->isEmpty('name')) {
             throw new Exception("Name is required!");
         }
 
         //email
-        if (!isset($request->data['email']) || empty($request->data['email'])) {
+        if ($request->isEmpty('email')) {
             throw new Exception("Email is required!");
         }
 
@@ -82,16 +82,16 @@ class BaseUserService
         }
 
         //phone
-        if (!isset($request->data['phone']) || empty($request->data['phone'])) {
+        if ($request->isEmpty('phone')) {
             throw new Exception("Phone is required!");
         }
 
         //password
-        if (!isset($request->data['password']) || empty($request->data['password'])) {
+        if ($request->isEmpty('password')) {
             throw new Exception("Password is required!");
         }
 
-        if (!isset($request->data['confirm_password']) || $request->data['password'] !== $request->data['confirm_password']) {
+        if ($request->get('password') !== $request->get('confirm_password')) {
             throw new Exception("Password and confirm password do not match!");
         }
 
@@ -99,10 +99,10 @@ class BaseUserService
         $token = $this->utilService->refreshToken(0);
 
 
-        $request->input['name'] = $request->data['name'];
-        $request->input['email'] = $request->data['email'];
-        $request->input['password'] = password_hash($request->data['password'], PASSWORD_DEFAULT);
-        $request->input['phone'] = $request->data['phone'];
+        $request->input['name'] = $request->get('name');
+        $request->input['email'] = $request->get('email');
+        $request->input['password'] = password_hash($request->get('password'), PASSWORD_DEFAULT);
+        $request->input['phone'] = $request->get('phone');
         $request->input['otp'] = $otp;
         $request->input['token'] = $token;
         $request->input['role'] = 'customer';
@@ -115,10 +115,10 @@ class BaseUserService
     }
 
     function resendOtp(Request $request){
-        if (!isset($request->data['id']) || empty($request->data['id'])) {
+        if ($request->isEmpty('id')) {
             throw new Exception("ID is required!");
         }
-        $user = $this->baseUserRepository->find($request->data['id']);
+        $user = $this->baseUserRepository->find($request->get('id'));
         $otp = $this->utilService->generateOtp();
         $token = $this->utilService->refreshToken($user->id);
         $request->input['otp'] = $otp;
