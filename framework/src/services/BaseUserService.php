@@ -41,14 +41,14 @@ class BaseUserService
 
     public function login(Request $request)
     {
-        $email = $request->data['email'] ?? '';
-        $password = $request->data['password'] ?? '';
-        if (empty($email) || empty($password)) {
-            throw new Exception("Email and password are required!");
+        if ($request->isEmpty('email')) {
+            throw new Exception("Email is required!");
         }
-        $user = $this->baseUserRepository->findByEmail($email);
-
-        if (!password_verify($password, $user->password)) {
+        if ($request->isEmpty('password')) {
+            throw new Exception("Password is required!");
+        }
+        $user = $this->baseUserRepository->findByEmail($request->get('email'));
+        if (!password_verify($request->get('password'), $user->password)) {
             throw new Exception("Invalid login!!");
         }
         if ($user->status !== BaseUserEntity::STATUS_ACTIVE) {
