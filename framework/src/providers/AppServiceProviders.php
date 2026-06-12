@@ -13,6 +13,7 @@ use R2Packages\Framework\mail_templates\MailTemplates;
 use R2Packages\Framework\Controllers\BaseUserController;
 use R2Packages\Framework\Criteria\BaseUserFilterCriteria;
 use R2Packages\Framework\middlewares\AdminMiddleware;
+use R2Packages\Framework\middlewares\OptionalAuthMiddleware;
 use R2Packages\Framework\PaginationMetta;
 use R2Packages\Framework\Repositories\DbRepository;
 use R2Packages\Framework\Request;
@@ -131,6 +132,13 @@ class AppServiceProviders
         // AuthUserService
         Container::getInstance()->set(AuthUserService::class, function ($request) {
             return new AuthUserService(
+                Container::getInstance()->get(ApiCredentialService::class, $request)
+            );
+        });
+
+        // OptionalAuthMiddleware
+        Container::getInstance()->set(OptionalAuthMiddleware::class, function ($request) {
+            return new OptionalAuthMiddleware(
                 Container::getInstance()->get(ApiCredentialService::class, $request)
             );
         });
