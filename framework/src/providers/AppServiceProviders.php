@@ -17,6 +17,7 @@ use R2Packages\Framework\PaginationMetta;
 use R2Packages\Framework\Repositories\DbRepository;
 use R2Packages\Framework\Request;
 use R2Packages\Framework\Services\ApiCredentialService;
+use R2Packages\Framework\Services\AuthUserService;
 use R2Packages\Framework\Services\UtilService;
 
 class AppServiceProviders
@@ -123,6 +124,14 @@ class AppServiceProviders
             return new AdminMiddleware(
                 Container::getInstance()->get(ApiCredentialService::class, $request),
                 Container::getInstance()
+            );
+        });
+
+
+        // AuthUserService
+        Container::getInstance()->set(AuthUserService::class, function ($request) {
+            return new AuthUserService(
+                Container::getInstance()->get(ApiCredentialService::class, $request)
             );
         });
     }
