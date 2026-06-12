@@ -5,6 +5,7 @@ namespace R2Packages\Framework\Controllers;
 use R2Packages\Framework\Entities\BaseUserEntity;
 use R2Packages\Framework\Repositories\BaseUserRepository;
 use R2Packages\Framework\Request;
+use R2Packages\Framework\Services\AuthUserService;
 use R2Packages\Framework\Services\BaseUserService;
 use R2Packages\Framework\Traits\Publishable;
 
@@ -14,18 +15,18 @@ class BaseUserController
 
     private BaseUserService $baseUserService;
     private Request $request;
-    private BaseUserEntity $authUser;
+    private AuthUserService $authUserService;
     private BaseUserRepository $baseUserRepository;
 
     function __construct(
         BaseUserService $baseUserService,
         Request $request,
-        BaseUserEntity $authUser,
+        AuthUserService $authUserService,
         BaseUserRepository $baseUserRepository
     ) {
         $this->baseUserService = $baseUserService;
         $this->request = $request;
-        $this->authUser = $authUser;
+        $this->authUserService = $authUserService;
         $this->baseUserRepository = $baseUserRepository;
     }
 
@@ -74,7 +75,7 @@ class BaseUserController
 
     public function logout()
     {
-        $user = $this->baseUserService->logout($this->request, $this->authUser);
+        $user = $this->baseUserService->logout($this->request, $this->authUserService->getAuthUser());
         jsonResponse([
             'message' => 'Logout successful',
             'data' => $user,
@@ -106,7 +107,7 @@ class BaseUserController
 
     public function updateProfile()
     {
-        $user = $this->baseUserService->updateProfile($this->request, $this->authUser);
+        $user = $this->baseUserService->updateProfile($this->request, $this->authUserService->getAuthUser());
         jsonResponse([
             'message' => 'Profile updated successfully',
             'data' => $user,
@@ -118,7 +119,7 @@ class BaseUserController
     {
         jsonResponse([
             'message' => 'Profile fetched successfully',
-            'data' => $this->authUser,
+            'data' => $this->authUserService->getAuthUser(),
             "success" => true
         ]);
     }
@@ -126,7 +127,7 @@ class BaseUserController
     // change my password
     public function changeMyPassword()
     {
-        $user = $this->baseUserService->changeMyPassword($this->request, $this->authUser);
+        $user = $this->baseUserService->changeMyPassword($this->request, $this->authUserService->getAuthUser());
         jsonResponse([
             'message' => 'Password changed successfully',
             'data' => $user,
@@ -136,7 +137,7 @@ class BaseUserController
 
     public function getMyProfile()
     {
-        $user = $this->authUser;
+        $user = $this->authUserService->getAuthUser();
         jsonResponse([
             'message' => 'My profile fetched successfully',
             'data' => $user,

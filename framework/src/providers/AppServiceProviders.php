@@ -95,7 +95,7 @@ class AppServiceProviders
             return new BaseUserController(
                 Container::getInstance()->get(BaseUserService::class, $request),
                 Container::getInstance()->get(Request::class, $request),
-                Container::getInstance()->get(AuthMiddleware::AUTH_USER, []),
+                Container::getInstance()->get(AuthUserService::class, $request),
                 Container::getInstance()->get(BaseUserRepository::class, $request)
             );
         });
