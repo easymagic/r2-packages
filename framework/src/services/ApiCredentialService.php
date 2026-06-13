@@ -51,7 +51,7 @@ class ApiCredentialService
     }
 
     function userTokenIsValid(){
-        return !$this->userIsEmpty() &&  $this->baseUserEntity->token === $this->x_user_token;
+        return  !empty($this->x_user_token) && $this->baseUserEntity->token === $this->x_user_token && !$this->userIsEmpty();
     }
 
     function getAuthUser(){
