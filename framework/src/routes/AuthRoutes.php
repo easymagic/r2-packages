@@ -30,10 +30,10 @@ class AuthRoutes
 
                 $route->post('/register', [BaseUserController::class, 'register']);
 
-                $route->post('/otp', [BaseUserController::class, 'verifyOtp']);
-                $route->post('/resend-otp', [BaseUserController::class, 'resendOtp']);
+                $route->post('/otp', [BaseUserController::class, 'verifyOtp']); // user_id is required
+                $route->post('/resend-otp', [BaseUserController::class, 'resendOtp']); // user_id is required
                 $route->post('/request-password-reset', [BaseUserController::class, 'requestPasswordReset']);
-                $route->post('/reset-password', [BaseUserController::class, 'resetPassword']);
+                $route->post('/reset-password', [BaseUserController::class, 'resetPassword']); // user_id is required
 
                 $route->globalMiddleware([
                     AuthMiddleware::class
@@ -49,9 +49,9 @@ class AuthRoutes
                 ], function (Route $route) {
                     $route->get('/user', [BaseUserController::class, 'fetch']);
                     $route->post('/user', [BaseUserController::class, 'create']);
-                    $route->post('/user/{id}', [BaseUserController::class, 'updateUserProfile']);
-                    $route->post('/user/{id}/password', [BaseUserController::class, 'changeUserPassword']);
-                    $route->get('/user/{id}', [BaseUserController::class, 'getUserProfile']);
+                    $route->post('/user/{user_id}', [BaseUserController::class, 'updateUserProfile']);
+                    $route->post('/user/{user_id}/password', [BaseUserController::class, 'changeUserPassword']);
+                    $route->get('/user/{user_id}', [BaseUserController::class, 'getUserProfile']);
                 });
 
             });

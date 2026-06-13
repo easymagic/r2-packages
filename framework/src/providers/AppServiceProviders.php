@@ -19,6 +19,7 @@ use R2Packages\Framework\Repositories\DbRepository;
 use R2Packages\Framework\Request;
 use R2Packages\Framework\Services\ApiCredentialService;
 use R2Packages\Framework\Services\AuthUserService;
+use R2Packages\Framework\Services\ids\UserIdService;
 use R2Packages\Framework\Services\UtilService;
 
 class AppServiceProviders
@@ -90,13 +91,22 @@ class AppServiceProviders
             );
         });
 
+        // UserIdService
+        Container::getInstance()->set(UserIdService::class, function ($request) {
+            return new UserIdService(
+                Container::getInstance()->get(Request::class, $request),
+                Container::getInstance()->get(BaseUserRepository::class, $request)
+            );
+        });
+
         // BaseUserController
         Container::getInstance()->set(BaseUserController::class, function ($request) {
             return new BaseUserController(
                 Container::getInstance()->get(BaseUserService::class, $request),
                 Container::getInstance()->get(Request::class, $request),
                 Container::getInstance()->get(AuthUserService::class, $request),
-                Container::getInstance()->get(BaseUserRepository::class, $request)
+                Container::getInstance()->get(BaseUserRepository::class, $request),
+                Container::getInstance()->get(UserIdService::class, $request)
             );
         });
 

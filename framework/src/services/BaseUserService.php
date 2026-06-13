@@ -11,7 +11,7 @@ use R2Packages\Framework\Repositories\BaseUserRepository;
 use R2Packages\Framework\Request;
 
 class BaseUserService
-{   
+{
 
     protected BaseUserRepository $baseUserRepository;
 
@@ -114,11 +114,8 @@ class BaseUserService
         return $user;
     }
 
-    function resendOtp(Request $request){
-        if ($request->isEmpty('id')) {
-            throw new Exception("ID is required!");
-        }
-        $user = $this->baseUserRepository->find($request->get('id'));
+    function resendOtp(Request $request, BaseUserEntity $user)
+    {
         $otp = $this->utilService->generateOtp();
         $token = $this->utilService->refreshToken($user->id);
         $request->input['otp'] = $otp;
@@ -128,7 +125,8 @@ class BaseUserService
         return $user;
     }
 
-    public function create(Request $request){
+    public function create(Request $request)
+    {
 
         if (!isset($request->data['name']) || empty($request->data['name'])) {
             throw new Exception("Name is required!");
@@ -183,24 +181,18 @@ class BaseUserService
         return $user;
     }
 
-    public function verifyOtp(Request $request)
+    public function verifyOtp(Request $request, BaseUserEntity $user)
     {
-        if (!isset($request->data['otp']) || empty($request->data['otp'])) {
+        if ($request->isEmpty('otp')) {
             throw new Exception("OTP is required!");
         }
-        // id 
-        if (!isset($request->data['id']) || empty($request->data['id'])) {
-            throw new Exception("ID is required!");
-        }
 
-        $id = $request->data['id'];
-        $otp = $request->data['otp'];
-        $user = $this->baseUserRepository->find($id);
+        $otp = $request->get('otp');
         if ($user->otp !== $otp) {
             throw new Exception("Invalid OTP!");
         }
         $request->input['status'] = BaseUserEntity::STATUS_ACTIVE;
-        $user = $this->baseUserRepository->save($id, $request->input);
+        $user = $this->baseUserRepository->save($user->id, $request->input);
         return $user;
     }
 
@@ -233,114 +225,95 @@ class BaseUserService
         return $user;
     }
 
-    function resetPassword(Request $request)
+    function resetPassword(Request $request, BaseUserEntity $user)
     {
         // id (user id)
-        if (!isset($request->data['id']) || empty($request->data['id'])) {
-            throw new Exception("ID is required!");
-        }
-        if (!isset($request->data['otp']) || empty($request->data['otp'])) {
+        if ($request->isEmpty('otp')) {
             throw new Exception("OTP is required!");
         }
-        if (!isset($request->data['password']) || empty($request->data['password'])) {
+        if ($request->isEmpty('password')) {
             throw new Exception("Password is required!");
         }
-        if (!isset($request->data['confirm_password']) || $request->data['password'] !== $request->data['confirm_password']) {
+        if ($request->get('password') !== $request->get('confirm_password')) {
             throw new Exception("Password and confirm password do not match!");
         }
-        $user = $this->baseUserRepository->find($request->data['id']);
-        if ($user->otp !== $request->data['otp']) {
+        if ($user->otp !== $request->get('otp')) {
             throw new Exception("Invalid OTP!");
         }
-        $request->input['password'] = password_hash($request->data['password'], PASSWORD_DEFAULT);
+        $request->input['password'] = password_hash($request->get('password'), PASSWORD_DEFAULT);
         $user = $this->baseUserRepository->save($user->id, $request->input);
         return $user;
     }
 
-    public function updateProfile(Request $request, BaseUserEntity $authUser){
-        if (!isset($authUser->id) || empty($authUser->id)) {
-            throw new Exception("ID is required!"); // need to be authenticated user id
-        }
-        if (!isset($request->data['name']) || empty($request->data['name'])) {
+    public function updateProfile(Request $request, BaseUserEntity $authUser)
+    {
+        if ($request->isEmpty('name')) {
             throw new Exception("Name is required!");
         }
-        if (!isset($request->data['phone']) || empty($request->data['phone'])) {
+        if ($request->isEmpty('phone')) {
             throw new Exception("Phone is required!");
         }
-        $request->input['name'] = $request->data['name'];
-        $request->input['phone'] = $request->data['phone'];
-        $id = $authUser->id;
-        $user = $this->baseUserRepository->save($id, $request->input);
-        return $user;
-    }
-
-
-    public function updateUserProfile(Request $request){
-        if (!isset($request->data['id']) || empty($request->data['id'])) {
-            throw new Exception("ID is required!");
-        }
-        if (!isset($request->data['name']) || empty($request->data['name'])) {
-            throw new Exception("Name is required!");
-        }
-        if (!isset($request->data['phone']) || empty($request->data['phone'])) {
-            throw new Exception("Phone is required!");
-        }
-
-        // role 
-        if (!isset($request->data['role']) || empty($request->data['role'])) {
-            throw new Exception("Role is required!");
-        }
-
-        // status
-        if (!isset($request->data['status']) || empty($request->data['status'])) {
-            throw new Exception("Status is required!");
-        }
-
-        $request->input["role"] = $request->data['role'];
-        $request->input["status"] = $request->data['status'];
-        $request->input['name'] = $request->data['name'];
-        $request->input['phone'] = $request->data['phone'];
-        $id = $request->data['id'];
-        $user = $this->baseUserRepository->save($id, $request->input);
-        return $user;
-    }
-
-
-    public function changeUserPassword(Request $request){
-        if (!isset($request->data['id']) || empty($request->data['id'])) {
-            throw new Exception("ID is required!");
-        }
-
-        if (!isset($request->data['password']) || empty($request->data['password'])) {
-            throw new Exception("Password is required!");
-        }
-
-        $user = $this->baseUserRepository->find($request->data['id']);
-
-        $request->input['password'] = password_hash($request->data['password'], PASSWORD_DEFAULT);
-        $user = $this->baseUserRepository->save($user->id, $request->input);
-        return $user;
-    }
-
-    public function changeMyPassword(Request $request, BaseUserEntity $authUser){
-        if (!isset($request->data['password']) || empty($request->data['password'])) {
-            throw new Exception("Password is required!");
-        }
-        // old password
-        if (!isset($request->data['old_password']) || empty($request->data['old_password'])) {
-            throw new Exception("Old password is required!");
-        }
-        // confirm password
-        if (!isset($request->data['confirm_password']) || $request->data['password'] !== $request->data['confirm_password']) {
-            throw new Exception("Password and confirm password do not match!");
-        }
-        $user = $this->baseUserRepository->find($authUser->id);
-        if (!password_verify($request->data['old_password'], $user->password)) {
-            throw new Exception("Old password is incorrect!");
-        }
-        $request->input['password'] = password_hash($request->data['password'], PASSWORD_DEFAULT);
+        $request->input['name'] = $request->get('name');
+        $request->input['phone'] = $request->get('phone');
         $user = $this->baseUserRepository->save($authUser->id, $request->input);
         return $user;
     }
 
+
+    public function updateUserProfile(Request $request, BaseUserEntity $user)
+    {
+        if ($request->isEmpty('name')) {
+            throw new Exception("Name is required!");
+        }
+        if ($request->isEmpty('phone')) {
+            throw new Exception("Phone is required!");
+        }
+        // role 
+        if ($request->isEmpty('role')) {
+            throw new Exception("Role is required!");
+        }
+        // status
+        if ($request->isEmpty('status')) {
+            throw new Exception("Status is required!");
+        }
+
+        $request->input["role"] = $request->get('role');
+        $request->input["status"] = $request->get('status');
+        $request->input['name'] = $request->get('name');
+        $request->input['phone'] = $request->get('phone');
+        $user = $this->baseUserRepository->save($user->id, $request->input);
+        return $user;
+    }
+
+
+    public function changeUserPassword(Request $request, BaseUserEntity $user)
+    {
+        if ($request->isEmpty('password')) {
+            throw new Exception("Password is required!");
+        }
+        $request->input['password'] = password_hash($request->get('password'), PASSWORD_DEFAULT);
+        $user = $this->baseUserRepository->save($user->id, $request->input);
+        return $user;
+    }
+
+    public function changeMyPassword(Request $request, BaseUserEntity $authUser)
+    {
+        if ($request->isEmpty('password')) {
+            throw new Exception("Password is required!");
+        }
+        // old password
+        if ($request->isEmpty('old_password')) {
+            throw new Exception("Old password is required!");
+        }
+        // confirm password
+        if ($request->get('password') !== $request->get('confirm_password')) {
+            throw new Exception("Password and confirm password do not match!");
+        }
+        if (!password_verify($request->get('old_password'), $authUser->password)) {
+            throw new Exception("Old password is incorrect!");
+        }
+        $request->input['password'] = password_hash($request->get('password'), PASSWORD_DEFAULT);
+        $user = $this->baseUserRepository->save($authUser->id, $request->input);
+        return $user;
+    }
 }

@@ -7,6 +7,7 @@ use R2Packages\Framework\Repositories\BaseUserRepository;
 use R2Packages\Framework\Request;
 use R2Packages\Framework\Services\AuthUserService;
 use R2Packages\Framework\Services\BaseUserService;
+use R2Packages\Framework\Services\ids\UserIdService;
 use R2Packages\Framework\Traits\Publishable;
 
 class BaseUserController
@@ -17,17 +18,20 @@ class BaseUserController
     private Request $request;
     private AuthUserService $authUserService;
     private BaseUserRepository $baseUserRepository;
+    private UserIdService $userIdService;
 
     function __construct(
         BaseUserService $baseUserService,
         Request $request,
         AuthUserService $authUserService,
-        BaseUserRepository $baseUserRepository
+        BaseUserRepository $baseUserRepository,
+        UserIdService $userIdService
     ) {
         $this->baseUserService = $baseUserService;
         $this->request = $request;
         $this->authUserService = $authUserService;
         $this->baseUserRepository = $baseUserRepository;
+        $this->userIdService = $userIdService;
     }
 
     public function login()
@@ -52,7 +56,7 @@ class BaseUserController
 
     public function resendOtp()
     {
-        $user = $this->baseUserService->resendOtp($this->request);
+        $user = $this->baseUserService->resendOtp($this->request, $this->userIdService->getUser());
         jsonResponse([
             'message' => 'OTP resent successfully',
             'data' => [
@@ -65,7 +69,7 @@ class BaseUserController
 
     public function verifyOtp()
     {
-        $user = $this->baseUserService->verifyOtp($this->request);
+        $user = $this->baseUserService->verifyOtp($this->request, $this->userIdService->getUser());
         jsonResponse([
             'message' => 'OTP verification successful',
             'data' => $user,
@@ -97,7 +101,7 @@ class BaseUserController
 
     public function resetPassword()
     {
-        $user = $this->baseUserService->resetPassword($this->request);
+        $user = $this->baseUserService->resetPassword($this->request, $this->userIdService->getUser());
         jsonResponse([
             'message' => 'Password reset successful',
             'data' => $user,
@@ -157,7 +161,7 @@ class BaseUserController
 
     public function updateUserProfile()
     {
-        $user = $this->baseUserService->updateUserProfile($this->request);
+        $user = $this->baseUserService->updateUserProfile($this->request, $this->userIdService->getUser());
         jsonResponse([
             'message' => 'User profile updated successfully',
             'data' => $user,
@@ -167,7 +171,7 @@ class BaseUserController
 
     public function changeUserPassword()
     {
-        $user = $this->baseUserService->changeUserPassword($this->request);
+        $user = $this->baseUserService->changeUserPassword($this->request, $this->userIdService->getUser());
         jsonResponse([
             'message' => 'User password changed successfully',
             'data' => $user,
