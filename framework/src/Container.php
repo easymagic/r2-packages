@@ -55,7 +55,6 @@ class Container
         }
 
         $dependencies = [];
-        $dependencies[] = $request;
 
         foreach ($constructor->getParameters() as $param) {
             $type = $param->getType();
@@ -88,6 +87,8 @@ class Container
 
             throw new Exception("Cannot resolve dependency {$typeName} in {$class}");
         }
+
+        $dependencies[] = $request;
 
         return $reflection->newInstanceArgs($dependencies);
     }    
