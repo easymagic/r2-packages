@@ -7,7 +7,11 @@ class Request
     public $data = [];
     public $input = [];
 
-    public function __construct(array $data)
+    /**
+     * Constructor
+     * @param array $data
+     */
+    public function __construct($data)
     {
         $this->data = $data;
         $this->input = [];
