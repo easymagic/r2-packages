@@ -62,10 +62,11 @@ class Container
             if (!$type) {
                 if ($param->isDefaultValueAvailable()) {
                     $dependencies[] = $param->getDefaultValue();
-                    continue;
+                    // continue;
                 }
 
-                throw new Exception("Cannot resolve parameter {$param->getName()} in {$class}");
+                continue;
+                // throw new Exception("Cannot resolve parameter {$param->getName()} in {$class}");
             }
 
             $typeName = $type->getName();
