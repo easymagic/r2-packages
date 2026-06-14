@@ -3,6 +3,7 @@
 namespace R2Packages\Framework;
 
 use Exception;
+use ReflectionClass;
 
 class Container
 {
@@ -31,11 +32,65 @@ class Container
                 return $this->services[$service];
             }
         }
-        if(class_exists($service)){
-            return new $service($args);
-        }
-        throw new Exception("Service not found!");    
+
+        return $this->resolve($service, $args);
+        // if(class_exists($service)){
+        //     return new $service($args);
+        // }
+        // throw new Exception("Service not found!");    
     }
+
+    private function resolve(string $class, $request = [])
+    {
+        $reflection = new ReflectionClass($class);
+
+        if (!$reflection->isInstantiable()) {
+            throw new Exception("Class {$class} is not instantiable");
+        }
+
+        $constructor = $reflection->getConstructor();
+
+        if (!$constructor) {
+            return new $class();
+        }
+
+        $dependencies = [];
+        $dependencies[] = $request;
+
+        foreach ($constructor->getParameters() as $param) {
+            $type = $param->getType();
+
+            if (!$type) {
+                if ($param->isDefaultValueAvailable()) {
+                    $dependencies[] = $param->getDefaultValue();
+                    continue;
+                }
+
+                throw new Exception("Cannot resolve parameter {$param->getName()} in {$class}");
+            }
+
+            $typeName = $type->getName();
+
+            // if ($typeName === Request::class) {
+            //     $dependencies[] = new Request($request);
+            //     continue;
+            // }
+
+            if (class_exists($typeName)) {
+                $dependencies[] = $this->get($typeName, $request);
+                continue;
+            }
+
+            if ($param->isDefaultValueAvailable()) {
+                $dependencies[] = $param->getDefaultValue();
+                continue;
+            }
+
+            throw new Exception("Cannot resolve dependency {$typeName} in {$class}");
+        }
+
+        return $reflection->newInstanceArgs($dependencies);
+    }    
 
     public function set($service, $instance){
         $this->services[$service] = $instance;
