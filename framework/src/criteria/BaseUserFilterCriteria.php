@@ -11,10 +11,10 @@ class BaseUserFilterCriteria extends Request
     protected BaseUserEntity $baseUserEntity;
 
     /**
-     * @param array $data
      * @param BaseUserEntity $baseUserEntity
+     * @param array $data
      */
-    function __construct($data, BaseUserEntity $baseUserEntity)
+    function __construct(BaseUserEntity $baseUserEntity, $data)
     {
         parent::__construct($data);
         $this->baseUserEntity = $baseUserEntity;
