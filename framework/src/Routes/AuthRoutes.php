@@ -12,9 +12,9 @@ class AuthRoutes
 {
     private Route $route;
 
-    public function __construct()
+    public function __construct(Route $route)
     {
-        $this->route = Route::getInstance();
+        $this->route = $route;
     }
 
     function registerRoutes()
