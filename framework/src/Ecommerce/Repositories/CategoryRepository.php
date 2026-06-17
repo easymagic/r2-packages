@@ -35,10 +35,10 @@ class CategoryRepository
         if($this->request->isEmpty('search')){
             $this->filterBySearch($this->request->get('search'));
         }
-        if($this->request->isEmpty('is_active') && $this->request->get('is_active') == "yes"){
+        if(!$this->request->isEmpty('is_active') && $this->request->get('is_active') == "yes"){
             $this->filterByIsActive(1);
         }
-        if($this->request->isEmpty('is_active') && $this->request->get('is_active') == "no"){
+        if(!$this->request->isEmpty('is_active') && $this->request->get('is_active') == "no"){
             $this->filterByIsActive(0);
         }
 
