@@ -4,6 +4,7 @@ namespace R2Packages\Framework\Ecommerce;
 
 use R2Packages\Framework\Ecommerce\Controllers\ActiveProductController;
 use R2Packages\Framework\Ecommerce\Controllers\CategoryController;
+use R2Packages\Framework\Ecommerce\Controllers\EcommerceMigrationController;
 use R2Packages\Framework\Ecommerce\Controllers\ProductController;
 use R2Packages\Framework\middlewares\AdminMiddleware;
 use R2Packages\Framework\middlewares\GlobalApiMiddleware;
@@ -35,6 +36,9 @@ class EcommerceRoutes
                     AdminMiddleware::class
                 ], function (Route $route) {
                     // admin only routes
+
+                    // ecommerce migration
+                    $route->post('/migrate', [EcommerceMigrationController::class, 'migrate']);
 
                     // categories
                     $route->get('/admin/categories', [CategoryController::class, 'index']);
