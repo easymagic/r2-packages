@@ -45,6 +45,7 @@ class ProductEntity
         return new self($data);
     }
 
+
     public function isEmpty()
     {
         return empty($this->id);

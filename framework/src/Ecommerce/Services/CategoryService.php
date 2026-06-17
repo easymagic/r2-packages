@@ -78,5 +78,11 @@ class CategoryService
         return $category;
     }
 
+    public function delete(CategoryEntity $category)
+    {
+        $this->categoryRepository->delete($category->id);
+        return true;
+    }
+
 
 }

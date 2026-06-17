@@ -2,17 +2,20 @@
 
 namespace R2Packages\Framework\Ecommerce\Entities;
 
-class CategoryEntity
+class ProductImageEntity
 {
-    public $id;
-    public $parent_id;
-    public $slug;
-    public $name;
-    public $description = null;
-    public $is_active = true;
+    public $id = 0;
+    public $product_id = 0;
+    public $image_url = '';
+    public $alt_text = '';
     public $sort_order = 0;
-    public $created_at = null;
-    public $updated_at = null;
+    public $is_primary = 0;
+    public $created_at = '';
+    public $updated_at = '';
+    public $is_active = 1;
+
+    public ProductEntity $product;
+
 
     public function __construct($data = [])
     {
@@ -24,14 +27,6 @@ class CategoryEntity
         if (empty($this->updated_at)){
             $this->updated_at = date('Y-m-d H:i:s');
         }
-
-        if (empty($this->is_active)){
-            $this->is_active = true;
-        }
-
-        if (empty($this->sort_order)){
-            $this->sort_order = 0;
-        }
     }
 
     public function newInstance($data = [])
@@ -42,5 +37,11 @@ class CategoryEntity
     public function isEmpty()
     {
         return empty($this->id);
+    }
+
+    public function setProduct(ProductEntity $product)
+    {
+        $this->product = $product;
+        return $this;
     }
 }
