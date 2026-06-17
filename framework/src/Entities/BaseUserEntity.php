@@ -78,4 +78,8 @@ class BaseUserEntity
         return $this;
     }
 
+    function isAdmin(){
+        return strpos($this->role, 'admin') !== false;
+    }
+
 }
