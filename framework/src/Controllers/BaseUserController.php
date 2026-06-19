@@ -204,8 +204,7 @@ class BaseUserController
 
     function getUserProfile()
     {
-        $id = $this->request->data['id'];
-        $user = $this->baseUserRepository->find($id);
+        $user = $this->userIdService->getUser();
         jsonResponse([
             'message' => 'User profile fetched successfully',
             'data' => $user,
