@@ -16,6 +16,12 @@ class SettingsService {
     public function __construct(SettingsRepository $settingsRepository)
     {
         $this->settingsRepository = $settingsRepository;
+    }
+
+    /**
+     * Sync settings to the database
+     */
+    function sync(){
         $this->appendSettings([
             "APP_NAME"=>"My App",
             "APP_URL"=>"http://localhost",
