@@ -2,7 +2,7 @@
 
 namespace R2Packages\Framework\Services;
 
-class CorssService
+class CorrsService
 {
 
     public function __construct() {}
