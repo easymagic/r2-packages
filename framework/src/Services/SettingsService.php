@@ -32,7 +32,7 @@ class SettingsService {
             "APP_STATE"=>"CA",
             "APP_ZIP"=>"12345",
             "APP_COUNTRY"=>"USA",
-            // "ENABLE_RUN_MIGRATION"=>"1",
+            "ENABLE_RUN_MIGRATION"=>"1",
         ]);
         $this->presaveSettings();
     }
