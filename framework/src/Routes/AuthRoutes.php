@@ -6,6 +6,7 @@ use R2Packages\Framework\middlewares\AuthMiddleware;
 use R2Packages\Framework\middlewares\GlobalApiMiddleware;
 use R2Packages\Framework\Route;
 use R2Packages\Framework\Controllers\BaseUserController;
+use R2Packages\Framework\Controllers\SettingsController;
 use R2Packages\Framework\middlewares\AdminMiddleware;
 
 class AuthRoutes
@@ -23,6 +24,10 @@ class AuthRoutes
         $this->route->globalMiddleware([
             GlobalApiMiddleware::class
         ], function (Route $route) {
+
+            // settings
+            $route->get('/settings', [SettingsController::class, 'index']);
+            $route->post('/settings', [SettingsController::class, 'save']);
 
             $route->prefix("accounts", function (Route $route) {
 

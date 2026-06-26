@@ -24,7 +24,7 @@ class EcommerceRoutes
 
     public function registerRoutes()
     {
-        $this->route->prefix('api/v1/ecommerce', function (Route $route) {
+        $this->route->prefix('v1/ecommerce', function (Route $route) {
 
 
             $route->globalMiddleware([
