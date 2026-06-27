@@ -52,12 +52,12 @@ class SettingsService {
             $setting = $this->settingsRepository->findByKey($key);
             if ($setting->isEmpty()){
                 $this->settingsRepository->save(0, [
-                    "key" => $key,
-                    "value" => $value,
+                    "setting_key" => $key,
+                    "setting_value" => $value,
                 ]);
             }else{
                 $this->settingsRepository->save($setting->id, [
-                    "value" => $value,
+                    "setting_value" => $value,
                 ]);
             }
          }    

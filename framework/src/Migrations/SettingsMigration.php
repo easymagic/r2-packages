@@ -8,7 +8,7 @@ class SettingsMigration {
 
     public function run() {
         Migration::table('settings')
-            ->field('key')->definition("VARCHAR(255) DEFAULT ''")->run()
-            ->field('value')->definition("TEXT DEFAULT NULL")->run();
+            ->field('setting_key')->definition("VARCHAR(255) DEFAULT ''")->run()
+            ->field('setting_value')->definition("TEXT DEFAULT NULL")->run();
     }
 }

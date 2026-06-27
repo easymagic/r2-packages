@@ -32,7 +32,7 @@ class SettingsRepository {
      */
     public function findByKey($key)
     {
-        $result = $this->dbRepository->fetchOne("SELECT * FROM settings WHERE `key` = ?", [$key]);
+        $result = $this->dbRepository->fetchOne("SELECT * FROM settings WHERE `setting_key` = ?", [$key]);
         return $this->hydrate($result);
     }
 

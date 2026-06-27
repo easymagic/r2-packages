@@ -5,8 +5,8 @@ namespace R2Packages\Framework\Entities;
 class SettingEntity {
 
     public $id = 0;
-    public $key = '';
-    public $value = '';
+    public $setting_key = '';
+    public $setting_value = '';
 
     public function __construct($data = [])
     {
