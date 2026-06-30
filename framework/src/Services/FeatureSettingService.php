@@ -27,7 +27,7 @@ class FeatureSettingService {
 
         $setting = $this->featureSettingRepository->filterBySettingKey($request->get('setting_key'))->fetchOne();
         if(!$setting->isEmpty()){
-            return $this->updateSetting($request, $setting);
+            return $setting;
         }
 
         $request->input['setting_value'] = $request->get('setting_value');
@@ -37,10 +37,10 @@ class FeatureSettingService {
 
     public function updateSetting(Request $request,FeatureSettingEntity $setting)
     {
-        if($request->isEmpty('setting_key')){
-            throw new Exception("Setting key is required!");
-        }
-        $request->input['setting_key'] = $request->get('setting_key');
+        // if($request->isEmpty('setting_key')){
+        //     throw new Exception("Setting key is required!");
+        // }
+        // $request->input['setting_key'] = $request->get('setting_key');
         $request->input['setting_value'] = $request->get('setting_value');
         return $this->featureSettingRepository->save($setting->id, $request->input);
     }

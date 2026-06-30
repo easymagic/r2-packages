@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace R2Packages\Framework\Services;
 
@@ -8,29 +8,32 @@ use R2Packages\Framework\Repositories\FeatureRepository;
 use R2Packages\Framework\Repositories\FeatureSettingRepository;
 use R2Packages\Framework\Request;
 
-class FeatureService {
-    
+class FeatureService
+{
+
     private FeatureRepository $featureRepository;
     private FeatureSettingRepository $featureSettingRepository;
 
-    public function __construct(FeatureRepository $featureRepository, FeatureSettingRepository $featureSettingRepository)
-    {
+    public function __construct(
+        FeatureRepository $featureRepository,
+        FeatureSettingRepository $featureSettingRepository
+    ) {
         $this->featureRepository = $featureRepository;
         $this->featureSettingRepository = $featureSettingRepository;
     }
 
     public function createFeature(Request $request)
     {
-        if($request->isEmpty('name')){
+        if ($request->isEmpty('name')) {
             throw new Exception("Name is required!");
         }
         $request->input['name'] = $request->get('name');
         $feature = $this->featureRepository->findByName($request->get('name'));
-        if(!$feature->isEmpty()){
-            return $this->updateFeature($request, $feature);
+        if (!$feature->isEmpty()) {
+            return $feature;
         }
 
-        if($request->isEmpty('description')){
+        if ($request->isEmpty('description')) {
             throw new Exception("Description is required!");
         }
         $request->input['description'] = $request->get('description');
@@ -43,19 +46,19 @@ class FeatureService {
 
     public function updateFeature(Request $request, FeatureEntity $feature)
     {
-        if($request->isEmpty('name')){
+        if ($request->isEmpty('name')) {
             throw new Exception("Name is required!");
         }
         $request->input['name'] = $request->get('name');
 
-        if($request->isEmpty('description')){
+        if ($request->isEmpty('description')) {
             throw new Exception("Description is required!");
         }
         $request->input['description'] = $request->get('description');
 
-        if(!$request->isEmpty('is_active')){
+        if (!$request->isEmpty('is_active')) {
             $request->input['is_active'] = 1;
-        }else{
+        } else {
             $request->input['is_active'] = 0;
         }
 
@@ -70,5 +73,15 @@ class FeatureService {
             $this->featureSettingRepository->delete($setting->id);
         }
         return $this->featureRepository->delete($feature->id);
+    }
+
+    public function enableFeature(FeatureEntity $feature)
+    {
+        return $this->featureRepository->save($feature->id, ['is_active' => 1]);
+    }
+
+    public function disableFeature(FeatureEntity $feature)
+    {
+        return $this->featureRepository->save($feature->id, ['is_active' => 0]);
     }
 }
