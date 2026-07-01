@@ -63,9 +63,9 @@ class ProductService
         }
         $request->input['category_id'] = $request->get('category_id');
 
-        if($request->isEmpty('user_id')){
-            throw new Exception("User ID is required!");
-        }
+        // if($request->isEmpty('user_id')){
+        //     throw new Exception("User ID is required!");
+        // }
         $request->input['user_id'] = $user->id;
 
         if($request->isEmpty('sku')){
