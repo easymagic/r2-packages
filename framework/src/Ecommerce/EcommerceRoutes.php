@@ -51,7 +51,6 @@ class EcommerceRoutes
                         $route->delete('/categories/{category_id}', [CategoryController::class, 'delete']);
                         $route->get('/categories/{category_id}', [CategoryController::class, 'get']);
 
-
                         // products
                         $route->get('/products', [ProductController::class, 'index']);
                         $route->post('/products/{user_id}', [ProductController::class, 'create']);
