@@ -7,7 +7,7 @@ use R2Packages\Framework\Ecommerce\Repositories\ProductRepository;
 use R2Packages\Framework\Ecommerce\Services\Ids\ProductIdService;
 use R2Packages\Framework\Ecommerce\Services\ProductService;
 use R2Packages\Framework\Request;
-use R2Packages\Framework\Services\AuthUserService;
+use R2Packages\Framework\Services\ids\UserIdService;
 
 class ProductController
 {
@@ -15,20 +15,20 @@ class ProductController
     private Request $request;
     private MyProductRepository $myProductRepository;
     private ProductIdService $productIdService;
-    private AuthUserService $authUserService;
+    private UserIdService $userIdService;
 
     public function __construct(
         ProductService $productService,
         Request $request,
         MyProductRepository $myProductRepository,
         ProductIdService $productIdService,
-        AuthUserService $authUserService
+        UserIdService $userIdService,
     ) {
         $this->productService = $productService;
         $this->request = $request;
         $this->myProductRepository = $myProductRepository;
         $this->productIdService = $productIdService;
-        $this->authUserService = $authUserService;
+        $this->userIdService = $userIdService;
     }
 
     public function index()
@@ -43,7 +43,8 @@ class ProductController
 
     public function create()
     {
-        $product = $this->productService->create($this->request, $this->authUserService->getAuthUser());
+        $user = $this->userIdService->getUser();
+        $product = $this->productService->create($this->request, $user);
         jsonResponse([
             'message' => 'Product created successfully',
             'data' => $product,
@@ -56,7 +57,7 @@ class ProductController
         $product = $this->productService->update(
             $this->request,
             $this->productIdService->getProduct(),
-            $this->authUserService->getAuthUser()
+            $this->userIdService->getUser()
         );
         jsonResponse([
             'message' => 'Product updated successfully',
@@ -82,7 +83,7 @@ class ProductController
         $product = $this->productIdService->getProduct();
         $this->productService->delete(
             $product,
-            $this->authUserService->getAuthUser()
+            $this->userIdService->getUser()
         );
         jsonResponse([
             'message' => 'Product deleted successfully',

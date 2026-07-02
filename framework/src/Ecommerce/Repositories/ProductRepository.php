@@ -119,8 +119,6 @@ class ProductRepository
     public function hydrate($data)
     {
         $product = $this->productEntity->newInstance($data);
-        $product->setCategory($this->categoryRepository->find($data['category_id']));
-        $product->setUser($this->userRepository->find($data['user_id']));
         return $product;
     }
 

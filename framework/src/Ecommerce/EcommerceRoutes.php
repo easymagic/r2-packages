@@ -54,9 +54,9 @@ class EcommerceRoutes
 
                         // products
                         $route->get('/products', [ProductController::class, 'index']);
-                        $route->post('/products', [ProductController::class, 'create']);
-                        $route->post('/products/{product_id}', [ProductController::class, 'update']);
-                        $route->delete('/products/{product_id}', [ProductController::class, 'delete']);
+                        $route->post('/products/{user_id}', [ProductController::class, 'create']);
+                        $route->post('/products/{user_id}/{product_id}', [ProductController::class, 'update']);
+                        $route->delete('/products/{user_id}/{product_id}', [ProductController::class, 'delete']);
                         $route->get('/products/{product_id}', [ProductController::class, 'get']);
 
 

@@ -91,17 +91,17 @@ class ProductService
         return strtoupper(substr($name, 0, 3)) . '-' . rand(100000, 999999);
     }
 
-    public function create(Request $request, BaseUserEntity $user)
+    public function create(Request $request, BaseUserEntity $owner)
     {
         $request->input["created_at"] = date('Y-m-d H:i:s');
-        $this->validateRequest($request, $user);
+        $this->validateRequest($request, $owner);
         $product = $this->productRepository->save(0, $request->input);
         return $product;
     }
 
-    public function update(Request $request, ProductEntity $product, BaseUserEntity $user)
+    public function update(Request $request, ProductEntity $product, BaseUserEntity $owner)
     {
-        if($user->id !== $product->user_id){
+        if($owner->id !== $product->user_id){
             throw new Exception("You are not authorized to update this product!");
         }
         $this->validateRequest($request, $product->user);
@@ -109,9 +109,9 @@ class ProductService
         return $product;
     }
 
-    public function delete(ProductEntity $product, BaseUserEntity $user)
+    public function delete(ProductEntity $product, BaseUserEntity $owner)
     {
-        if($user->id !== $product->user_id){
+        if($owner->id !== $product->user_id){
             throw new Exception("You are not authorized to delete this product!");
         }
         $this->productRepository->delete($product->id);
