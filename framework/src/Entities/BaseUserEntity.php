@@ -16,6 +16,7 @@ class BaseUserEntity
     public $updated_at = null;
     public $otp = null;
     public $token = null;
+    public $wallet_balance = 0.00;
 
     // private $onRegistrationValidation = null;
 
