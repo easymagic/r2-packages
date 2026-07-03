@@ -21,7 +21,7 @@ class BaseUserMigration
         ->field('updated_at')->definition('TIMESTAMP DEFAULT CURRENT_TIMESTAMP')->run()
         ->field('otp')->definition('VARCHAR(255) DEFAULT NULL')->run()
         // wallet balance
-        // ->field('wallet_balance')->definition('FLOAT DEFAULT 0.00')->run()
+        ->field('wallet_balance')->definition('FLOAT DEFAULT 0.00')->run()
         // token
         ->field('token')->definition('VARCHAR(255) DEFAULT NULL')->run();
         // ->field('social_security_number')->definition('VARCHAR(255) DEFAULT NULL')->run();
