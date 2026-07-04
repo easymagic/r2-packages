@@ -6,8 +6,11 @@ use R2Packages\Framework\middlewares\AuthMiddleware;
 use R2Packages\Framework\middlewares\GlobalApiMiddleware;
 use R2Packages\Framework\Route;
 use R2Packages\Framework\Controllers\BaseUserController;
+use R2Packages\Framework\Controllers\PendingTopupRequestController;
 use R2Packages\Framework\Controllers\SettingsController;
+use R2Packages\Framework\Controllers\WalletController;
 use R2Packages\Framework\middlewares\AdminMiddleware;
+use R2Packages\Framework\middlewares\WalletPaymentsFeedbackMiddleware;
 
 class AuthRoutes
 {
@@ -41,12 +44,20 @@ class AuthRoutes
                 $route->post('/reset-password', [BaseUserController::class, 'resetPassword']); // user_id is required
 
                 $route->globalMiddleware([
-                    AuthMiddleware::class
+                    AuthMiddleware::class,
+                    WalletPaymentsFeedbackMiddleware::class // feedback from paystack
                 ], function (Route $route) {
                     $route->delete('/login', [BaseUserController::class, 'logout']);
                     $route->post('/me', [BaseUserController::class, 'updateProfile']);
                     $route->get('/me', [BaseUserController::class, 'getMyProfile']);
                     $route->post('/me/password', [BaseUserController::class, 'changeMyPassword']);
+
+
+                    // wallet
+                    $route->get("wallet", [WalletController::class, 'index']);
+                    $route->get("wallet/{wallet_transaction_id}", [WalletController::class, 'show']);
+                    $route->post("wallet", [WalletController::class, 'store']); //request paystack topup
+        
                 });
 
                 $route->globalMiddleware([
@@ -57,6 +68,14 @@ class AuthRoutes
                     $route->post('/user/{user_id}', [BaseUserController::class, 'updateUserProfile']);
                     $route->post('/user/{user_id}/password', [BaseUserController::class, 'changeUserPassword']);
                     $route->get('/user/{user_id}', [BaseUserController::class, 'getUserProfile']);
+
+
+                    // wallet
+                    $route->get("pending-topup-requests", [PendingTopupRequestController::class, 'index']);
+                    $route->get("pending-topup-requests/{wallet_transaction_id}", [PendingTopupRequestController::class, 'show']);
+                    $route->post("pending-topup-requests/{wallet_transaction_id}", [PendingTopupRequestController::class, 'update']); //approve
+                    $route->delete("pending-topup-requests/{wallet_transaction_id}", [PendingTopupRequestController::class, 'destroy']); //reject
+        
                 });
 
             });

@@ -155,13 +155,13 @@ class WalletTransactionService
 
     function approveManualTopup(
         Request $request,
-        BaseUserEntity $user,
         WalletTransactionEntity $walletTransaction
     ) {
 
         if ($walletTransaction->isAlreadyApproved()) {
             throw new Exception('Manual topup request already approved!');
         }
+        $user = $walletTransaction->user;
         $newBalance = $user->wallet_balance + $walletTransaction->amount;
 
         $request->input = [];
@@ -170,20 +170,17 @@ class WalletTransactionService
         $request->input["status"] = 'successful';
         $request->input["approval_status"] = 'approved';
 
-        // $walletTransaction->approve($authenticatedUser);
-        $walletUser = $walletTransaction->user;
-
         $walletTransaction = $this->walletTransactionRepository->save(
             $walletTransaction->id,
             $request->input
         );
 
         $this->baseUserRepository->save($user->id, [
-            'wallet_balance' => $walletUser->wallet_balance
+            'wallet_balance' => $newBalance
         ]);
 
         $this->mailService->send(
-            $walletTransaction->user->email,
+            $user->email,
             'Manual Topup Wallet Approved',
             'noreply@example.com',
             $this->myMailTemplate->notifyApprovedManualTopup(
@@ -202,7 +199,6 @@ class WalletTransactionService
 
     function rejectManualTopup(
         Request $request,
-        BaseUserEntity $user,
         WalletTransactionEntity $walletTransaction
     ) {
         if ($request->isEmpty("reason")) {
@@ -213,6 +209,7 @@ class WalletTransactionService
         if ($walletTransaction->isAlreadyApproved()) {
             throw new Exception('Manual topup request already approved, you cannot reject it!');
         }
+        $user = $walletTransaction->user;
 
 
 
