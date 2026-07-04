@@ -2,6 +2,8 @@
 
 namespace R2Packages\Framework\Entities;
 
+use R2Packages\Framework\Repositories\NotificationRepository;
+
 class BaseUserEntity
 {
 
@@ -22,23 +24,16 @@ class BaseUserEntity
 
     private static $instance = null;
 
+    public $notifications = [];
+
     const STATUS_ACTIVE = 'active';
     const STATUS_INACTIVE = 'inactive';
 
-    /**
-     * Get an instance of the BaseUserEntity
-     * @param array $data
-     * @return BaseUserEntity
-     */
-    public static function getInstance($data = []){
-        if(self::$instance === null){
-            self::$instance = new self($data);
-        }
-        return self::$instance;
-    }
+    public NotificationRepository $notificationRepository;
 
-    public function __construct($data = [])
+    public function __construct(NotificationRepository $notificationRepository,$data = [])
     {
+        $this->notificationRepository = $notificationRepository;
         setAttributes($this, $data);
         
 
@@ -58,10 +53,12 @@ class BaseUserEntity
             $this->status = self::STATUS_INACTIVE;
         }
 
+        $this->notifications = $this->notificationRepository->fetch();
+
     }
 
     public function newInstance($data = []){
-        return new self($data);
+        return new self($this->notificationRepository, $data);
     }
 
     public function isEmpty(){
@@ -81,6 +78,11 @@ class BaseUserEntity
 
     function isAdmin(){
         return strpos($this->role, 'admin') !== false;
+    }
+
+    // is staff
+    function isStaff(){
+        return strpos($this->role, 'staff') !== false;
     }
 
 }
