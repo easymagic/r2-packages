@@ -46,17 +46,14 @@ class WalletTransactionService
     function requestPaystackTopup(Request $request, BaseUserEntity $user)
     {
         // amount 
-        if ($request->isEmpty("amount")) {
-            throw new Exception('Amount is required!');
-        }
-        $amount = $request->get("amount");
+        $request->require("amount", "Amount is required!");
+
         // user
 
-        $balance = $user->wallet_balance + $amount;
+        $balance = $user->wallet_balance + $request->get("amount");
 
         $request->input = [];
 
-        $request->input["amount"] = $amount;
         $request->input["balance"] = $balance;
         $request->input["type"] = 'credit';
         $request->input["source"] = 'paystack';
@@ -81,7 +78,7 @@ class WalletTransactionService
 
         $this->paymentService->initiate(
             $user->email,
-            $amount,
+            $request->get("amount"),
             $request->input["reference"]
         );
 
@@ -103,15 +100,9 @@ class WalletTransactionService
         $request->input["user_id"] = $user->id;
 
         // amount
-        if ($request->isEmpty("amount")) {
-            throw new Exception('Amount is required!');
-        }
-        $request->input["amount"] = $request->get("amount");
+        $request->require("amount", "Amount is required!");
         // description
-        if ($request->isEmpty("description")) {
-            throw new Exception('Description is required!');
-        }
-        $request->input["description"] = $request->get("description");
+        $request->require("description", "Description is required!");
         // proof of payment screenshot 1
         // proof of payment screenshot 2
 
@@ -201,10 +192,8 @@ class WalletTransactionService
         Request $request,
         WalletTransactionEntity $walletTransaction
     ) {
-        if ($request->isEmpty("reason")) {
-            throw new Exception('Reason is required!');
-        }
-        $reason = $request->get("reason");
+        $request->input = [];
+        $request->require("reason", "Reason is required!");
 
         if ($walletTransaction->isAlreadyApproved()) {
             throw new Exception('Manual topup request already approved, you cannot reject it!');
@@ -218,8 +207,6 @@ class WalletTransactionService
         // $this->action_at = date('Y-m-d H:i:s');
         // $this->status = 'failed';
         // $this->approval_status = 'rejected';
-        $request->input = [];
-        $request->input["reason"] = $reason;
         $request->input["action_by"] = $user->id;
         $request->input["action_at"] = date('Y-m-d H:i:s');
         $request->input["status"] = 'failed';

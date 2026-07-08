@@ -2,6 +2,8 @@
 
 namespace R2Packages\Framework;
 
+use Exception;
+
 class Request
 {
     public $data = [];
@@ -43,5 +45,22 @@ class Request
      */
     public function get($field){
         return $this->data[$field] ?? null;
+    }
+
+    public function require($field, $message = null){
+        if ($this->isEmpty($field)) {
+            throw new Exception($message ?? "The $field field is required");
+        }
+        $this->input[$field] = $this->data[$field];
+        return $this;
+    }
+
+    public function optional($field, $default = null){
+        if ($this->isEmpty($field)) {
+            $this->input[$field] = $default;
+            return $this;
+        }
+        $this->input[$field] = $this->data[$field];
+        return $this;
     }
 }
