@@ -3,7 +3,7 @@
 namespace R2Packages\Framework\middlewares;
 
 use R2Packages\Framework\middlewares\AuthMiddleware;
-use R2Packages\Framework\Services\BaseUserService;
+use R2Packages\Framework\BaseUser\BaseUserService;
 
 class AdminMiddleware extends AuthMiddleware {
 

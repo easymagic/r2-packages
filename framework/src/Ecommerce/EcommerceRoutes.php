@@ -3,12 +3,11 @@
 namespace R2Packages\Framework\Ecommerce;
 
 use R2Packages\Framework\Ecommerce\Category\CategoryController;
-use R2Packages\Framework\Ecommerce\Controllers\ActiveProductController;
-use R2Packages\Framework\Ecommerce\Controllers\ActiveProductImageController;
-
-use R2Packages\Framework\Ecommerce\Controllers\EcommerceMigrationController;
-use R2Packages\Framework\Ecommerce\Controllers\ProductController;
-use R2Packages\Framework\Ecommerce\Controllers\ProductImageController;
+use R2Packages\Framework\Ecommerce\Migrations\EcommerceMigrationController;
+use R2Packages\Framework\Ecommerce\Product\ActiveProductController;
+use R2Packages\Framework\Ecommerce\Product\ProductController;
+use R2Packages\Framework\Ecommerce\ProductImage\ActiveProductImageController;
+use R2Packages\Framework\Ecommerce\ProductImage\ProductImageController;
 use R2Packages\Framework\middlewares\AdminMiddleware;
 use R2Packages\Framework\middlewares\GlobalApiMiddleware;
 use R2Packages\Framework\Route;

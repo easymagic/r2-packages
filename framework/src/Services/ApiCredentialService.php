@@ -2,8 +2,8 @@
 
 namespace R2Packages\Framework\Services;
 
-use R2Packages\Framework\Entities\BaseUserEntity;
-use R2Packages\Framework\Repositories\BaseUserRepository;
+use R2Packages\Framework\BaseUser\BaseUserEntity;
+use R2Packages\Framework\BaseUser\BaseUserRepository;
 use R2Packages\Framework\Request;
 
 class ApiCredentialService

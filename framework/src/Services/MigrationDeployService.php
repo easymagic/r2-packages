@@ -2,7 +2,7 @@
 
 namespace R2Packages\Framework\Services;
 
-use R2Packages\Framework\Repositories\SettingsRepository;
+use R2Packages\Framework\Settings\SettingsRepository;
 
 class MigrationDeployService {
 

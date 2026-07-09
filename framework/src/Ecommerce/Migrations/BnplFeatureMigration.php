@@ -3,10 +3,10 @@
 namespace R2Packages\Framework\Ecommerce\Migrations;
 
 use R2Packages\Framework\Migration;
-use R2Packages\Framework\Repositories\FeatureRepository;
+use R2Packages\Framework\Feature\FeatureRepository;
 use R2Packages\Framework\Request;
-use R2Packages\Framework\Services\FeatureService;
-use R2Packages\Framework\Services\FeatureSettingService;
+use R2Packages\Framework\Feature\FeatureService;
+use R2Packages\Framework\FeatureSetting\FeatureSettingService;
 
 class BnplFeatureMigration
 {

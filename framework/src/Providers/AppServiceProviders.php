@@ -5,13 +5,13 @@ namespace R2Packages\Framework\Providers;
 use R2Packages\Framework\middlewares\AuthMiddleware;
 use R2Packages\Framework\middlewares\GlobalApiMiddleware;
 use R2Packages\Framework\Container;
-use R2Packages\Framework\Repositories\BaseUserRepository;
-use R2Packages\Framework\Services\BaseUserService;
-use R2Packages\Framework\Entities\BaseUserEntity;
+use R2Packages\Framework\BaseUser\BaseUserRepository;
+use R2Packages\Framework\BaseUser\BaseUserService;
+use R2Packages\Framework\BaseUser\BaseUserEntity;
 use R2Packages\Framework\MailService;
 use R2Packages\Framework\mail_templates\MailTemplates;
-use R2Packages\Framework\Controllers\BaseUserController;
-use R2Packages\Framework\Criteria\BaseUserFilterCriteria;
+use R2Packages\Framework\BaseUser\BaseUserController;
+use R2Packages\Framework\BaseUser\BaseUserFilterCriteria;
 use R2Packages\Framework\middlewares\AdminMiddleware;
 use R2Packages\Framework\middlewares\OptionalAuthMiddleware;
 use R2Packages\Framework\PaginationMetta;
@@ -19,7 +19,7 @@ use R2Packages\Framework\Repositories\DbRepository;
 use R2Packages\Framework\Request;
 use R2Packages\Framework\Services\ApiCredentialService;
 use R2Packages\Framework\Services\AuthUserService;
-use R2Packages\Framework\Services\ids\UserIdService;
+use R2Packages\Framework\BaseUser\UserIdService;
 use R2Packages\Framework\Services\UtilService;
 
 class AppServiceProviders

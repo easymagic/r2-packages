@@ -3,7 +3,7 @@
 namespace R2Packages\Framework\middlewares;
 
 use R2Packages\Framework\Request;
-use R2Packages\Framework\Services\WalletTransactionService;
+use R2Packages\Framework\WalletTransaction\WalletTransactionService;
 
 class WalletPaymentsFeedbackMiddleware
 {

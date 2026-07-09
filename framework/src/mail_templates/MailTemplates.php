@@ -2,7 +2,7 @@
 
 namespace R2Packages\Framework\mail_templates;
 
-use R2Packages\Framework\Entities\BaseUserEntity;
+use R2Packages\Framework\BaseUser\BaseUserEntity;
 
 class MailTemplates
 {

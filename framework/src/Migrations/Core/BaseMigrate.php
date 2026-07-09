@@ -2,10 +2,10 @@
 
 namespace R2Packages\Framework\Migrations\Core;
 
-use R2Packages\Framework\Migrations\BaseUserMigration;
-use R2Packages\Framework\Migrations\FeatureMigration;
-use R2Packages\Framework\Migrations\FeatureSettingMigration;
-use R2Packages\Framework\Migrations\SettingsMigration;
+use R2Packages\Framework\BaseUser\BaseUserMigration;
+use R2Packages\Framework\Feature\FeatureMigration;
+use R2Packages\Framework\FeatureSetting\FeatureSettingMigration;
+use R2Packages\Framework\Settings\SettingsMigration;
 
 class BaseMigrate {
 
