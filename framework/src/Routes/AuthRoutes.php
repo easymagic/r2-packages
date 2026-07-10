@@ -3,6 +3,7 @@
 namespace R2Packages\Framework\Routes;
 
 use R2Packages\Framework\BaseUser\BaseUserController;
+use R2Packages\Framework\Feature\FeatureController;
 use R2Packages\Framework\middlewares\AdminMiddleware;
 use R2Packages\Framework\middlewares\AuthMiddleware;
 use R2Packages\Framework\middlewares\GlobalApiMiddleware;
@@ -78,6 +79,13 @@ class AuthRoutes
                     $route->get("pending-topup-requests/{wallet_transaction_id}", [PendingTopupRequestController::class, 'show']);
                     $route->post("pending-topup-requests/{wallet_transaction_id}", [PendingTopupRequestController::class, 'update']);
                     $route->delete("pending-topup-requests/{wallet_transaction_id}", [PendingTopupRequestController::class, 'destroy']);
+
+                    // features
+                    $route->get('/features', [FeatureController::class, 'index']);
+                    $route->post('/features/{feature_id}/enable', [FeatureController::class, 'enableFeature']);
+                    $route->post('/features/{feature_id}/disable', [FeatureController::class, 'disableFeature']);
+                    $route->get('/features/{feature_id}/settings', [FeatureController::class, 'getFeatureSettings']);
+                    $route->post('/features/{feature_id}/settings/{feature_setting_id}', [FeatureController::class, 'updateFeatureSetting']);
                 });
             });
         });
