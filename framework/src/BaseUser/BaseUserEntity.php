@@ -24,7 +24,7 @@ class BaseUserEntity
 
     private static $instance = null;
 
-    public $notifications = [];
+    // public $notifications = [];
 
     const STATUS_ACTIVE = 'active';
     const STATUS_INACTIVE = 'inactive';
@@ -53,8 +53,12 @@ class BaseUserEntity
             $this->status = self::STATUS_INACTIVE;
         }
 
-        $this->notifications = $this->notificationRepository->fetch();
+        // $this->notifications = $this->notificationRepository->fetch();
 
+    }
+
+    function notifications(){
+        return $this->notificationRepository->fetch();
     }
 
     public function newInstance($data = []){
