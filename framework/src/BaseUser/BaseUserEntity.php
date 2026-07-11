@@ -24,16 +24,13 @@ class BaseUserEntity
 
     private static $instance = null;
 
-    // public $notifications = [];
+    public $notifications = [];
 
     const STATUS_ACTIVE = 'active';
     const STATUS_INACTIVE = 'inactive';
 
-    public NotificationRepository $notificationRepository;
-
-    public function __construct(NotificationRepository $notificationRepository,$data = [])
+    public function __construct($data = [])
     {
-        $this->notificationRepository = $notificationRepository;
         setAttributes($this, $data);
         
 
@@ -57,12 +54,19 @@ class BaseUserEntity
 
     }
 
-    function notifications(){
-        return $this->notificationRepository->fetch();
+    /**
+     * Set notifications
+     * @param array $notifications
+     * @return $this
+     */
+    public function setNotifications($notifications){
+        $this->notifications = $notifications;
+        return $this;
     }
 
+
     public function newInstance($data = []){
-        return new self($this->notificationRepository, $data);
+        return new self($data);
     }
 
     public function isEmpty(){

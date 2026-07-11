@@ -7,6 +7,7 @@ use R2Packages\Framework\Container;
 use R2Packages\Framework\BaseUser\BaseUserFilterCriteria;
 use R2Packages\Framework\BaseUser\BaseUserEntity;
 use R2Packages\Framework\Event;
+use R2Packages\Framework\Notification\NotificationRepository;
 use R2Packages\Framework\Traits\WithEvents;
 use R2Packages\Framework\PaginationMetta;
 use R2Packages\Framework\Repositories\DbRepository;
@@ -24,14 +25,17 @@ class BaseUserRepository
 
     protected BaseUserEntity $baseUserEntity;
     protected DbRepository $dbRepository;
+    protected NotificationRepository $notificationRepository;
 
 
     function __construct(
         BaseUserEntity $baseUserEntity,
         DbRepository $dbRepository,
         PaginationMetta $paginationMetta,
-        Request $request
+        Request $request,
+        NotificationRepository $notificationRepository
     ) {
+        $this->notificationRepository = $notificationRepository;
         $this->baseUserEntity = $baseUserEntity;
         $this->dbRepository = $dbRepository;
         $this->filters = $request->data;
@@ -76,7 +80,10 @@ class BaseUserRepository
      */
     public function hydrate($data)
     {
-        return $this->baseUserEntity->newInstance($data);
+        $user = $this->baseUserEntity->newInstance($data);
+        $notifications = $this->notificationRepository->filterByUserId($user->id)->fetch();
+        $user->setNotifications($notifications);
+        return $user;
     }
 
     /**

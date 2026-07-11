@@ -48,27 +48,51 @@ class NotificationRepository
         $authUser = $this->authUserService->getAuthUser();
         
         if (!$authUser->isEmpty()) {
-          $this->filters['user_id'] = $authUser->id;
+            $this->filterByUserId($authUser->id);
         }
 
         if (isset($this->filters['user_id'])) {
-            $this->sql .= ' AND user_id = ?';
-            $this->params[] = $this->filters['user_id'];
+            $this->filterByUserId($this->filters['user_id']);
         }
         if (isset($this->filters['read_status'])) {
-            $this->sql .= ' AND read_status = ?';
-            $this->params[] = $this->filters['read_status'];
+            $this->filterByReadStatus($this->filters['read_status']);
         }
         // read status filter
         if (isset($this->filters['read'])) {
-            $this->sql .= ' AND read_status = ?';
-            $this->params[] = 'read';
+            $this->filterByRead();
         }
         // unread status filter
         if (isset($this->filters['unread'])) {
-            $this->sql .= ' AND read_status = ?';
-            $this->params[] = 'unread';
+            $this->filterByUnread();
         }
+    }
+
+    function filterByUserId($userId)
+    {
+        $this->sql .= ' AND user_id = ?';
+        $this->params[] = $userId;
+        return $this;
+    }
+
+    function filterByReadStatus($readStatus)
+    {
+        $this->sql .= ' AND read_status = ?';
+        $this->params[] = $readStatus;
+        return $this;
+    }
+
+    function filterByRead()
+    {
+        $this->sql .= ' AND read_status = ?';
+        $this->params[] = 'read';
+        return $this;
+    }
+
+    function filterByUnread()
+    {
+        $this->sql .= ' AND read_status = ?';
+        $this->params[] = 'unread';
+        return $this;
     }
 
     function find($id)
