@@ -4,18 +4,34 @@ namespace R2Packages\Framework\Ecommerce\Product;
 
 use Exception;
 use R2Packages\Framework\BaseUser\BaseUserEntity;
+use R2Packages\Framework\BaseUser\UserIdService;
 use R2Packages\Framework\Request;
+use R2Packages\Framework\Services\AuthUserService;
 
 class ProductService
 {
     private ProductRepository $productRepository;
+    private UserIdService $userIdService;
 
-    public function __construct(ProductRepository $productRepository)
+    public function __construct(ProductRepository $productRepository,UserIdService $userIdService)
     {
         $this->productRepository = $productRepository;
+        $this->userIdService = $userIdService;
+        $user = $userIdService->getUser();
+        $this->productRepository->filterByUserId($user->id);
     }
 
-    protected function validateRequest(Request $request, BaseUserEntity $user){
+    function fetch(){
+        return $this->productRepository->fetch();
+    }
+
+    function fetchAll(){
+        return $this->productRepository->fetch();
+    }
+
+    protected function validateRequest(Request $request){
+
+        $user = $this->userIdService->getUser();
 
         if($request->isEmpty('name')){
             throw new Exception("Name is required!");
@@ -85,26 +101,28 @@ class ProductService
         return strtoupper(substr($name, 0, 3)) . '-' . rand(100000, 999999);
     }
 
-    public function create(Request $request, BaseUserEntity $owner)
+    public function create(Request $request)
     {
         $request->input["created_at"] = date('Y-m-d H:i:s');
-        $this->validateRequest($request, $owner);
+        $this->validateRequest($request);
         $product = $this->productRepository->save(0, $request->input);
         return $product;
     }
 
-    public function update(Request $request, ProductEntity $product, BaseUserEntity $owner)
+    public function update(Request $request, ProductEntity $product)
     {
+        $owner = $this->userIdService->getUser();
         if($owner->id !== $product->user_id){
             throw new Exception("You are not authorized to update this product!");
         }
-        $this->validateRequest($request, $product->user);
+        $this->validateRequest($request);
         $product = $this->productRepository->save($product->id, $request->input);
         return $product;
     }
 
-    public function delete(ProductEntity $product, BaseUserEntity $owner)
+    public function delete(ProductEntity $product)
     {
+        $owner = $this->userIdService->getUser();
         if($owner->id !== $product->user_id){
             throw new Exception("You are not authorized to delete this product!");
         }

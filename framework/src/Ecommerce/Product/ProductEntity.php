@@ -25,26 +25,22 @@ class ProductEntity
     public $created_at = '';
     public $updated_at = '';
 
-    public CategoryEntity $category;
-    public BaseUserEntity $user;
-
-    private CategoryRepository $categoryRepository;
-    private BaseUserRepository $userRepository;
-    private ProductImageRepository $productImageRepository;
+    public CategoryEntity $categoryEntity;
+    public BaseUserEntity $userEntity;
 
     public $productImages = [];
 
     public function __construct(
-        CategoryRepository $categoryRepository,
-        BaseUserRepository $userRepository,
-        ProductImageRepository $productImageRepository,
+        CategoryEntity $categoryEntity,
+        BaseUserEntity $userEntity,
+        $productImages = [],
         $data = []
     ) {
         setAttributes($this, $data);
 
-        $this->categoryRepository = $categoryRepository;
-        $this->userRepository = $userRepository;
-        $this->productImageRepository = $productImageRepository;
+        $this->categoryEntity = $categoryEntity;
+        $this->userEntity = $userEntity;
+        $this->productImages = $productImages;
 
         if (empty($this->created_at)) {
             $this->created_at = date('Y-m-d H:i:s');
@@ -55,17 +51,14 @@ class ProductEntity
         if (empty($this->is_active)) {
             $this->is_active = 1;
         }
-        $this->category = $this->categoryRepository->find($this->category_id);
-        $this->user = $this->userRepository->find($this->user_id);
-        $this->productImages = $this->productImageRepository->filterByProductId($this->id)->fetchAll();
     }
 
-    public function newInstance($data = [])
+    public function newInstance(CategoryEntity $categoryEntity, BaseUserEntity $userEntity, $productImages = [], $data = [])
     {
         return new self(
-            $this->categoryRepository,
-            $this->userRepository,
-            $this->productImageRepository,
+            $categoryEntity,
+            $userEntity,
+            $productImages,
             $data
         );
     }
