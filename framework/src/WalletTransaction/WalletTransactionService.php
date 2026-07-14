@@ -11,6 +11,7 @@ use R2Packages\Framework\BaseUser\BaseUserRepository;
 use R2Packages\Framework\WalletTransaction\PendingPaymentWalletTransactionRepository;
 use R2Packages\Framework\WalletTransaction\WalletTransactionRepository;
 use R2Packages\Framework\Request;
+use R2Packages\Framework\Services\AuthUserService;
 use R2Packages\Framework\Services\MyMailTemplate;
 use R2Packages\Framework\Services\PaymentService;
 
@@ -23,26 +24,49 @@ class WalletTransactionService
     private MyMailTemplate $myMailTemplate;
     private MailService $mailService;
     private BaseUserRepository $baseUserRepository;
-    private PendingPaymentWalletTransactionRepository $pendingPaymentWalletTransactionRepository;
+
+    private AuthUserService $authUserService;
 
 
 
     function __construct(
+        AuthUserService $authUserService,
         WalletTransactionRepository $walletTransactionRepository,
         PaymentService $paymentService,
         FileUploadService $fileUploadService,
         MyMailTemplate $myMailTemplate,
         MailService $mailService,
-        BaseUserRepository $baseUserRepository,
-        PendingPaymentWalletTransactionRepository $pendingPaymentWalletTransactionRepository
+        BaseUserRepository $baseUserRepository
     ) {
+        $this->authUserService = $authUserService;
         $this->walletTransactionRepository = $walletTransactionRepository;
         $this->paymentService = $paymentService;
         $this->fileUploadService = $fileUploadService;
         $this->myMailTemplate = $myMailTemplate;
         $this->mailService = $mailService;
         $this->baseUserRepository = $baseUserRepository;
-        $this->pendingPaymentWalletTransactionRepository = $pendingPaymentWalletTransactionRepository;
+
+        if (!$this->authUserService->getAuthUser()->isEmpty()){
+            $userId = $this->authUserService->getAuthUser()->id;
+
+            // if user is not admin, filter by user id
+            if (!$this->authUserService->getAuthUser()->isAdmin()){
+                $this->walletTransactionRepository->filterByUserId($userId);
+            }
+
+        }
+    }
+
+    function fetch(){
+        return $this->walletTransactionRepository->fetch();
+    }
+
+    function fetchAll(){
+        return $this->walletTransactionRepository->fetchAll();
+    }
+
+    function count(){
+        return $this->walletTransactionRepository->count();
     }
 
     function requestPaystackTopup(Request $request, BaseUserEntity $user)
@@ -66,17 +90,6 @@ class WalletTransactionService
         $request->input["created_at"] = date('Y-m-d H:i:s');
         $request->input["user_id"] = $user->id;
         $request->input["reference"] = uniqid("WALLET_REF-");
-
-        // print_r($request->input);
-
-        // $payment = new PaymentEntity([
-        //     'email' => $authenticatedUserEntity->email,
-        //     'amount' => $amount,
-        //     'reference' => $request->input["reference"],
-        //     // 'callback_url' => $callback_url($walletTransaction),
-        // ]);
-
-        // print_r($payment);
 
         $this->paymentService->initiate(
             $user->email,
@@ -237,37 +250,24 @@ class WalletTransactionService
         return $walletTransaction;
     }
 
-
-    function paystackFeedbback(
-        Request $request
-    ) {
-        $pendingWalletTransaction = $this->pendingPaymentWalletTransactionRepository->fetchAll();
-        foreach ($pendingWalletTransaction as $pendingWalletTransaction) {
-            /** @var WalletTransactionEntity $pendingWalletTransaction **/
-            // $paymentService = new PaymentService();
-            $this->paymentService->verify($pendingWalletTransaction->reference);
-            if ($this->paymentService->status == 'success') {
-                if ($pendingWalletTransaction->isAlreadyApproved()) {
-                    // echo '<h2>Payment already approved!</h2>';
-                    return false;
-                }
-                $user = $pendingWalletTransaction->user;
-                $balance = $user->wallet_balance + $pendingWalletTransaction->amount;
-                
-                // $pendingWalletTransaction->approveFromPaystack();
-                $request->input = [];
-                $request->input["status"] = 'successful';
-                $request->input["approval_status"] = 'approved';
-                $request->input["action_at"] = date('Y-m-d H:i:s');
-
-                // dd("...", $walletTransaction);
-                $this->walletTransactionRepository->save($pendingWalletTransaction->id, $request->input);
-                $this->baseUserRepository->save($user->id, [
-                    'wallet_balance' => $balance,
-                ]);
-            }
-        }
+    function getPaymentService()
+    {
+        return $this->paymentService;
     }
 
+    function getWalletTransactionRepository()
+    {
+        return $this->walletTransactionRepository;
+    }
+
+    function getBaseUserRepository()
+    {
+        return $this->baseUserRepository;
+    }
+
+    function getAuthUserService()
+    {
+        return $this->authUserService;
+    }
     
 }

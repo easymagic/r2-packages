@@ -8,6 +8,9 @@ use R2Packages\Framework\WalletTransaction\PendingPaymentWalletTransactionReposi
 use R2Packages\Framework\WalletTransaction\WalletTransactionRepository;
 use R2Packages\Framework\Request;
 use R2Packages\Framework\Services\AuthUserService;
+use R2Packages\Framework\WalletTransaction\Filters\ApprovedManualTopupWalletTransactionService;
+use R2Packages\Framework\WalletTransaction\Filters\PendingManualTopupWalletTransactionService;
+use R2Packages\Framework\WalletTransaction\Filters\PendingPaymentWalletTransactionService;
 use R2Packages\Framework\WalletTransaction\WalletTransactionIdService;
 use R2Packages\Framework\WalletTransaction\WalletTransactionService;
 
@@ -16,9 +19,9 @@ class WalletController
 
     private WalletTransactionService $walletTransactionService;
     private WalletTransactionRepository $walletTransactionRepository;
-    private PendingPaymentWalletTransactionRepository $pendingPaymentWalletTransactionRepository;
-    private PendingManualTopupWalletTransactionRepository $pendingManualTopupWalletTransactionRepository;
-    private ApprovedManualTopupWalletTransactionRepository $approvedManualTopupWalletTransactionRepository;
+    private PendingPaymentWalletTransactionService $pendingPaymentWalletTransactionService;
+    private PendingManualTopupWalletTransactionService $pendingManualTopupWalletTransactionService;
+    private ApprovedManualTopupWalletTransactionService $approvedManualTopupWalletTransactionService;
     private Request $request;
     private AuthUserService $authUserService;
     private WalletTransactionIdService $walletTransactionIdService;
@@ -26,18 +29,18 @@ class WalletController
     function __construct(
         WalletTransactionService $walletTransactionService,
         WalletTransactionRepository $walletTransactionRepository,
-        PendingPaymentWalletTransactionRepository $pendingPaymentWalletTransactionRepository,
-        PendingManualTopupWalletTransactionRepository $pendingManualTopupWalletTransactionRepository,
-        ApprovedManualTopupWalletTransactionRepository $approvedManualTopupWalletTransactionRepository,
+        PendingPaymentWalletTransactionService $pendingPaymentWalletTransactionService,
+        PendingManualTopupWalletTransactionService $pendingManualTopupWalletTransactionService,
+        ApprovedManualTopupWalletTransactionService $approvedManualTopupWalletTransactionService,
         Request $request,
         AuthUserService $authUserService,
         WalletTransactionIdService $walletTransactionIdService
     ) {
         $this->walletTransactionService = $walletTransactionService;
         $this->walletTransactionRepository = $walletTransactionRepository;
-        $this->pendingPaymentWalletTransactionRepository = $pendingPaymentWalletTransactionRepository;
-        $this->pendingManualTopupWalletTransactionRepository = $pendingManualTopupWalletTransactionRepository;
-        $this->approvedManualTopupWalletTransactionRepository = $approvedManualTopupWalletTransactionRepository;
+        $this->pendingPaymentWalletTransactionService = $pendingPaymentWalletTransactionService;
+        $this->pendingManualTopupWalletTransactionService = $pendingManualTopupWalletTransactionService;
+        $this->approvedManualTopupWalletTransactionService = $approvedManualTopupWalletTransactionService;
         $this->request = $request;
         $this->authUserService = $authUserService;
         $this->walletTransactionIdService = $walletTransactionIdService;
@@ -51,9 +54,9 @@ class WalletController
             'success' => true,
             'message' => 'Wallet fetched successfully',
             'wallet_transactions' => $walletTransactions,
-            'pending_payment_wallet_transactions' => $this->pendingPaymentWalletTransactionRepository->fetch(),
-            'pending_manual_topup_wallet_transactions' => $this->pendingManualTopupWalletTransactionRepository->fetch(),
-            'approved_manual_topup_wallet_transactions' => $this->approvedManualTopupWalletTransactionRepository->fetch(),
+            'pending_payment_wallet_transactions' => $this->pendingPaymentWalletTransactionService->fetch(),
+            'pending_manual_topup_wallet_transactions' => $this->pendingManualTopupWalletTransactionService->fetch(),
+            'approved_manual_topup_wallet_transactions' => $this->approvedManualTopupWalletTransactionService->fetch(),
             'total' => $total
         ]);
     }

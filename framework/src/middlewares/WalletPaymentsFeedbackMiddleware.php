@@ -3,25 +3,26 @@
 namespace R2Packages\Framework\middlewares;
 
 use R2Packages\Framework\Request;
+use R2Packages\Framework\WalletTransaction\Filters\PendingPaymentWalletTransactionService;
 use R2Packages\Framework\WalletTransaction\WalletTransactionService;
 
 class WalletPaymentsFeedbackMiddleware
 {
 
-    private WalletTransactionService $walletTransactionService;
+    private PendingPaymentWalletTransactionService $pendingPaymentWalletTransactionService;
     private Request $request;
 
     public function __construct(
-        WalletTransactionService $walletTransactionService,
+        PendingPaymentWalletTransactionService $pendingPaymentWalletTransactionService,
         Request $request
     ) {
-        $this->walletTransactionService = $walletTransactionService;
+        $this->pendingPaymentWalletTransactionService = $pendingPaymentWalletTransactionService;
         $this->request = $request;
     }
 
     public function handle()
     {
-        $this->walletTransactionService->paystackFeedbback(
+        $this->pendingPaymentWalletTransactionService->paystackFeedback(
             $this->request
         );
     }

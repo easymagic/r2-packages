@@ -6,7 +6,7 @@ use R2Packages\Framework\WalletTransaction\PendingManualTopupWalletTransactionRe
 use R2Packages\Framework\WalletTransaction\WalletTransactionRepository;
 use R2Packages\Framework\Request;
 use R2Packages\Framework\Services\AuthUserService;
-use R2Packages\Framework\BaseUser\UserIdService;
+use R2Packages\Framework\WalletTransaction\Filters\PendingManualTopupWalletTransactionService;
 use R2Packages\Framework\WalletTransaction\WalletTransactionIdService;
 use R2Packages\Framework\WalletTransaction\WalletTransactionService;
 
@@ -14,35 +14,31 @@ class PendingTopupRequestController
 {
 
     private WalletTransactionService $walletTransactionService;
-    private PendingManualTopupWalletTransactionRepository $pendingManualTopupWalletTransactionRepository;
+    private PendingManualTopupWalletTransactionService $pendingManualTopupWalletTransactionService;
     private Request $request;
     private AuthUserService $authUserService;
-    private WalletTransactionRepository $walletTransactionRepository;
 
     private WalletTransactionIdService $walletTransactionIdService;
 
-
     function __construct(
         WalletTransactionService $walletTransactionService,
-        WalletTransactionRepository $walletTransactionRepository,
-        PendingManualTopupWalletTransactionRepository $pendingManualTopupWalletTransactionRepository,
+        PendingManualTopupWalletTransactionService $pendingManualTopupWalletTransactionService,
         Request $request,
         AuthUserService $authUserService,
         WalletTransactionIdService $walletTransactionIdService,
     ) {
         $this->walletTransactionService = $walletTransactionService;
-        $this->pendingManualTopupWalletTransactionRepository = $pendingManualTopupWalletTransactionRepository;
+        $this->pendingManualTopupWalletTransactionService = $pendingManualTopupWalletTransactionService;
         $this->request = $request;
         $this->authUserService = $authUserService;
-        $this->walletTransactionRepository = $walletTransactionRepository;
         $this->walletTransactionIdService = $walletTransactionIdService;
     }
 
     function index()
     {
 
-        $walletTransactions = $this->pendingManualTopupWalletTransactionRepository->fetch();
-        $total = $this->pendingManualTopupWalletTransactionRepository->count();
+        $walletTransactions = $this->pendingManualTopupWalletTransactionService->fetch();
+        $total = $this->pendingManualTopupWalletTransactionService->count();
 
         jsonResponse([
             'success' => true,
