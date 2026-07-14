@@ -182,22 +182,22 @@ class BaseUserController
 
     public function fetch()
     {
-        $users = $this->baseUserRepository->fetch();
+        $users = $this->baseUserService->fetch();
         jsonResponse([
             'message' => 'Users fetched successfully',
             'data' => $users,
-            "count" => $this->baseUserRepository->count(),
+            "count" => $this->baseUserService->count(),
             "success" => true
         ]);
     }
 
     public function fetchAll()
     {
-        $users = $this->baseUserRepository->fetchAll();
+        $users = $this->baseUserService->fetchAll();
         jsonResponse([
             'message' => 'Users fetched successfully',
             'data' => $users,
-            "count" => $this->baseUserRepository->count(),
+            "count" => $this->baseUserService->count(),
             "success" => true
         ]);
     }

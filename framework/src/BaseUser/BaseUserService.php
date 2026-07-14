@@ -9,6 +9,7 @@ use R2Packages\Framework\MailService;
 use R2Packages\Framework\mail_templates\MailTemplates;
 use R2Packages\Framework\BaseUser\BaseUserRepository;
 use R2Packages\Framework\Request;
+use R2Packages\Framework\Services\AuthUserService;
 use R2Packages\Framework\Services\UtilService;
 
 class BaseUserService
@@ -24,18 +25,46 @@ class BaseUserService
 
     private UtilService $utilService;
 
+    protected AuthUserService $authUserService;
+
     function __construct(
         Request $request,
         BaseUserRepository $baseUserRepository,
         MailService $mailService,
         MailTemplates $mailTemplates,
-        UtilService $utilService
+        UtilService $utilService,
+        AuthUserService $authUserService
     ) {
+        $this->authUserService = $authUserService;
         $this->request = $request;
         $this->baseUserRepository = $baseUserRepository;
         $this->mailService = $mailService;
         $this->mailTemplates = $mailTemplates;
         $this->utilService = $utilService;
+
+        $user = $this->authUserService->getAuthUser();
+
+        if(!$user->isEmpty()){
+            $role = $user->role;
+            // if role contains admin, then add admin filter
+            if(strpos($role, 'admin') !== false){
+                // do nothing , admin can see all users
+            }else{
+                $this->baseUserRepository->filterById($user->id); // only show the user's own data
+            }
+        }
+    }
+
+    function fetch(){
+        return $this->baseUserRepository->fetch();
+    }
+
+    function fetchAll(){
+        return $this->baseUserRepository->fetchAll();
+    }
+
+    function count(){
+        return $this->baseUserRepository->count();
     }
 
 

@@ -2,6 +2,7 @@
 
 namespace R2Packages\Framework\WalletTransaction;
 
+use R2Packages\Framework\BaseUser\BaseUserRepository;
 use R2Packages\Framework\WalletTransaction\WalletTransactionEntity;
 use R2Packages\Framework\PaginationMetta;
 use R2Packages\Framework\Repositories\DbRepository;
@@ -30,7 +31,9 @@ class WalletTransactionRepository
 
     protected DbRepository $dbRepository;
 
-    protected AuthUserService $authUserService;
+    // protected AuthUserService $authUserService;
+
+    protected BaseUserRepository $baseUserRepository;
 
     /**
      * WalletTransactionRepository constructor.
@@ -47,24 +50,26 @@ class WalletTransactionRepository
         DbRepository $dbRepository,
         PaginationMetta $paginationMeta,
         Request $request,
-        AuthUserService $authUserService
+        // AuthUserService $authUserService,
+        BaseUserRepository $baseUserRepository
     ) {
+        $this->baseUserRepository = $baseUserRepository;
         $this->walletTransactionEntity = $walletTransactionEntity;
         $this->dbRepository           = $dbRepository;
         $this->data                   = $request->data;
         $this->size                   = $paginationMeta->limit;
         $this->sql                    = 'SELECT * FROM wallet_transactions WHERE 1=1';
-        $this->authUserService = $authUserService;
+        // $this->authUserService = $authUserService;
 
         
-        $authenticatedUserEntity = $this->authUserService->getAuthUser();
-        if (!$authenticatedUserEntity->isEmpty()){
-           if ($authenticatedUserEntity->isAdmin() || $authenticatedUserEntity->isStaff()){
-                // no filter admin and staff should see all wallet transactions
-           } else {
-                $this->filterByUserId($authenticatedUserEntity->id);
-           }
-        }
+        // $authenticatedUserEntity = $this->authUserService->getAuthUser();
+        // if (!$authenticatedUserEntity->isEmpty()){
+        //    if ($authenticatedUserEntity->isAdmin() || $authenticatedUserEntity->isStaff()){
+        //         // no filter admin and staff should see all wallet transactions
+        //    } else {
+        //         $this->filterByUserId($authenticatedUserEntity->id);
+        //    }
+        // }
 
 
         $this->applyCommonFilters();
@@ -305,7 +310,8 @@ class WalletTransactionRepository
      */
     private function hydrate($data)
     {
-        $walletTransaction = $this->walletTransactionEntity->newInstance($data);
+        $user = $this->baseUserRepository->find($data['user_id']);
+        $walletTransaction = $this->walletTransactionEntity->newInstance($user, $data);
         return $walletTransaction;
     }
 

@@ -6,8 +6,6 @@ use R2Packages\Framework\FeatureSetting\FeatureSettingRepository;
 
 class FeatureEntity {
 
-    private FeatureSettingRepository $featureSettingRepository;
-
     public $id = 0;
     public $name = '';
     public $description = '';
@@ -17,16 +15,15 @@ class FeatureEntity {
 
     public $feature_settings = [];
 
-    public function __construct(FeatureSettingRepository $featureSettingRepository, $data = [])
+    public function __construct($featureSettings = [], $data = [])
     {
-        $this->featureSettingRepository = $featureSettingRepository;
         setAttributes($this, $data);
-        $this->feature_settings = $featureSettingRepository->filterByFeatureId($this->id)->fetchAll();
+        $this->feature_settings = $featureSettings;
     }
 
-    public function newInstance($data = [])
+    public function newInstance($featureSettings = [], $data = [])
     {
-        return new self($this->featureSettingRepository, $data);
+        return new self($featureSettings, $data);
     }
 
     public function isEmpty()

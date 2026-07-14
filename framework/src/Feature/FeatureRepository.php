@@ -3,6 +3,7 @@
 namespace R2Packages\Framework\Feature;
 
 use R2Packages\Framework\Feature\FeatureEntity;
+use R2Packages\Framework\FeatureSetting\FeatureSettingRepository;
 use R2Packages\Framework\Repositories\DbRepository;
 
 class FeatureRepository
@@ -10,6 +11,8 @@ class FeatureRepository
 
     private FeatureEntity $featureEntity;
     private DbRepository $dbRepository;
+
+    private FeatureSettingRepository $featureSettingRepository;
 
     private $size = 11;
     private $sql = '';
@@ -19,15 +22,18 @@ class FeatureRepository
     public function __construct(
         FeatureEntity $featureEntity,
         DbRepository $dbRepository,
+        FeatureSettingRepository $featureSettingRepository,
     ) {
         $this->featureEntity = $featureEntity;
         $this->dbRepository = $dbRepository;
+        $this->featureSettingRepository = $featureSettingRepository;
         $this->sql = "SELECT * FROM features WHERE 1=1";
     }
 
     public function hydrate($data)
     {
-        $feature = $this->featureEntity->newInstance($data);
+        $featureSettings = $this->featureSettingRepository->filterByFeatureId($data['id'])->fetchAll();
+        $feature = $this->featureEntity->newInstance($featureSettings, $data);
         return $feature;
     }
 

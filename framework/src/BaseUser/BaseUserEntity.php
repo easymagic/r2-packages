@@ -29,10 +29,10 @@ class BaseUserEntity
     const STATUS_ACTIVE = 'active';
     const STATUS_INACTIVE = 'inactive';
 
-    public function __construct($data = [])
+    public function __construct($notifications = [],$data = [])
     {
         setAttributes($this, $data);
-        
+        $this->notifications = $notifications;
 
         if (empty($this->created_at)){
             $this->created_at = date('Y-m-d H:i:s');
@@ -54,19 +54,8 @@ class BaseUserEntity
 
     }
 
-    /**
-     * Set notifications
-     * @param array $notifications
-     * @return $this
-     */
-    public function setNotifications($notifications){
-        $this->notifications = $notifications;
-        return $this;
-    }
-
-
-    public function newInstance($data = []){
-        return new self($data);
+    public function newInstance($notifications = [],$data = []){
+        return new self($notifications, $data);
     }
 
     public function isEmpty(){

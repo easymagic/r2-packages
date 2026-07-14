@@ -43,15 +43,15 @@ class BaseUserRepository
         $this->sql = "SELECT * FROM {$this->table} WHERE 1=1";
         $this->params = [];
 
-        if(!$this->baseUserEntity->isEmpty()){
-            $role = $this->baseUserEntity->role;
-            // if role contains admin, then add admin filter
-            if(strpos($role, 'admin') !== false){
-                // do nothing , admin can see all users
-            }else{
-                $this->filterById($this->baseUserEntity->id); // only show the user's own data
-            }
-        }
+        // if(!$this->baseUserEntity->isEmpty()){
+        //     $role = $this->baseUserEntity->role;
+        //     // if role contains admin, then add admin filter
+        //     if(strpos($role, 'admin') !== false){
+        //         // do nothing , admin can see all users
+        //     }else{
+        //         $this->filterById($this->baseUserEntity->id); // only show the user's own data
+        //     }
+        // }
 
         $this->commonFilters();
     }
@@ -80,10 +80,8 @@ class BaseUserRepository
      */
     public function hydrate($data)
     {
-        $user = $this->baseUserEntity->newInstance($data);
-        $notifications = $this->notificationRepository->filterByUserId($user->id)->fetch();
-        $user->setNotifications($notifications);
-        return $user;
+        $notifications = $this->notificationRepository->filterByUserId($data['id'])->fetch();
+        return $this->baseUserEntity->newInstance($notifications, $data);
     }
 
     /**

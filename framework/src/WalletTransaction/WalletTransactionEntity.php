@@ -2,6 +2,7 @@
 
 namespace R2Packages\Framework\WalletTransaction;
 
+use R2Packages\Framework\BaseUser\BaseUserEntity;
 use R2Packages\Framework\BaseUser\BaseUserRepository;
 
 class WalletTransactionEntity
@@ -28,20 +29,19 @@ class WalletTransactionEntity
     public $media_base_url = '';
 
     public BaseUserEntity $user;
-    public BaseUserRepository $baseUserRepository;
+    
 
-    function __construct(BaseUserRepository $baseUserRepository,$data = []){
-        $this->baseUserRepository = $baseUserRepository;
+    function __construct(BaseUserEntity $user,$data = []){
+        $this->user = $user;
         setAttributes($this, $data);
-        $this->user = $this->baseUserRepository->find($this->user_id);
     }
 
     function isEmpty(){
         return empty($this->id);
     }
     
-    function newInstance($data = []){
-        return new WalletTransactionEntity($this->baseUserRepository, $data);
+    function newInstance(BaseUserEntity $user,$data = []){
+        return new WalletTransactionEntity($user, $data);
     }
 
     // function creditUserWallet(){
