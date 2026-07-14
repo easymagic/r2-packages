@@ -2,33 +2,31 @@
 
 namespace R2Packages\Framework\Ecommerce\Category;
 
+use R2Packages\Framework\Ecommerce\Category\Filters\ActiveCategoryService;
 use R2Packages\Framework\Request;
 
 class CategoryController
 {
     private CategoryService $categoryService;
     private Request $request;
-    private CategoryRepository $categoryRepository;
     private CategoryIdService $categoryIdService;
-    private ActiveCategoryRepository $activeCategoryRepository;
+    private ActiveCategoryService $activeCategoryService;
 
     public function __construct(
         CategoryService $categoryService,
         Request $request,
-        CategoryRepository $categoryRepository,
         CategoryIdService $categoryIdService,
-        ActiveCategoryRepository $activeCategoryRepository
+        ActiveCategoryService $activeCategoryService
     ) {
         $this->categoryService = $categoryService;
         $this->request = $request;
-        $this->categoryRepository = $categoryRepository;
         $this->categoryIdService = $categoryIdService;
-        $this->activeCategoryRepository = $activeCategoryRepository;
+        $this->activeCategoryService = $activeCategoryService;
     }
 
     public function index()
     {
-        $categories = $this->categoryRepository->fetchAll();
+        $categories = $this->categoryService->fetchAll();
         jsonResponse([
             'message' => 'Categories fetched successfully',
             'data' => $categories,
@@ -79,7 +77,7 @@ class CategoryController
 
     public function getActiveCategories()
     {
-        $categories = $this->activeCategoryRepository->fetchAll();
+        $categories = $this->activeCategoryService->fetchAll();
         jsonResponse([
             'message' => 'Active categories fetched successfully',
             'data' => $categories,

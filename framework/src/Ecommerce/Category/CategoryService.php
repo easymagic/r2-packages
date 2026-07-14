@@ -14,6 +14,18 @@ class CategoryService
         $this->categoryRepository = $categoryRepository;
     }
 
+    function fetch(){
+        return $this->categoryRepository->fetch();
+    }
+
+    function fetchAll(){
+        return $this->categoryRepository->fetchAll();
+    }
+
+    function count(){
+        return $this->categoryRepository->count();
+    }
+
     protected function validateRequest(Request $request){
         // name is required
         if($request->isEmpty('name')){
