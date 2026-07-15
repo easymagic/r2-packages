@@ -9,27 +9,18 @@ class ProductImageController
 {
     private ProductImageService $productImageService;
     private Request $request;
-    private ProductIdService $productIdService;
-    private ProductImageIdService $productImageIdService;
-    private ProductImageRepository $productImageRepository;
 
     public function __construct(
         ProductImageService $productImageService,
         Request $request,
-        ProductIdService $productIdService,
-        ProductImageIdService $productImageIdService,
-        ProductImageRepository $productImageRepository
     ) {
         $this->productImageService = $productImageService;
         $this->request = $request;
-        $this->productIdService = $productIdService;
-        $this->productImageIdService = $productImageIdService;
-        $this->productImageRepository = $productImageRepository;
     }
 
     public function index()
     {
-        $productImages = $this->productImageRepository->fetchAll();
+        $productImages = $this->productImageService->fetchAll();
         jsonResponse([
             'message' => 'Product images fetched successfully',
             'data' => $productImages,
@@ -39,7 +30,7 @@ class ProductImageController
 
     public function create()
     {
-        $productImage = $this->productImageService->create($this->request, $this->productIdService->getProduct());
+        $productImage = $this->productImageService->create($this->request);
         jsonResponse([
             'message' => 'Product image created successfully',
             'data' => $productImage,
@@ -49,7 +40,7 @@ class ProductImageController
 
     public function update()
     {
-        $productImage = $this->productImageService->update($this->request, $this->productImageIdService->getProductImage());
+        $productImage = $this->productImageService->update($this->request);
         jsonResponse([
             'message' => 'Product image updated successfully',
             'data' => $productImage,
@@ -59,7 +50,7 @@ class ProductImageController
 
     public function delete()
     {
-        $this->productImageService->delete($this->productImageIdService->getProductImage());
+        $this->productImageService->delete();
         jsonResponse([
             'message' => 'Product image deleted successfully',
             "success" => true
@@ -68,7 +59,7 @@ class ProductImageController
 
     public function get()
     {
-        $productImage = $this->productImageIdService->getProductImage();
+        $productImage = $this->productImageService->one();
         jsonResponse([
             'message' => 'Product image fetched successfully',
             'data' => $productImage,

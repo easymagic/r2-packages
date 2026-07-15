@@ -16,8 +16,6 @@ class ProductImageEntity
     public $updated_at = '';
     public $is_active = 1;
 
-    public ProductEntity $product;
-
     public function __construct($data = [])
     {
         setAttributes($this, $data);
@@ -38,11 +36,5 @@ class ProductImageEntity
     public function isEmpty()
     {
         return empty($this->id);
-    }
-
-    public function setProduct(ProductEntity $product)
-    {
-        $this->product = $product;
-        return $this;
     }
 }

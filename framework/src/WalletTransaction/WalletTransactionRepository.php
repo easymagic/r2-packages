@@ -5,33 +5,23 @@ namespace R2Packages\Framework\WalletTransaction;
 use R2Packages\Framework\BaseUser\BaseUserRepository;
 use R2Packages\Framework\WalletTransaction\WalletTransactionEntity;
 use R2Packages\Framework\PaginationMetta;
+use R2Packages\Framework\Ports\AbstractRepositoryPort;
 use R2Packages\Framework\Repositories\DbRepository;
 use R2Packages\Framework\Request;
-use R2Packages\Framework\Services\AuthUserService;
 
 /**
  * Repository class for handling wallet transactions.
  */
-class WalletTransactionRepository
+class WalletTransactionRepository extends AbstractRepositoryPort
 {
-    /** @var array Filters and data to shape queries */
-    protected $data = [];
-
-    /** @var int Pagination size for fetch operations */
-    protected $size = 11;
 
     /** @var string SQL query to be executed */
-    protected $sql = '';
+    protected $sql = 'SELECT * FROM wallet_transactions WHERE 1=1';
+    protected $table = 'wallet_transactions';
 
-    /** @var array SQL query parameters */
-    protected $params = [];
 
     /** @var WalletTransactionEntity Entity used for hydration */
     protected WalletTransactionEntity $walletTransactionEntity;
-
-    protected DbRepository $dbRepository;
-
-    // protected AuthUserService $authUserService;
 
     protected BaseUserRepository $baseUserRepository;
 
@@ -39,40 +29,23 @@ class WalletTransactionRepository
      * WalletTransactionRepository constructor.
      *
      * @param WalletTransactionEntity $walletTransactionEntity
-     * @param UserRepository $userRepository
      * @param DbRepository $dbRepository
      * @param PaginationMetta $paginationMeta
      * @param Request $request
-     * @param AuthUserService $authUserService
+     * @param BaseUserRepository $baseUserRepository
      */
     public function __construct(
         WalletTransactionEntity $walletTransactionEntity,
         DbRepository $dbRepository,
         PaginationMetta $paginationMeta,
         Request $request,
-        // AuthUserService $authUserService,
         BaseUserRepository $baseUserRepository
     ) {
+        
         $this->baseUserRepository = $baseUserRepository;
         $this->walletTransactionEntity = $walletTransactionEntity;
-        $this->dbRepository           = $dbRepository;
-        $this->data                   = $request->data;
-        $this->size                   = $paginationMeta->limit;
-        $this->sql                    = 'SELECT * FROM wallet_transactions WHERE 1=1';
-        // $this->authUserService = $authUserService;
 
-        
-        // $authenticatedUserEntity = $this->authUserService->getAuthUser();
-        // if (!$authenticatedUserEntity->isEmpty()){
-        //    if ($authenticatedUserEntity->isAdmin() || $authenticatedUserEntity->isStaff()){
-        //         // no filter admin and staff should see all wallet transactions
-        //    } else {
-        //         $this->filterByUserId($authenticatedUserEntity->id);
-        //    }
-        // }
-
-
-        $this->applyCommonFilters();
+        parent::__construct($dbRepository, $paginationMeta, $request);
 
         $this->orderByIdDesc();
     }
@@ -136,10 +109,6 @@ class WalletTransactionRepository
         if (isset($this->data['duration']) && $this->data['duration'] > 0) {
             $this->filterByDuration($this->data['duration']);
         }
-
-        // Order by id descending
-        // $this->orderByIdDesc();
-
 
     }
 
@@ -245,91 +214,17 @@ class WalletTransactionRepository
     }
 
     /**
-     * Fetch paginated wallet transactions with filters.
-     *
-     * @return WalletTransactionEntity[]
-     */
-    public function fetch()
-    {
-        $rows = $this->dbRepository->paginate($this->sql, $this->size, $this->params);
-        return array_map([$this, 'hydrate'], $rows);
-    }
-
-    /**
-     * Fetch all wallet transactions that match filters.
-     *
-     * @return WalletTransactionEntity[]
-     */
-    public function fetchAll()
-    {
-        $rows = $this->dbRepository->fetchAll($this->sql, $this->params);
-        return array_map([$this, 'hydrate'], $rows);
-    }
-
-    /*
-    // Example for extending functionality:
-    public function fetchPendingByUserIDAndDuration($user_id, $duration = 30)
-    {
-        $sql = 'SELECT * FROM wallet_transactions WHERE user_id = ? AND created_at >= ? AND status = "pending"';
-        $params = [
-            $user_id,
-            date('Y-m-d H:i:s', strtotime('-' . $duration . ' minutes'))
-        ];
-        $rows = dbFetchAll($sql, $params);
-        return array_map([$this, 'hydrate'], $rows);
-    }
-    */
-
-    /**
-     * Count wallet transactions matching the current query and filters.
-     *
-     * @return int
-     */
-    public function count()
-    {
-        return $this->dbRepository->count($this->sql, $this->params);
-    }
-
-    /**
-     * Find a wallet transaction by its ID.
-     *
-     * @param int $id
-     * @return WalletTransactionEntity|null
-     */
-    public function find($id)
-    {
-        $row = $this->dbRepository->fetchOne('SELECT * FROM wallet_transactions WHERE id = ?', [$id]);
-        return $this->hydrate($row);
-    }
-
-    /**
      * Hydrate a WalletTransactionEntity from database array and attach User entity.
      *
      * @param array|null $data
      * @return WalletTransactionEntity|null
      */
-    private function hydrate($data)
+    protected function hydrate($data)
     {
         $user = $this->baseUserRepository->find($data['user_id']);
         $walletTransaction = $this->walletTransactionEntity->newInstance($user, $data);
         return $walletTransaction;
     }
 
-    /**
-     * Save a wallet transaction (insert or update).
-     *
-     * @param int $id Existing transaction ID or 0 for insert
-     * @param array $data Transaction fields
-     * @return WalletTransactionEntity|null
-     */
-    public function save($id, $data)
-    {
-        if ($id > 0) {
-            $this->dbRepository->update('wallet_transactions', $data, ['id' => $id]);
-        } else {
-            $id = $this->dbRepository->insert('wallet_transactions', $data);
-        }
-        return $this->find($id);
-    }
 
 }

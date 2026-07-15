@@ -22,6 +22,9 @@ class ProductRepository
     private $params = [];
     protected $size = 10;
 
+    const STATUS_ACTIVE = 1;
+    const STATUS_INACTIVE = 0;
+
     public function __construct(
         DbRepository $dbRepository,
         Request $request,
@@ -135,7 +138,10 @@ class ProductRepository
     {
         $categoryEntity = $this->categoryRepository->find($data['category_id']);
         $userEntity = $this->userRepository->find($data['user_id']);
-        $productImages = $this->productImageRepository->filterByProductId($data['id'])->fetchAll();
+        $productImages = $this->productImageRepository
+            ->filterByProductId($data['id'])
+            ->filterByIsActive(ProductImageRepository::IS_ACTIVE)
+            ->fetchAll();
         $product = $this->productEntity->newInstance($categoryEntity, $userEntity, $productImages, $data);
         return $product;
     }

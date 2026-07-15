@@ -1,31 +1,34 @@
 <?php 
 
-namespace R2Packages\Framework\Ecommerce\Product;
+namespace R2Packages\Framework\Ecommerce\Product\Filters;
 
+use R2Packages\Framework\Ecommerce\Product\ProductIdService;
 use R2Packages\Framework\Request;
 
 class ActiveProductController
 {
-    private ActiveProductRepository $activeProductRepository;
+    private ActiveProductService $activeProductService;
     private Request $request;
     private ProductIdService $productIdService;
 
     public function __construct(
-        ActiveProductRepository $activeProductRepository,
+        ActiveProductService $activeProductService,
         Request $request,
         ProductIdService $productIdService,
     ) {
-        $this->activeProductRepository = $activeProductRepository;
+        $this->activeProductService = $activeProductService;
         $this->request = $request;
         $this->productIdService = $productIdService;
     }
 
     public function index()
     {
-        $products = $this->activeProductRepository->fetchAll();
+        $products = $this->activeProductService->fetch();
+        $count = $this->activeProductService->count();
         jsonResponse([
             'message' => 'Products fetched successfully',
             'data' => $products,
+            'count' => $count,
             "success" => true
         ]);
     }

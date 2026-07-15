@@ -29,6 +29,10 @@ class ProductService
         return $this->productRepository->fetch();
     }
 
+    public function count(){
+        return $this->productRepository->count();
+    }
+
     protected function validateRequest(Request $request){
 
         $user = $this->userIdService->getUser();

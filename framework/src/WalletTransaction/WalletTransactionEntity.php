@@ -44,36 +44,6 @@ class WalletTransactionEntity
         return new WalletTransactionEntity($user, $data);
     }
 
-    // function creditUserWallet(){
-    //     $this->user->increaseWalletBalance($this->amount);
-    // }
-
-    // function approve(UserEntity $user){
-    //     $this->creditUserWallet();
-    //     $this->action_by = $user->id;
-    //     $this->action_at = date('Y-m-d H:i:s');
-    //     $this->status = 'successful';
-    //     $this->approval_status = 'approved';
-    //     return $this;
-    // }
-
-    // function reject(UserEntity $user,$reason){
-    //     $this->reason = $reason;
-    //     $this->action_by = $user->id;
-    //     $this->action_at = date('Y-m-d H:i:s');
-    //     $this->status = 'failed';
-    //     $this->approval_status = 'rejected';
-    //     return $this;
-    // }
-
-    // function approveFromPaystack(){
-    //     $this->creditUserWallet();
-    //     $this->action_at = date('Y-m-d H:i:s');
-    //     $this->status = 'successful';
-    //     $this->approval_status = 'approved';
-    //     return $this;
-    // }
-
     function isAlreadyApproved(){
         return $this->approval_status == 'approved';
     }
