@@ -9,27 +9,18 @@ class ProductController
 {
     private ProductService $productService;
     private Request $request;
-    private MyProductRepository $myProductRepository;
-    private ProductIdService $productIdService;
-    private UserIdService $userIdService;
 
     public function __construct(
         ProductService $productService,
         Request $request,
-        MyProductRepository $myProductRepository,
-        ProductIdService $productIdService,
-        UserIdService $userIdService,
     ) {
         $this->productService = $productService;
         $this->request = $request;
-        $this->myProductRepository = $myProductRepository;
-        $this->productIdService = $productIdService;
-        $this->userIdService = $userIdService;
     }
 
     public function index()
     {
-        $products = $this->myProductRepository->fetchAll();
+        $products = $this->productService->fetch();
         jsonResponse([
             'message' => 'Products fetched successfully',
             'data' => $products,
@@ -39,8 +30,7 @@ class ProductController
 
     public function create()
     {
-        $user = $this->userIdService->getUser();
-        $product = $this->productService->create($this->request, $user);
+        $product = $this->productService->create($this->request);
         jsonResponse([
             'message' => 'Product created successfully',
             'data' => $product,
@@ -50,11 +40,7 @@ class ProductController
 
     public function update()
     {
-        $product = $this->productService->update(
-            $this->request,
-            $this->productIdService->getProduct(),
-            $this->userIdService->getUser()
-        );
+        $product = $this->productService->update($this->request);
         jsonResponse([
             'message' => 'Product updated successfully',
             'data' => $product,
@@ -64,7 +50,7 @@ class ProductController
 
     public function get()
     {
-        $product = $this->productIdService->getProduct();
+        $product = $this->productService->one();
         jsonResponse([
             'message' => 'Product fetched successfully',
             'data' => $product,
@@ -74,11 +60,7 @@ class ProductController
 
     public function delete()
     {
-        $product = $this->productIdService->getProduct();
-        $this->productService->delete(
-            $product,
-            $this->userIdService->getUser()
-        );
+        $this->productService->delete();
         jsonResponse([
             'message' => 'Product deleted successfully',
             "success" => true

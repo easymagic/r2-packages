@@ -12,11 +12,13 @@ class ProductService
 {
     private ProductRepository $productRepository;
     private UserIdService $userIdService;
-
-    public function __construct(ProductRepository $productRepository,UserIdService $userIdService)
+    private ProductIdService $productIdService;
+    
+    public function __construct(ProductRepository $productRepository,UserIdService $userIdService,ProductIdService $productIdService)
     {
         $this->productRepository = $productRepository;
         $this->userIdService = $userIdService;
+        $this->productIdService = $productIdService;
         $user = $userIdService->getUser();
         $this->productRepository->filterByUserId($user->id);
     }
@@ -31,6 +33,10 @@ class ProductService
 
     public function count(){
         return $this->productRepository->count();
+    }
+
+    function one(){
+        return $this->productIdService->getProduct();
     }
 
     protected function validateRequest(Request $request){
@@ -113,8 +119,9 @@ class ProductService
         return $product;
     }
 
-    public function update(Request $request, ProductEntity $product)
+    public function update(Request $request)
     {
+        $product = $this->productIdService->getProduct();
         $owner = $this->userIdService->getUser();
         if($owner->id !== $product->user_id){
             throw new Exception("You are not authorized to update this product!");
@@ -124,8 +131,9 @@ class ProductService
         return $product;
     }
 
-    public function delete(ProductEntity $product)
+    public function delete()
     {
+        $product = $this->productIdService->getProduct();
         $owner = $this->userIdService->getUser();
         if($owner->id !== $product->user_id){
             throw new Exception("You are not authorized to delete this product!");
