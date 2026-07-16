@@ -15,6 +15,8 @@ class CategoryRepository extends AbstractRepositoryPort
     protected $size = 10;
     protected $data = [];
 
+    const STATUS_ACTIVE = 1;
+
     private CategoryEntity $categoryEntity;
 
     public function __construct(

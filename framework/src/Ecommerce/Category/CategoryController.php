@@ -2,6 +2,8 @@
 
 namespace R2Packages\Framework\Ecommerce\Category;
 
+use R2Packages\Framework\Ecommerce\Category\Commands\CreateCategoryCommand;
+use R2Packages\Framework\Ecommerce\Category\Commands\UpdateCategoryCommand;
 use R2Packages\Framework\Ecommerce\Category\Filters\ActiveCategoryService;
 use R2Packages\Framework\Request;
 
@@ -9,19 +11,23 @@ class CategoryController
 {
     private CategoryService $categoryService;
     private Request $request;
-    private CategoryIdService $categoryIdService;
     private ActiveCategoryService $activeCategoryService;
+
+    private CreateCategoryCommand $createCategoryCommand;
+    private UpdateCategoryCommand $updateCategoryCommand;
 
     public function __construct(
         CategoryService $categoryService,
         Request $request,
-        CategoryIdService $categoryIdService,
-        ActiveCategoryService $activeCategoryService
+        ActiveCategoryService $activeCategoryService,
+        CreateCategoryCommand $createCategoryCommand,
+        UpdateCategoryCommand $updateCategoryCommand
     ) {
         $this->categoryService = $categoryService;
         $this->request = $request;
-        $this->categoryIdService = $categoryIdService;
         $this->activeCategoryService = $activeCategoryService;
+        $this->createCategoryCommand = $createCategoryCommand;
+        $this->updateCategoryCommand = $updateCategoryCommand;
     }
 
     public function index()
@@ -36,7 +42,7 @@ class CategoryController
 
     public function create()
     {
-        $category = $this->categoryService->create($this->request);
+        $category = $this->categoryService->create($this->createCategoryCommand);
         jsonResponse([
             'message' => 'Category created successfully',
             'data' => $category,
@@ -46,8 +52,7 @@ class CategoryController
 
     public function update()
     {
-        $category = $this->categoryIdService->getCategory();
-        $category = $this->categoryService->update($this->request, $category);
+        $category = $this->categoryService->update($this->updateCategoryCommand);
         jsonResponse([
             'message' => 'Category updated successfully',
             'data' => $category,
@@ -57,8 +62,7 @@ class CategoryController
 
     public function delete()
     {
-        $category = $this->categoryIdService->getCategory();
-        $this->categoryService->delete($category);
+        $this->categoryService->delete();
         jsonResponse([
             'message' => 'Category deleted successfully',
             "success" => true
@@ -67,7 +71,7 @@ class CategoryController
 
     public function get()
     {
-        $category = $this->categoryIdService->getCategory();
+        $category = $this->categoryService->one();
         jsonResponse([
             'message' => 'Category fetched successfully',
             'data' => $category,

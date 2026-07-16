@@ -4,15 +4,18 @@ namespace R2Packages\Framework\Ecommerce\Category;
 
 use Exception;
 use R2Packages\Framework\Ecommerce\Category\Commands\CreateCategoryCommand;
+use R2Packages\Framework\Ecommerce\Category\Commands\UpdateCategoryCommand;
 use R2Packages\Framework\Request;
 
 class CategoryService
 {
     private CategoryRepository $categoryRepository;
+    private CategoryIdService $categoryIdService;
 
-    public function __construct(CategoryRepository $categoryRepository)
+    public function __construct(CategoryRepository $categoryRepository,CategoryIdService $categoryIdService)
     {
         $this->categoryRepository = $categoryRepository;
+        $this->categoryIdService = $categoryIdService;
     }
 
     function fetch(){
@@ -35,17 +38,23 @@ class CategoryService
     }
 
 
-    public function update(Request $request, CategoryEntity $category)
+    public function update(UpdateCategoryCommand $updateCategoryCommand)
     {
-        $this->validateRequest($request);
-        $category = $this->categoryRepository->save($category->id, $request->input);
+        $data = $updateCategoryCommand->handle();
+        $category = $this->categoryIdService->getCategory();
+        $category = $this->categoryRepository->save($category->id, $data);
         return $category;
     }
 
-    public function delete(CategoryEntity $category)
+    public function delete()
     {
+        $category = $this->one();
         $this->categoryRepository->delete($category->id);
         return true;
+    }
+
+    function one(){
+        return $this->categoryIdService->getCategory();
     }
 
 
