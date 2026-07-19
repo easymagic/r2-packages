@@ -2,9 +2,10 @@
 
 namespace R2Packages\Framework\Services;
 
+use App\v2\Interfaces\PaymentServiceInterface;
 use Exception;
 
-class PaymentService {
+class PaymentService implements PaymentServiceInterface {
 
     private Registry $registry;
 
@@ -219,6 +220,26 @@ class PaymentService {
         $this->status = true;
 
         return $this;
+    }
+
+    public function getAuthUrl(){
+        return $this->auth_url;
+    }
+
+    public function getReference(){
+        return $this->reference;
+    }
+
+    public function getStatus(){
+        return $this->status;
+    }
+
+    public function getError(){
+        return $this->error;
+    }
+
+    public function getAuthorizationCode(){
+        return $this->authorization_code;
     }
 
 }
