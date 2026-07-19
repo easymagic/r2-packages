@@ -47,7 +47,7 @@ abstract class AbstractAuthController
 
     public function login()
     {
-
+        
         $response = $this->auth->login($this->request,$this->repository);
         return jsonResponse([
             'data' => $response,
@@ -84,15 +84,9 @@ abstract class AbstractAuthController
     
     public function requestResetPassword()
     {
-        if ($this->request->isEmpty('email')){
-           throw new \Exception('Email is required');
-        }
         $email = $this->request->get('email');
         /** @var UserEntity $user */
         $user = $this->repository->fetchBy('email',$email);
-        if (empty($user) || $user->isEmpty()){
-            throw new \Exception('User not found!');
-        }
         $response = $this->auth->requestResetPassword($this->request,$this->repository);
         $this->authNotification->sendPasswordReset($user,$this->notification);
         return jsonResponse([
@@ -176,5 +170,6 @@ abstract class AbstractAuthController
             "message" => "User profile updated successfully!"
         ]);
     }
+
 
 }
