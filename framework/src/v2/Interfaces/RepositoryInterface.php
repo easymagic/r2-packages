@@ -6,6 +6,13 @@ interface RepositoryInterface
 {
     public function filter();
     public function fetch();
+    /**
+     * Fetch a record by a field and value
+     * @param string $field
+     * @param string $value
+     * @return mixed
+     */
+    public function fetchBy($field,$value);
     public function fetchAll();
     public function count();
     /**
