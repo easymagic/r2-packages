@@ -11,6 +11,7 @@ use R2Packages\Framework\middlewares\WalletPaymentsFeedbackMiddleware;
 use R2Packages\Framework\Migrations\MigrationController;
 use R2Packages\Framework\Route;
 use R2Packages\Framework\Settings\SettingsController;
+use R2Packages\Framework\v2\User\AuthController;
 use R2Packages\Framework\WalletTransaction\PendingTopupRequestController;
 use R2Packages\Framework\WalletTransaction\WalletController;
 
@@ -36,12 +37,12 @@ class AuthRoutes
             $route->prefix("accounts", function (Route $route) {
 
                 // base user - public
-                $route->post('/login', [BaseUserController::class, 'login']);
-                $route->post('/register', [BaseUserController::class, 'register']);
-                $route->post('/otp/{user_id}', [BaseUserController::class, 'verifyOtp']);
-                $route->post('/resend-otp', [BaseUserController::class, 'resendOtp']);
-                $route->post('/request-password-reset', [BaseUserController::class, 'requestPasswordReset']);
-                $route->post('/reset-password', [BaseUserController::class, 'resetPassword']);
+                $route->post('/login', [AuthController::class, 'login']);
+                $route->post('/register', [AuthController::class, 'register']);
+                $route->post('/otp/{user_id}', [AuthController::class, 'verifyOtp']);
+                $route->post('/resend-otp', [AuthController::class, 'resendOtp']);
+                $route->post('/request-password-reset', [AuthController::class, 'requestResetPassword']);
+                $route->post('/reset-password', [AuthController::class, 'resetPassword']);
 
                 $route->globalMiddleware([
                     AuthMiddleware::class,
@@ -49,10 +50,10 @@ class AuthRoutes
                 ], function (Route $route) {
 
                     // base user - authenticated
-                    $route->delete('/login', [BaseUserController::class, 'logout']);
-                    $route->post('/me', [BaseUserController::class, 'updateProfile']);
-                    $route->get('/me', [BaseUserController::class, 'getMyProfile']);
-                    $route->post('/me/password', [BaseUserController::class, 'changeMyPassword']);
+                    $route->delete('/login', [AuthController::class, 'logout']);
+                    $route->post('/me', [AuthController::class, 'updateProfile']);
+                    $route->get('/me', [AuthController::class, 'me']);
+                    $route->post('/me/password', [AuthController::class, 'changePassword']);
 
                     // wallet transactions
                     $route->get("wallet", [WalletController::class, 'index']);

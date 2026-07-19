@@ -2,9 +2,9 @@
 
 namespace R2Packages\Framework\Services;
 
-use R2Packages\Framework\BaseUser\BaseUserEntity;
-use R2Packages\Framework\BaseUser\BaseUserRepository;
 use R2Packages\Framework\Request;
+use R2Packages\Framework\v2\User\UserEntity;
+use R2Packages\Framework\v2\User\UserRepository;
 
 class ApiCredentialService
 {
@@ -12,15 +12,15 @@ class ApiCredentialService
     private $x_user_token = '';
     private $x_token = '';
     private Request $request;
-    private BaseUserRepository $baseUserRepository;
-    private BaseUserEntity $baseUserEntity;
+    private UserRepository $userRepository;
+    private UserEntity $userEntity;
 
     protected $globalToken = '1234567890';
 
-    public function __construct(Request $request,BaseUserRepository $baseUserRepository)
+    public function __construct(Request $request,UserRepository $userRepository)
     {
         $this->request = $request;
-        $this->baseUserRepository = $baseUserRepository;
+        $this->userRepository = $userRepository;
         $this->decodeParams();
     }
 
@@ -30,7 +30,7 @@ class ApiCredentialService
 
         if (!$this->userTokenIsEmpty()) {
             $userId = explode('_', $this->x_user_token)[0];
-            $this->baseUserEntity = $this->baseUserRepository->find($userId);
+            $this->userEntity = $this->userRepository->fetchBy("id", $userId);
         }
     }
 
@@ -43,7 +43,7 @@ class ApiCredentialService
     }
 
     function userIsEmpty(){
-        return $this->baseUserEntity->isEmpty();
+        return $this->userEntity->isEmpty();
     }
 
     function globalTokenIsValid(){
@@ -51,10 +51,10 @@ class ApiCredentialService
     }
 
     function userTokenIsValid(){
-        return  !empty($this->x_user_token) && $this->baseUserEntity->token === $this->x_user_token && !$this->userIsEmpty();
+        return  !empty($this->x_user_token) && $this->userEntity->token === $this->x_user_token && !$this->userIsEmpty();
     }
 
     function getAuthUser(){
-        return $this->baseUserEntity;
+        return $this->userEntity;
     }
 }

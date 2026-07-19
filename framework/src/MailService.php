@@ -2,7 +2,9 @@
 
 namespace R2Packages\Framework;
 
-class MailService
+use R2Packages\Framework\v2\Interfaces\NotificationInterface;
+
+class MailService implements NotificationInterface
 {
     public $from = 'noreply@example.com';
     

@@ -1,6 +1,6 @@
 <?php 
 
-namespace R2Packages\Framework\v2\User\Entity;
+namespace R2Packages\Framework\v2\User;
 
 class UserEntity
 {
