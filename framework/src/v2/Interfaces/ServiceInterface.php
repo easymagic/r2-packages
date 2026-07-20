@@ -24,8 +24,19 @@ interface ServiceInterface
      * Update a record
      * @param array $data
      * @param RepositoryInterface $repository
+     * @param mixed $entity
      * @return mixed
      */
-    public function update($data,RepositoryInterface $repository);
-    public function delete(RepositoryInterface $repository);
+    public function update($data,$entity,RepositoryInterface $repository);
+
+    /**
+     * Delete a record
+     * @param mixed $entity
+     * @param RepositoryInterface $repository
+     * @return mixed
+     */
+    public function delete($entity,RepositoryInterface $repository);
+
+    // fetchById
+    public function fetchById(Request $request,RepositoryInterface $repository);
 }

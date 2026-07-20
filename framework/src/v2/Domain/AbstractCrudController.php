@@ -36,14 +36,16 @@ abstract class AbstractCrudController
 
     public function update(){
         $data = $this->service->validateUpdate($this->request);
-        $response = $this->service->update($data, $this->repository);
+        $entity = $this->service->fetchById($this->request, $this->repository);
+        $response = $this->service->update($data, $entity, $this->repository);
         return jsonResponse([
             'data' => $response
         ]);
     }
 
     public function destroy(){
-        $response = $this->service->delete($this->repository);
+        $entity = $this->service->fetchById($this->request, $this->repository);
+        $response = $this->service->delete($entity, $this->repository);
         return jsonResponse([
             'data' => $response
         ]);

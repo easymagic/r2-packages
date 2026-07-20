@@ -4,7 +4,12 @@ namespace R2Packages\Framework\v2\Interfaces;
 
 interface RepositoryInterface
 {
-    public function filter();
+    /**
+     * Filter a record
+     * @param array $data
+     * @return mixed
+     */
+    public function filter($data);
     public function fetch();
     /**
      * Fetch a record by a field and value

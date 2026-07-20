@@ -1,5 +1,5 @@
 <?php 
-namespace App\v2\Interfaces;
+namespace R2Packages\Framework\v2\Interfaces;
 
 interface PaymentServiceInterface
 {
