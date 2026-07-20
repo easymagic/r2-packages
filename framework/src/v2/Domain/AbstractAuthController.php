@@ -35,9 +35,9 @@ abstract class AbstractAuthController
 
     public function login()
     {
-        
-        $user = $this->auth->login($this->request,$this->repository);
-        $user =$this->auth->refreshToken($user,$this->repository);
+        $data = $this->auth->validateLogin($this->request,$this->repository);
+        $user = $this->auth->login($data, $this->repository);
+
         return jsonResponse([
             'data' => $user,
             "status" => "success",
@@ -47,11 +47,8 @@ abstract class AbstractAuthController
 
     public function register()
     {
-        $this->auth->register($this->request,$this->repository);
-        /** @var UserEntity $user */
-        $user = $this->repository->fetchBy("email",$this->request->get('email'));
-        $this->authNotification->sendRegistrationOtp($user,$this->notification);
-
+        $data = $this->auth->validateRegister($this->request,$this->repository);
+        $user = $this->auth->register($data, $this->repository, $this->authNotification);
         return jsonResponse([
             'data' => $user,
             "status" => "success",
@@ -73,11 +70,8 @@ abstract class AbstractAuthController
     
     public function requestResetPassword()
     {
-        $email = $this->request->get('email');
-        $response = $this->auth->requestResetPassword($this->request,$this->repository);
-        /** @var UserEntity $user */
-        $user = $this->repository->fetchBy('email',$email);
-        $this->authNotification->sendPasswordReset($user,$this->notification);
+        $data = $this->auth->validateRequestResetPassword($this->request,$this->repository);
+        $response = $this->auth->requestResetPassword($data,$this->repository,$this->authNotification);
         return jsonResponse([
             'data' => $response,
             "status" => "success",
@@ -87,8 +81,8 @@ abstract class AbstractAuthController
     
     public function resetPassword()
     {
-        $user = $this->repository->fetchBy('email',$this->request->get('email'));
-        $response = $this->auth->resetPassword($user,$this->request,$this->repository);
+        $data = $this->auth->validateResetPassword($this->request,$this->repository);
+        $response = $this->auth->resetPassword($data,$this->repository);
         return jsonResponse([
             'data' => $response,
             "status" => "success",
@@ -98,8 +92,9 @@ abstract class AbstractAuthController
     
     public function updateProfile()
     {
+        $data = $this->auth->validateUpdateProfile($this->request,$this->repository);
         $user = $this->auth->getAuthUser();
-        $response = $this->auth->updateProfile($user,$this->request,$this->repository);
+        $response = $this->auth->updateProfile($data,$user,$this->repository);
         return jsonResponse([
             'data' => $response,
             "status" => "success",
@@ -110,7 +105,8 @@ abstract class AbstractAuthController
     public function changePassword()
     {
         $user = $this->auth->getAuthUser();
-        $response = $this->auth->changePassword($user,$this->request,$this->repository);
+        $data = $this->auth->validateChangePassword($this->request,$this->repository);
+        $response = $this->auth->changePassword($data,$user,$this->repository);
         return jsonResponse([
             'data' => $response,
             "status" => "success",
@@ -120,7 +116,8 @@ abstract class AbstractAuthController
 
     public function createUser()
     {
-        $response = $this->auth->createUser($this->request,$this->repository);
+        $data = $this->auth->validateCreateUser($this->request,$this->repository);
+        $response = $this->auth->createUser($data,$this->repository);
         return jsonResponse([
             'data' => $response,
             "status" => "success",
@@ -132,7 +129,8 @@ abstract class AbstractAuthController
     {
 
         $user = $this->auth->fetchById($this->request,$this->repository);
-        $response = $this->auth->changeUserPassword($user,$this->request,$this->repository);
+        $data = $this->auth->validateChangeUserPassword($this->request,$this->repository);
+        $response = $this->auth->changeUserPassword($data,$user,$this->repository);
         return jsonResponse([
             'data' => $response,
             "status" => "success",
@@ -142,9 +140,8 @@ abstract class AbstractAuthController
 
     public function verifyOtp()
     {
-        $user = $this->repository->fetchBy("email",$this->request->get('email'));
-        $this->auth->verifyOtp($user,$this->request,$this->repository);
-        $this->auth->refreshOtp($user,$this->repository);
+        $data = $this->auth->validateVerifyOtp($this->request,$this->repository);
+        $user = $this->auth->verifyOtp($data, $this->repository);
         return jsonResponse([
             'data' => $user,
             "status" => "success",
@@ -154,9 +151,8 @@ abstract class AbstractAuthController
 
     public function resendOtp()
     {
-        $user = $this->repository->fetchBy("email",$this->request->get('email'));
-        $this->auth->resendOtp($user,$this->request,$this->repository);
-        $this->authNotification->sendOtp($user,$this->notification);
+        $data = $this->auth->validateResendOtp($this->request,$this->repository);
+        $user = $this->auth->resendOtp($data,$this->repository,$this->authNotification);
         return jsonResponse([
             'data' => $user,
             "status" => "success",
@@ -167,7 +163,8 @@ abstract class AbstractAuthController
     public function updateUserProfile()
     {
         $user = $this->auth->fetchById($this->request,$this->repository);
-        $response = $this->auth->updateUserProfile($user,$this->request,$this->repository);
+        $data = $this->auth->validateUpdateUserProfile($this->request,$this->repository);
+        $response = $this->auth->updateUserProfile($data,$user,$this->repository);
         return jsonResponse([
             'data' => $response,
             "status" => "success",
