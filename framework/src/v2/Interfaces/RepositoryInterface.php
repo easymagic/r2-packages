@@ -15,10 +15,16 @@ interface RepositoryInterface
      * Fetch a record by a field and value
      * @param string $field
      * @param string $value
-     * @return mixed
+     * @return self
      */
     public function fetchBy($field,$value);
     public function fetchAll();
+    
+    /**
+     * Fetch a single record
+     * @return mixed
+     */
+    public function fetchOne();
     public function count();
     /**
      * Sum a field
@@ -46,4 +52,19 @@ interface RepositoryInterface
      * @return bool
      */
     public function delete($id);
+
+    /**
+     * Set the SQL query
+     * @param string $sql
+     * @return self
+     */
+    public function setSql($sql);
+
+    
+    /**
+     * Set the parameters for the SQL query
+     * @param array $params
+     * @return self
+     */
+    public function setParams($params);
 }
