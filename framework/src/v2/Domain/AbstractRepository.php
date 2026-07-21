@@ -90,8 +90,8 @@ abstract class AbstractRepository implements RepositoryInterface
      * @return mixed
      */
     public function find($id){
-        $this->sql.= " AND " . $this->primaryKey . " = ?";
-        $this->params[] = $id;
+        // $this->sql.= " AND " . $this->primaryKey . " = ?";
+        // $this->params[] = $id;
 
         return $this->newQuery(" AND " . $this->primaryKey . " = ?", [$id]);        
     }
