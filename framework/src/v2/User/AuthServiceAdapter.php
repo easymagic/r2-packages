@@ -5,7 +5,9 @@ namespace R2Packages\Framework\v2\User;
 use Exception;
 use R2Packages\Framework\Request;
 use R2Packages\Framework\Services\AuthUserService;
+use R2Packages\Framework\v2\Interfaces\AuthNotificationInterface;
 use R2Packages\Framework\v2\Interfaces\AuthServiceInterface;
+use R2Packages\Framework\v2\Interfaces\NotificationInterface;
 use R2Packages\Framework\v2\Interfaces\RepositoryInterface;
 
 class AuthServiceAdapter implements AuthServiceInterface
@@ -17,21 +19,31 @@ class AuthServiceAdapter implements AuthServiceInterface
         $this->authUserService = $authUserService;
     }
 
-    public function login(
-        Request $request,
-        RepositoryInterface $repository
-    ) {
+    public function validateLogin(Request $request, RepositoryInterface $repository)
+    {
         if ($request->isEmpty('email') || $request->isEmpty('password')) {
             throw new \Exception('Email and password are required');
         }
-        /** @var UserEntity $user */
-        $user = $repository->fetchBy("email", $request->get('email'));
+
+        $user = $repository->fetchBy("email", $request->get('email'))->fetchOne();
         if ($user->isEmpty()) {
             throw new \Exception('Invalid login credentials!');
         }
         if (!password_verify($request->get('password'), $user->password)) {
             throw new \Exception('Invalid login credentials!');
         }
+        return [
+            "email" => $user->email,
+            "password" => $request->get('password'),
+        ];
+    }
+
+    public function login(
+        $data,
+        RepositoryInterface $repository
+    ) {
+        $user = $repository->fetchBy("email", $data["email"])->fetchOne();
+        $this->refreshToken($user, $repository);
         return $user;
     }
 
@@ -57,21 +69,37 @@ class AuthServiceAdapter implements AuthServiceInterface
         return $user;
     }
 
-    public function verifyOtp(UserEntity $user, Request $request, RepositoryInterface $repository)
+    public function validateVerifyOtp(Request $request, RepositoryInterface $repository)
     {
         if ($request->isEmpty('otp')) {
             throw new \Exception('OTP is required');
         }
+        if ($request->isEmpty('email')) {
+            throw new \Exception('Email is required');
+        }
+        $user = $repository->fetchBy("email", $request->get('email'))->fetchOne();
+        if ($user->isEmpty()) {
+            throw new \Exception('User not found!');
+        }
         if ($user->otp !== $request->get('otp')) {
             throw new \Exception('Invalid OTP!');
         }
+        return [
+            "email" => $user->email,
+            "otp" => $request->get('otp'),
+        ];
+    }
+
+    public function verifyOtp($data, RepositoryInterface $repository)
+    {
+        $user = $repository->fetchBy("email", $data["email"])->fetchOne();
         $user = $repository->save($user->id, [
             'status' => 'active',
         ]);
         return $user;
     }
 
-    public function register(Request $request, RepositoryInterface $repository)
+    public function validateRegister(Request $request, RepositoryInterface $repository)
     {
         if ($request->isEmpty('name')) {
             throw new Exception("Name is required!");
@@ -83,7 +111,7 @@ class AuthServiceAdapter implements AuthServiceInterface
         }
 
         /** @var UserEntity $userCheck */
-        $userCheck = $repository->fetchBy("email", $request->get('email'));
+        $userCheck = $repository->fetchBy("email", $request->get('email'))->fetchOne();
         if (!$userCheck->isEmpty()) {
             throw new Exception("User already exists!");
         }
@@ -102,10 +130,6 @@ class AuthServiceAdapter implements AuthServiceInterface
             throw new Exception("Password and confirm password do not match!");
         }
 
-        // $otp = $this->utilService->generateOtp();
-        // $token = $this->utilService->refreshToken(0);
-
-
         $request->input['name'] = $request->get('name');
         $request->input['email'] = $request->get('email');
         $request->input['password'] = password_hash($request->get('password'), PASSWORD_DEFAULT);
@@ -116,10 +140,19 @@ class AuthServiceAdapter implements AuthServiceInterface
         $request->input['status'] = 'inactive';
         $request->input['created_at'] = date('Y-m-d H:i:s');
         $request->input['updated_at'] = date('Y-m-d H:i:s');
+    }
+
+    public function register(
+        $data,
+        RepositoryInterface $repository,
+        AuthNotificationInterface $authNotification,
+        NotificationInterface $notification
+    ) {
         /** @var UserEntity $user */
-        $user = $repository->save(0, $request->input);
+        $user = $repository->save(0, $data);
         $this->refreshOtp($user, $repository);
         $user = $this->refreshToken($user, $repository);
+        $authNotification->sendRegistrationOtp($user, $notification);
         return $user;
     }
 
@@ -129,18 +162,32 @@ class AuthServiceAdapter implements AuthServiceInterface
         return $user;
     }
 
-    public function requestResetPassword(Request $request, RepositoryInterface $repository)
+    public function validateRequestResetPassword(Request $request, RepositoryInterface $repository)
     {
         if ($request->isEmpty('email')) {
             throw new Exception("Email is required!");
         }
         /** @var UserEntity $user */
-        $user = $repository->fetchBy("email", $request->get('email'));
+        $user = $repository->fetchBy("email", $request->get('email'))->fetchOne();
         if ($user->isEmpty()) {
             throw new Exception("User not found!");
         }
+        return [
+            "email" => $user->email,
+        ];
+    }
+
+    public function requestResetPassword(
+        $data,
+        RepositoryInterface $repository,
+        AuthNotificationInterface $authNotification,
+        NotificationInterface $notification
+    ) {
+        $user = $repository->fetchBy("email", $data["email"])->fetchOne();
         $this->refreshOtp($user, $repository);
-        $this->refreshToken($user, $repository);
+        $user = $this->refreshToken($user, $repository);
+        $authNotification->sendPasswordReset($user, $notification);
+        return $user;
     }
 
     public function resetPassword(UserEntity $user, Request $request, RepositoryInterface $repository)
@@ -313,7 +360,8 @@ class AuthServiceAdapter implements AuthServiceInterface
         return $user;
     }
 
-    public function fetchById(Request $request, RepositoryInterface $repository) {
+    public function fetchById(Request $request, RepositoryInterface $repository)
+    {
         if ($request->isEmpty('user_id')) {
             throw new Exception("User ID is required!");
         }
@@ -325,7 +373,8 @@ class AuthServiceAdapter implements AuthServiceInterface
         return $user;
     }
 
-    public function getAuthUser() {
+    public function getAuthUser()
+    {
         return $this->authUserService->getAuthUser();
     }
 

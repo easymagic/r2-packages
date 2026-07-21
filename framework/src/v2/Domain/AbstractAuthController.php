@@ -48,7 +48,7 @@ abstract class AbstractAuthController
     public function register()
     {
         $data = $this->auth->validateRegister($this->request,$this->repository);
-        $user = $this->auth->register($data, $this->repository, $this->authNotification);
+        $user = $this->auth->register($data, $this->repository, $this->authNotification, $this->notification);
         return jsonResponse([
             'data' => $user,
             "status" => "success",
@@ -71,7 +71,7 @@ abstract class AbstractAuthController
     public function requestResetPassword()
     {
         $data = $this->auth->validateRequestResetPassword($this->request,$this->repository);
-        $response = $this->auth->requestResetPassword($data,$this->repository,$this->authNotification);
+        $response = $this->auth->requestResetPassword($data,$this->repository,$this->authNotification, $this->notification);
         return jsonResponse([
             'data' => $response,
             "status" => "success",
@@ -152,7 +152,7 @@ abstract class AbstractAuthController
     public function resendOtp()
     {
         $data = $this->auth->validateResendOtp($this->request,$this->repository);
-        $user = $this->auth->resendOtp($data,$this->repository,$this->authNotification);
+        $user = $this->auth->resendOtp($data,$this->repository,$this->authNotification, $this->notification);
         return jsonResponse([
             'data' => $user,
             "status" => "success",

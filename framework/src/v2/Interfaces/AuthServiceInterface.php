@@ -47,7 +47,8 @@ interface AuthServiceInterface
     public function resendOtp(
         $data,
         RepositoryInterface $repository,
-        AuthNotificationInterface $authNotification
+        AuthNotificationInterface $authNotification,
+        NotificationInterface $notification
     );
 
     public function validateRegister(Request $request, RepositoryInterface $repository); // return data to be registered
@@ -57,7 +58,7 @@ interface AuthServiceInterface
      * @param RepositoryInterface $repository
      * @return mixed
      */
-    public function register($data, RepositoryInterface $repository, AuthNotificationInterface $authNotification);
+    public function register($data, RepositoryInterface $repository, AuthNotificationInterface $authNotification, NotificationInterface $notification);
     public function logout(UserEntity $user, RepositoryInterface $repository);
 
     public function validateRequestResetPassword(Request $request, RepositoryInterface $repository); // return data to be reset
@@ -67,7 +68,7 @@ interface AuthServiceInterface
      * @param RepositoryInterface $repository
      * @return mixed
      */
-    public function requestResetPassword($data, RepositoryInterface $repository, AuthNotificationInterface $authNotification);
+    public function requestResetPassword($data, RepositoryInterface $repository, AuthNotificationInterface $authNotification, NotificationInterface $notification);
 
     public function validateResetPassword(Request $request, RepositoryInterface $repository); // return data to be reset
     /**

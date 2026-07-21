@@ -30,4 +30,15 @@ class AuthNotificationAdapter implements AuthNotificationInterface
         <p>Thank you for using our platform.</p>
         ');
     }
+
+    function sendOtp(UserEntity $user, NotificationInterface $notificationInterface)
+    {
+        $notificationInterface->send($user->email, 'OTP', 'noreply@example.com', '
+        
+        <p>Hello {$user->name},</p>
+        <p>Your OTP is:</p>
+        <p>OTP: {$user->otp}</p>
+        <p>Thank you for using our platform.</p>
+        ');
+    }
 }

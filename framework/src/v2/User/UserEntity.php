@@ -2,7 +2,9 @@
 
 namespace R2Packages\Framework\v2\User;
 
-class UserEntity
+use R2Packages\Framework\v2\Interfaces\EntityInterface;
+
+class UserEntity implements EntityInterface
 {
 
     public $id = null;

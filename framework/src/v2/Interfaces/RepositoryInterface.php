@@ -22,7 +22,7 @@ interface RepositoryInterface
     
     /**
      * Fetch a single record
-     * @return mixed
+     * @return EntityInterface
      */
     public function fetchOne();
     public function count();
