@@ -41,7 +41,8 @@ class AppServiceContainer
         $this->container->set(RouteServiceInterface::class, function () {
             return new RouteService(
                 $this->container->get(DispatcherServiceInterface::class),
-                $this->container->get(ContainerServiceInterface::class)
+                $this->container->get(ContainerServiceInterface::class),
+                $this->container->get(JsonResponseServiceInterface::class)
             );
         });
 

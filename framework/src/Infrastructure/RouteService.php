@@ -5,6 +5,7 @@ namespace R2Packages\Framework\Infrastructure;
 use Exception;
 use R2Packages\Framework\Application\ContainerServiceInterface;
 use R2Packages\Framework\Application\DispatcherServiceInterface;
+use R2Packages\Framework\Application\JsonResponseServiceInterface;
 use R2Packages\Framework\Application\RouteServiceInterface;
 use R2Packages\Framework\Utils;
 
@@ -13,11 +14,16 @@ class RouteService implements RouteServiceInterface
 
     private DispatcherServiceInterface $dispatcherService;
     private ContainerServiceInterface $containerService;
+    private JsonResponseServiceInterface $jsonResponseService;
 
-    public function __construct(DispatcherServiceInterface $dispatcherService, ContainerServiceInterface $containerService)
-    {
+    public function __construct(
+        DispatcherServiceInterface $dispatcherService,
+        ContainerServiceInterface $containerService,
+        JsonResponseServiceInterface $jsonResponseService
+    ) {
         $this->dispatcherService = $dispatcherService;
         $this->containerService = $containerService;
+        $this->jsonResponseService = $jsonResponseService;
     }
 
     private $routes = [
@@ -169,7 +175,7 @@ class RouteService implements RouteServiceInterface
                         }
                     }
                 } catch (Exception $e) {
-                    Utils::jsonResponse(['message' => $e->getMessage(), 'success' => false], 500);
+                    $this->jsonResponseService->error($e->getMessage(), 500);
                 }
 
                 return $callback;
