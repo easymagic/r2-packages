@@ -1,6 +1,8 @@
 <?php
 
-namespace R2Packages\Framework;
+namespace R2Packages\Framework\Infrastructure;
+
+use R2Packages\Framework\Application\DbServiceInterface;
 
 /**
  * MigrationV2 is a helper class to manage and modify MySQL table fields.
@@ -50,12 +52,20 @@ class Migration
      */
     private $minimumSize = 11;
 
+    private DbServiceInterface $dbService;
+
     /**
-     * @param string|null $table (optional) The table name for the migration instance.
+     * @param DbServiceInterface $dbService The database service instance.
      */
-    public function __construct($table = null)
+    public function __construct(DbServiceInterface $dbService)
+    {
+        $this->dbService = $dbService;
+    }
+
+    public function withTable(string $table)
     {
         $this->table = $table;
+        return $this;
     }
 
     /**
@@ -64,12 +74,12 @@ class Migration
      * @param string $table
      * @return static
      */
-    public static function table($table)
+    public static function table(DbServiceInterface $dbService)
     {
-        return new self($table);
+        return new self($dbService);
     }
 
-    public function definition($definition)
+    public function definition(string $definition)
     {
         $this->definition = $definition;
         return $this;
@@ -175,8 +185,8 @@ class Migration
      */
     public function modify()
     {
-        $obj = new self($this->table);
-        $obj->table($this->table)->field($this->field)->size($this->size);
+        $obj = new self($this->dbService);
+        $obj->withTable($this->table)->field($this->field)->size($this->size);
         return $obj;
     }
 
@@ -196,12 +206,12 @@ class Migration
      * Create a dummy table if it doesn't exist, only with auto-incrementing "id".
      * @param string $table
      */
-    public function createTable($table)
+    public function createTable(string $table)
     {
         $sql = "CREATE TABLE $table (
             id BIGINT AUTO_INCREMENT PRIMARY KEY
         )";
-        dbExecute($sql);
+        $this->dbService->execute($sql);
     }
 
     /**
@@ -256,8 +266,8 @@ class Migration
             $sql = "ALTER TABLE {$this->table} ADD COLUMN `{$this->field}` {$this->definition}";
         }
         echo $sql . '<br>';
-        dbExecute($sql);
-        return new self($this->table);
+        $this->dbService->execute($sql);
+        return new self($this->dbService);
     }
 
     /**
@@ -268,7 +278,7 @@ class Migration
     public function tableExists($table)
     {
         $sql = "SHOW TABLES LIKE '$table'";
-        $result = dbFetchOne($sql);
+        $result = $this->dbService->fetchOne($sql);
         return $result ? true : false;
     }
 
@@ -281,7 +291,7 @@ class Migration
     public function fieldExists($table, $field)
     {
         $sql = "SHOW COLUMNS FROM $table LIKE '$field'";
-        $result = dbFetchOne($sql);
+        $result = $this->dbService->fetchOne($sql);
         return $result ? true : false;
     }
 }

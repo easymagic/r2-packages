@@ -67,6 +67,12 @@ class AppServiceContainer
         $this->container->set(DbConnectionServiceInterface::class, function () {
             return new DbConnectionService();
         });
+
+        $this->container->set(Migration::class, function () {
+            return new Migration(
+                $this->container->get(DbServiceInterface::class)
+            );
+        });
     }
 
     function loadRoutes(callable $callback)
