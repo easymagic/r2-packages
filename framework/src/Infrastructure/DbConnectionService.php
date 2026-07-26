@@ -7,7 +7,7 @@ use R2Packages\Framework\Application\DbConnectionServiceInterface;
 
 class DbConnectionService implements DbConnectionServiceInterface
 {
-    private static $pdo = null;
+    private static PDO $pdo;
 
     public function getConnection()
     {
