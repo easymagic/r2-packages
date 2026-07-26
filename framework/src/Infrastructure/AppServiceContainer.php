@@ -6,6 +6,7 @@ use R2Packages\Framework\Application\ContainerServiceInterface;
 use R2Packages\Framework\Application\CorsServiceInterface;
 use R2Packages\Framework\Application\DbServiceInterface;
 use R2Packages\Framework\Application\DispatcherServiceInterface;
+use R2Packages\Framework\Application\JsonResponseServiceInterface;
 use R2Packages\Framework\Application\RouteServiceInterface;
 use R2Packages\Framework\Application\Validation\ValidationServiceInterface;
 use R2Packages\Framework\Infrastructure\Validation\ValidationService;
@@ -54,6 +55,10 @@ class AppServiceContainer
 
         $this->container->set(ValidationServiceInterface::class, function () {
             return new ValidationService();
+        });
+
+        $this->container->set(JsonResponseServiceInterface::class, function () {
+            return new JsonResponseService();
         });
     }
 
