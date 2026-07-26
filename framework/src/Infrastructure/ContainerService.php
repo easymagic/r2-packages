@@ -53,18 +53,9 @@ class ContainerService implements ContainerServiceInterface
             }
 
             $typeName = $type->getName();
+            $dependencies[] = $this->get($typeName, $data);
+            continue;
 
-            if (class_exists($typeName)) {
-                $dependencies[] = $this->get($typeName, $data);
-                continue;
-            }
-
-            if ($param->isDefaultValueAvailable()) {
-                $dependencies[] = $param->getDefaultValue();
-                continue;
-            }
-
-            // throw new Exception("Cannot resolve dependency {$typeName} in {$class}");
         }
 
         $dependencies[] = $data;
