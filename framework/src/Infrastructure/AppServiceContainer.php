@@ -4,6 +4,7 @@ namespace R2Packages\Framework\Infrastructure;
 
 use R2Packages\Framework\Application\ContainerServiceInterface;
 use R2Packages\Framework\Application\CorsServiceInterface;
+use R2Packages\Framework\Application\DbConnectionServiceInterface;
 use R2Packages\Framework\Application\DbServiceInterface;
 use R2Packages\Framework\Application\DispatcherServiceInterface;
 use R2Packages\Framework\Application\JsonResponseServiceInterface;
@@ -29,7 +30,6 @@ class AppServiceContainer
 
     function boot()
     {
-
         $this->container->set(ContainerServiceInterface::class, function () {
             return new ContainerService();
         });
@@ -47,7 +47,9 @@ class AppServiceContainer
         });
 
         $this->container->set(DbServiceInterface::class, function () {
-            return new DbService();
+            return new DbService(
+                $this->container->get(DbConnectionServiceInterface::class)
+            );
         });
 
         $this->container->set(CorsServiceInterface::class, function () {
@@ -60,6 +62,10 @@ class AppServiceContainer
 
         $this->container->set(JsonResponseServiceInterface::class, function () {
             return new JsonResponseService();
+        });
+
+        $this->container->set(DbConnectionServiceInterface::class, function () {
+            return new DbConnectionService();
         });
     }
 
