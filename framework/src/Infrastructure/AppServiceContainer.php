@@ -3,6 +3,7 @@
 namespace R2Packages\Framework\Infrastructure;
 
 use R2Packages\Framework\Application\ContainerServiceInterface;
+use R2Packages\Framework\Application\DbServiceInterface;
 use R2Packages\Framework\Application\DispatcherServiceInterface;
 use R2Packages\Framework\Application\RouteServiceInterface;
 
@@ -34,13 +35,33 @@ class AppServiceContainer
                 $this->container->get(ContainerServiceInterface::class)
             );
         });
+
+        $this->container->set(DbServiceInterface::class, function () {
+            return new DbService();
+        });
+        
     }
 
-    function loadRoutes(callable $callback){
+    function loadRoutes(callable $callback)
+    {
         $callback($this->routeService);
     }
 
-    function run(string $path, string $method){
+    function run(string $path, string $method)
+    {
         $this->routeService->run($path, $method);
+    }
+
+    function registerAutoloader(string $dirPath)
+    {
+        // -------------------------------------------------------------
+        // Autoloader
+        // -------------------------------------------------------------
+        spl_autoload_register(function ($class) use ($dirPath) {
+            $path = $dirPath . '/' . str_replace('\\', '/', $class) . '.php';
+            if (file_exists($path)) {
+                include_once $path;
+            }
+        });
     }
 }
