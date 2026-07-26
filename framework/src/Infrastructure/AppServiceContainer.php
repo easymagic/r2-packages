@@ -77,4 +77,12 @@ class AppServiceContainer
     function allowCors() {
         $this->corsService->allow();
     }
+
+    /**
+     * Get the container instance
+     * @return ContainerServiceInterface
+     */
+    function container(){
+        return $this->container;
+    }
 }
