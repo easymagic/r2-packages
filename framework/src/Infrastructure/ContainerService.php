@@ -64,7 +64,7 @@ class ContainerService implements ContainerServiceInterface
                 continue;
             }
 
-            throw new Exception("Cannot resolve dependency {$typeName} in {$class}");
+            // throw new Exception("Cannot resolve dependency {$typeName} in {$class}");
         }
 
         $dependencies[] = $data;
