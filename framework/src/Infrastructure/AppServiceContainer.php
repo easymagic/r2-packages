@@ -7,6 +7,8 @@ use R2Packages\Framework\Application\CorsServiceInterface;
 use R2Packages\Framework\Application\DbServiceInterface;
 use R2Packages\Framework\Application\DispatcherServiceInterface;
 use R2Packages\Framework\Application\RouteServiceInterface;
+use R2Packages\Framework\Application\Validation\ValidationServiceInterface;
+use R2Packages\Framework\Infrastructure\Validation\ValidationService;
 
 class AppServiceContainer
 {
@@ -48,6 +50,10 @@ class AppServiceContainer
 
         $this->container->set(CorsServiceInterface::class, function () {
             return new CorsService();
+        });
+
+        $this->container->set(ValidationServiceInterface::class, function () {
+            return new ValidationService();
         });
     }
 
