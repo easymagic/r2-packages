@@ -54,7 +54,7 @@ class RouteService implements RouteServiceInterface
     }
 
 
-    public function get(string $path, callable $callback)
+    public function get(string $path, mixed $callback)
     {
         $path = $this->getResolvedPath($path);
 
@@ -67,7 +67,7 @@ class RouteService implements RouteServiceInterface
         return $this;
     }
 
-    public function post(string $path, callable $callback)
+    public function post(string $path, mixed $callback)
     {
         $path = $this->getResolvedPath($path);
 
@@ -80,7 +80,7 @@ class RouteService implements RouteServiceInterface
         return $this;
     }
 
-    public function delete(string $path, callable $callback)
+    public function delete(string $path, mixed $callback)
     {
         $path = $this->getResolvedPath($path);
 
@@ -93,7 +93,7 @@ class RouteService implements RouteServiceInterface
         return $this;
     }
 
-    public function put(string $path, callable $callback)
+    public function put(string $path, mixed $callback)
     {
         $path = $this->getResolvedPath($path);
 
