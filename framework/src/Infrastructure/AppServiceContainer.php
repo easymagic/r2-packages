@@ -3,6 +3,7 @@
 namespace R2Packages\Framework\Infrastructure;
 
 use R2Packages\Framework\Application\ContainerServiceInterface;
+use R2Packages\Framework\Application\CorsServiceInterface;
 use R2Packages\Framework\Application\DbServiceInterface;
 use R2Packages\Framework\Application\DispatcherServiceInterface;
 use R2Packages\Framework\Application\RouteServiceInterface;
@@ -11,11 +12,16 @@ class AppServiceContainer
 {
     private ContainerServiceInterface $container;
     private RouteServiceInterface $routeService;
+    private CorsServiceInterface $corsService;
 
-    public function __construct(ContainerServiceInterface $containerService, RouteServiceInterface $routeService)
-    {
+    public function __construct(
+        ContainerServiceInterface $containerService,
+        RouteServiceInterface $routeService,
+        CorsServiceInterface $corsService
+    ) {
         $this->container = $containerService;
         $this->routeService = $routeService;
+        $this->corsService = $corsService;
     }
 
     function boot()
@@ -39,7 +45,10 @@ class AppServiceContainer
         $this->container->set(DbServiceInterface::class, function () {
             return new DbService();
         });
-        
+
+        $this->container->set(CorsServiceInterface::class, function () {
+            return new CorsService();
+        });
     }
 
     function loadRoutes(callable $callback)
@@ -63,5 +72,9 @@ class AppServiceContainer
                 include_once $path;
             }
         });
+    }
+
+    function allowCors() {
+        $this->corsService->allow();
     }
 }
