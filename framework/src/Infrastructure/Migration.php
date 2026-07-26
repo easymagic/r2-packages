@@ -71,7 +71,7 @@ class Migration
     /**
      * Create a new MigrationV2 instance for the specified table.
      * Usage: MigrationV2::table('users')
-     * @param string $table
+     * @param DbServiceInterface $dbService The database service instance.
      * @return static
      */
     public static function table(DbServiceInterface $dbService)
@@ -267,7 +267,9 @@ class Migration
         }
         echo $sql . '<br>';
         $this->dbService->execute($sql);
-        return new self($this->dbService);
+        $newObject =  new self($this->dbService);
+        $newObject->withTable($this->table);
+        return $newObject;
     }
 
     /**
