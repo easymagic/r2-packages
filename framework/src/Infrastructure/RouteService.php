@@ -34,7 +34,7 @@ class RouteService implements RouteServiceInterface
     private $nameHash                 = [];
 
 
-    private function getResolvedPath($path)
+    private function getResolvedPath(string $path)
     {
         $path = trim($path, '/');
         if (!empty($this->defaultGlobalPrefix)) {
