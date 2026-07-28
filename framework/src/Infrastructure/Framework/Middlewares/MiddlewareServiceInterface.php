@@ -6,5 +6,5 @@ use R2Packages\Framework\Request;
 
 interface MiddlewareServiceInterface
 {
-    public function handle(Request $request);
+    public function handle();
 }
