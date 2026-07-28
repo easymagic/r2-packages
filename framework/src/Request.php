@@ -44,10 +44,10 @@ class Request
      * @return mixed
      */
     public function get($field){
-        return $this->data[$field] ?? null;
+        return $this->data[$field] ?? '';
     }
 
-    public function require($field, $message = null){
+    public function require(string $field, string $message = ''): self{
         if ($this->isEmpty($field)) {
             throw new Exception($message ?? "The $field field is required");
         }
@@ -55,7 +55,7 @@ class Request
         return $this;
     }
 
-    public function optional($field, $default = null){
+    public function optional(string $field, mixed $default = ''): self{
         if ($this->isEmpty($field)) {
             $this->input[$field] = $default;
             return $this;
