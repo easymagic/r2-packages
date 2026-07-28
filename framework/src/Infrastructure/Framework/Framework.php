@@ -18,6 +18,10 @@ class Framework
         $this->dirPath = $dirPath;
     }
 
+    /**
+     * Boot the framework
+     * @return AppServiceContainer
+     */
     public function boot()
     {
 
@@ -39,5 +43,7 @@ class Framework
         $appServiceContainer->allowCors();
         $appServiceContainer->boot(); // load services
         $appServiceContainer->registerAutoloader($this->dirPath . '/src');
+
+        return $appServiceContainer;
     }
 }
