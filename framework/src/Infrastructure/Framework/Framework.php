@@ -13,7 +13,6 @@ use R2Packages\Framework\Infrastructure\Framework\Router\RouteService;
 class Framework
 {
     private string $dirPath = '';
-    private EnvServiceInterface $envService;
     private AppServiceContainer $appServiceContainer;
 
     public function __construct(string $dirPath)

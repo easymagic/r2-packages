@@ -78,7 +78,9 @@ class AppServiceContainer
         });
 
         $this->container->set(DbConnectionServiceInterface::class, function () {
-            return new DbConnectionService();
+            return new DbConnectionService(
+                $this->container->get(EnvServiceInterface::class)
+            );
         });
 
         $this->container->set(Migration::class, function () {
@@ -88,7 +90,9 @@ class AppServiceContainer
         });
 
         $this->container->set(MailServiceInterface::class, function () {
-            return new MailService();
+            return new MailService(
+                $this->container->get(EnvServiceInterface::class)
+            );
         });
 
         $this->container->set(FileUploadServiceInterface::class, function () {

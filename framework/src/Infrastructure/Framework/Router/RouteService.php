@@ -138,7 +138,7 @@ class RouteService implements RouteServiceInterface
         $found      = false;
 
         if (!isset($this->routes[$method])) {
-            Utils::dd("Request method not supported..");
+            die("Request method not supported..");
         }
 
         foreach ($this->routes[$method] as $route => $callback) {
@@ -171,7 +171,7 @@ class RouteService implements RouteServiceInterface
                             call_user_func_array([$clsObj, $clsMethod], $args);
                             exit;
                         } else {
-                            Utils::dd("Method " . $clsMethod . " does not exist in class " . $cls);
+                            die("Method " . $clsMethod . " does not exist in class " . $cls);
                         }
                     }
                 } catch (Exception $e) {
@@ -185,7 +185,7 @@ class RouteService implements RouteServiceInterface
         if (!$found) {
             // dd("Route not found", $path, $method, $this->routes[$method]);
 
-            Utils::dd("Route not found");
+            die("Route not found");
         }
     }
 }
