@@ -24,6 +24,8 @@ use R2Packages\Framework\Infrastructure\Framework\Router\RouteServiceInterface;
 use R2Packages\Framework\Infrastructure\Framework\Validation\ValidationService;
 use R2Packages\Framework\Infrastructure\Framework\Validation\ValidationServiceInterface;
 use R2Packages\Framework\Infrastructure\Framework\Json\JsonResponseService;
+use R2Packages\Framework\Infrastructure\Framework\Payment\PaymentService;
+use R2Packages\Framework\Infrastructure\Framework\Payment\PaymentServiceInterface;
 
 class AppServiceContainer
 {
@@ -105,6 +107,12 @@ class AppServiceContainer
 
         $this->container->set(Request::class, function () {
             return Request::getInstance($_REQUEST);
+        });
+
+        $this->container->set(PaymentServiceInterface::class, function () {
+            return new PaymentService(
+                $this->container->get(EnvServiceInterface::class)
+            );
         });
     }
 
