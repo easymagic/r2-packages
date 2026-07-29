@@ -96,7 +96,7 @@ class AppServiceContainer
         });
 
         $this->container->set(EnvServiceInterface::class, function () {
-            return new EnvService();
+            return EnvService::getInstance();
         });
     }
 

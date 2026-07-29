@@ -7,6 +7,17 @@ class EnvService implements EnvServiceInterface
 
     private array $env = [];
 
+    /**
+     * @var EnvService|null
+     */
+    private static $instance = null;
+
+    public static function getInstance(){
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 
     public function loadEnv(string $path){
         if (!file_exists($path)) return;
