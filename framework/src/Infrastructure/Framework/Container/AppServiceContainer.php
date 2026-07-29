@@ -102,6 +102,10 @@ class AppServiceContainer
         $this->container->set(EnvServiceInterface::class, function () {
             return EnvService::getInstance();
         });
+
+        $this->container->set(Request::class, function () {
+            return Request::getInstance($_REQUEST);
+        });
     }
 
     function loadRoutes(callable $callback)
