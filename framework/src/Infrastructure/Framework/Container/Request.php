@@ -7,6 +7,9 @@ class Request
     public $data = [];
     public $input = [];
 
+    /**
+     * @var Request|null
+     */
     private static $instance = null;
 
     /**
@@ -24,6 +27,10 @@ class Request
             self::$instance = new self($request);
         }
         return self::$instance;
+    }
+
+    function get(string $key){
+        return $this->data[$key] ?? '';
     }
 
     public function all()
