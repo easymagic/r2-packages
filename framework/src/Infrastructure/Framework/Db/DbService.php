@@ -121,9 +121,9 @@ class DbService implements DbServiceInterface
         foreach ($idKeys as $idKey) {
             if (isset($data[$idKey]) && $data[$idKey] > 0) {
                 $check = "SELECT * FROM $table WHERE $idKey = ?";
-                $check = $this->fetchOne($check, [$data[$idKey]]);
+                $check = dbFetchOne($check, [$data[$idKey]], $errors);
                 if ($check) {
-                    $this->update($table, $data, [$idKey => $data[$idKey]]);
+                    dbUpdate($table, $data, [$idKey => $data[$idKey]], $errors);
                 }
                 return $data[$idKey];
             }
