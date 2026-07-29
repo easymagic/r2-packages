@@ -15,6 +15,8 @@ use R2Packages\Framework\Infrastructure\Framework\Dispatcher\DispatcherServiceIn
 use R2Packages\Framework\Infrastructure\Framework\Json\JsonResponseServiceInterface;
 use R2Packages\Framework\Infrastructure\Framework\Mail\MailService;
 use R2Packages\Framework\Application\Mail\MailServiceInterface;
+use R2Packages\Framework\Infrastructure\Framework\Env\EnvService;
+use R2Packages\Framework\Infrastructure\Framework\Env\EnvServiceInterface;
 use R2Packages\Framework\Infrastructure\Framework\File\FileUploadService;
 use R2Packages\Framework\Infrastructure\Framework\File\FileUploadServiceInterface;
 use R2Packages\Framework\Infrastructure\Framework\Router\RouteService;
@@ -91,6 +93,10 @@ class AppServiceContainer
 
         $this->container->set(FileUploadServiceInterface::class, function () {
             return new FileUploadService();
+        });
+
+        $this->container->set(EnvServiceInterface::class, function () {
+            return new EnvService();
         });
     }
 
