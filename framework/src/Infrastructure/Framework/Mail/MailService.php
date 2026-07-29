@@ -2,12 +2,22 @@
 namespace R2Packages\Framework\Infrastructure\Framework\Mail;
 
 use R2Packages\Framework\Application\Mail\MailServiceInterface;
+use R2Packages\Framework\Infrastructure\Framework\Env\EnvServiceInterface;
 
 class MailService implements MailServiceInterface
 {
+    private EnvServiceInterface $envService;
+
+    public function __construct(EnvServiceInterface $envService)
+    {
+        $this->envService = $envService;
+    }
+
     public function send(string $to, string $subject, string $from, string $body){
 
-        if (mail_service() === 'mail') {
+        $mailService = $this->envService->get('MAIL_SERVICE');
+
+        if ($mailService === 'mail') {
             // use normal mail function to send the email as html
             mail($to, $subject, $body, "Content-Type: text/html; charset=UTF-8", $from);
         } else {
