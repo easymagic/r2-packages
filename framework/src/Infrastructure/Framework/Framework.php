@@ -42,7 +42,7 @@ class Framework
 
         $appServiceContainer->allowCors();
         $appServiceContainer->boot(); // load services
-        $appServiceContainer->registerAutoloader($this->dirPath . '/src');
+        $appServiceContainer->registerAutoloader($this->dirPath . '/');
 
         return $appServiceContainer;
     }
