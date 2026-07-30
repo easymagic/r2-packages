@@ -146,7 +146,12 @@ class RouteService implements RouteServiceInterface
                 $found  = true;
                 $params = $dispatcher->getParams();
 
-                $request = array_merge($request, $params, $_REQUEST, $_FILES);
+                // read from php://input
+                $input = file_get_contents('php://input');
+                $input = json_decode($input, true) ?? [];
+                // $request = array_merge($request, $input);
+
+                $request = array_merge($request, $params, $_REQUEST, $_FILES, $input);
                 $headers = getallheaders();
                 $request = array_merge($request, $headers);
                 $_REQUEST = $request;
