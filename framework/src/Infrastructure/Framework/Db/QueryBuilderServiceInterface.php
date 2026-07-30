@@ -1,5 +1,5 @@
 <?php 
-namespace App\Infrastructure\Framework\Db;
+namespace R2Packages\Framework\Infrastructure\Framework\Db;
 
 interface QueryBuilderServiceInterface
 {
