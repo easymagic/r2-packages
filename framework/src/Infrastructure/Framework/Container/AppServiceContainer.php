@@ -2,6 +2,8 @@
 
 namespace R2Packages\Framework\Infrastructure\Framework\Container;
 
+use App\Infrastructure\Framework\Db\QueryBuilderService;
+use App\Infrastructure\Framework\Db\QueryBuilderServiceInterface;
 use R2Packages\Framework\Infrastructure\Framework\Container\ContainerServiceInterface;
 use R2Packages\Framework\Infrastructure\Framework\Cors\CorsService;
 use R2Packages\Framework\Infrastructure\Framework\Cors\CorsServiceInterface;
@@ -113,6 +115,10 @@ class AppServiceContainer
             return new PaymentService(
                 $this->container->get(EnvServiceInterface::class)
             );
+        });
+
+        $this->container->set(QueryBuilderServiceInterface::class, function () {
+            return new QueryBuilderService();
         });
     }
 
