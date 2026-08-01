@@ -4,12 +4,12 @@ namespace R2Packages\Framework\Infrastructure\Framework\File;
 
 class FileUploadService implements FileUploadServiceInterface{
 
-    function uploadFile(array $file, string $path)
+    function uploadFile(array $file, string $path, string $full_path)
     {
         if (empty($file) || !is_array($file) || empty($file['tmp_name']) || (isset($file['error']) && $file['error'] !== UPLOAD_ERR_OK)) {
             return false;
         }
-        $fullPath =  $path; // use current working directory
+        $fullPath =  $full_path . '/' . $path; // use current working directory
         if (!is_dir($fullPath)) {
             mkdir($fullPath, 0777, true);
         }

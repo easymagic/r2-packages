@@ -4,5 +4,5 @@ namespace R2Packages\Framework\Infrastructure\Framework\File;
 
 interface FileUploadServiceInterface
 {
-    public function uploadFile(array $file, string $path);
+    public function uploadFile(array $file, string $path, string $full_path);
 }
