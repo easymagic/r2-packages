@@ -29,8 +29,8 @@ class Request
         return self::$instance;
     }
 
-    function get(string $key){
-        return $this->data[$key] ?? '';
+    function get(string $key,mixed $default = ''){
+        return $this->data[$key] ?? $default;
     }
 
     public function all()
