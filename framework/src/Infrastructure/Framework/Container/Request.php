@@ -10,9 +10,9 @@ class Request
     /**
      * Constructor
      */
-    public function __construct()
+    public function __construct($data = [])
     {
-        $this->data = $_REQUEST;
+        $this->data = $data;
         $this->input = [];
     }
 
