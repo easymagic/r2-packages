@@ -8,25 +8,12 @@ class Request
     public $input = [];
 
     /**
-     * @var Request|null
-     */
-    private static $instance = null;
-
-    /**
      * Constructor
-     * @param array $data
      */
-    public function __construct($data)
+    public function __construct()
     {
-        $this->data = $data;
+        $this->data = $_REQUEST;
         $this->input = [];
-    }
-
-    public static function getInstance($request = []){
-        if (!isset(self::$instance)) {
-            self::$instance = new self($request);
-        }
-        return self::$instance;
     }
 
     function get(string $key,mixed $default = ''){

@@ -47,79 +47,31 @@ class AppServiceContainer
 
     function boot()
     {
-        $this->container->set(ContainerServiceInterface::class, function () {
-            return new ContainerService();
-        });
+        $this->container->singleton(ContainerServiceInterface::class, ContainerService::class);
 
-        $this->container->set(DispatcherServiceInterface::class, function () {
-            return new DispatcherService();
-        });
+        $this->container->map(DispatcherServiceInterface::class, DispatcherService::class);
 
-        $this->container->set(RouteServiceInterface::class, function () {
-            return new RouteService(
-                $this->container->get(DispatcherServiceInterface::class),
-                $this->container->get(ContainerServiceInterface::class),
-                $this->container->get(JsonResponseServiceInterface::class)
-            );
-        });
+        $this->container->map(RouteServiceInterface::class, RouteService::class);
 
-        $this->container->set(DbServiceInterface::class, function () {
-            return new DbService(
-                $this->container->get(DbConnectionServiceInterface::class)
-            );
-        });
+        $this->container->singleton(DbServiceInterface::class, DbService::class);
 
-        $this->container->set(CorsServiceInterface::class, function () {
-            return new CorsService();
-        });
+        $this->container->map(CorsServiceInterface::class, CorsService::class);
 
-        $this->container->set(ValidationServiceInterface::class, function () {
-            return new ValidationService();
-        });
+        $this->container->map(ValidationServiceInterface::class, ValidationService::class);
 
-        $this->container->set(JsonResponseServiceInterface::class, function () {
-            return new JsonResponseService();
-        });
+        $this->container->map(JsonResponseServiceInterface::class, JsonResponseService::class);
 
-        $this->container->set(DbConnectionServiceInterface::class, function () {
-            return new DbConnectionService(
-                $this->container->get(EnvServiceInterface::class)
-            );
-        });
+        $this->container->singleton(DbConnectionServiceInterface::class, DbConnectionService::class);
 
-        $this->container->set(Migration::class, function () {
-            return new Migration(
-                $this->container->get(DbServiceInterface::class)
-            );
-        });
+        $this->container->singleton(MailServiceInterface::class, MailService::class);
 
-        $this->container->set(MailServiceInterface::class, function () {
-            return new MailService(
-                $this->container->get(EnvServiceInterface::class)
-            );
-        });
+        $this->container->map(FileUploadServiceInterface::class, FileUploadService::class);
 
-        $this->container->set(FileUploadServiceInterface::class, function () {
-            return new FileUploadService();
-        });
+        $this->container->singleton(EnvServiceInterface::class, EnvService::class);
 
-        $this->container->set(EnvServiceInterface::class, function () {
-            return EnvService::getInstance();
-        });
+        $this->container->singleton(PaymentServiceInterface::class, PaymentService::class);
 
-        $this->container->set(Request::class, function () {
-            return Request::getInstance($_REQUEST);
-        });
-
-        $this->container->set(PaymentServiceInterface::class, function () {
-            return new PaymentService(
-                $this->container->get(EnvServiceInterface::class)
-            );
-        });
-
-        $this->container->set(QueryBuilderServiceInterface::class, function () {
-            return new QueryBuilderService();
-        });
+        $this->container->map(QueryBuilderServiceInterface::class, QueryBuilderService::class);
     }
 
     function loadRoutes(callable $callback)
