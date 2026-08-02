@@ -19,12 +19,12 @@ class ContainerService implements ContainerServiceInterface
         }
 
         if (isset($this->mappedSingletonServices[$service])){
-            $this->mappedSingletonServices[$service] = $this->resolve($this->mappedSingletonServices[$service]);
+            $this->mappedSingletonServices[$service] = $this->resolve($this->mappedSingletonServices[$service], $args);
             return $this->mappedSingletonServices[$service];
         }
 
         if (isset($this->mappedServices[$service])){
-            $concreteClass = $this->resolve($this->mappedServices[$service]);
+            $concreteClass = $this->resolve($this->mappedServices[$service], $args);
             return $concreteClass;
         }
 
