@@ -60,6 +60,17 @@ class ContainerService implements ContainerServiceInterface
         foreach ($constructor->getParameters() as $param) {
             $type = $param->getType();
 
+            $primitiveTypes = ['int', 'string', 'float', 'bool', 'array', 'object'];
+            if ($type && in_array($type->getName(), $primitiveTypes)) {
+                if ($param->isDefaultValueAvailable()) {
+                    $dependencies[] = $param->getDefaultValue();
+                    // continue;
+                }else{
+                    $dependencies[] = $data;
+                }
+                continue;
+            }
+
             if (!$type) {
                 if ($param->isDefaultValueAvailable()) {
                     $dependencies[] = $param->getDefaultValue();
