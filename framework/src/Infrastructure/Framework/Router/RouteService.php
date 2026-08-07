@@ -208,7 +208,7 @@ class RouteService implements RouteServiceInterface
         if (!isset($this->commands[$command])) {
             die("Command not found");
         }
-        $this->commands[$command]($params);
+        $this->commands[$command](...$params);
         return $this;
     }
 
