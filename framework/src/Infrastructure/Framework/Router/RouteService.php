@@ -39,6 +39,9 @@ class RouteService implements RouteServiceInterface
     private $defaultGlobalPrefix      = [];
     private $nameHash                 = [];
 
+    private $commands = [];
+
+
 
     private function getResolvedPath(string $path)
     {
@@ -193,4 +196,20 @@ class RouteService implements RouteServiceInterface
             die("Route not found");
         }
     }
+
+    public function command(string $command, callable $callback)
+    {
+        $this->commands[$command] = $callback;
+        return $this;
+    }
+
+    public function executeCommand(string $command, array $params)
+    {
+        if (!isset($this->commands[$command])) {
+            die("Command not found");
+        }
+        $this->commands[$command]($params);
+        return $this;
+    }
+
 }

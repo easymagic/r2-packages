@@ -97,6 +97,12 @@ class AppServiceContainer
         });
     }
 
+    function executeCommand(string $command, array $params)
+    {
+        $this->routeService->executeCommand($command, $params);
+    }
+
+
     function allowCors() {
         $this->corsService->allow();
     }

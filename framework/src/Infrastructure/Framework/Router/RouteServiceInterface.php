@@ -10,4 +10,7 @@ interface RouteServiceInterface
     public function prefix( string $prefix, callable $callback);
     public function middleware( array $middleware, callable $callback);
     public function run( string $path, string $method);
+    public function command(string $command, callable $callback);
+    public function executeCommand(string $command, array $params);
+
 }
