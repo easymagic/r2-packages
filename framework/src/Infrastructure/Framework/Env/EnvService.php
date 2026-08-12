@@ -5,7 +5,7 @@ namespace R2Packages\Framework\Infrastructure\Framework\Env;
 class EnvService implements EnvServiceInterface
 {
 
-    private array $env = [];
+    private static array $env = [];
 
     /**
      * @var EnvService|null
@@ -28,7 +28,7 @@ class EnvService implements EnvServiceInterface
             if (strpos(trim($line), '#') === 0) continue;
             list($key, $value) = explode('=', $line, 2);
             putenv(trim($key) . '=' . trim($value));
-            $this->env[trim($key)] = trim($value);
+            self::$env[trim($key)] = trim($value);
         }
 
     }
@@ -36,6 +36,6 @@ class EnvService implements EnvServiceInterface
 
     public function get(string $key)
     {
-        return  isset($this->env[$key]) ? $this->env[$key] : '';
+        return  isset(self::$env[$key]) ? self::$env[$key] : '';
     }
 }

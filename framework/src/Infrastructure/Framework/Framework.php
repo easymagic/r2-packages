@@ -31,7 +31,7 @@ class Framework
         $dispatcherService = new DispatcherService();
         $containerService = new ContainerService();
         $jsonResponseService = new JsonResponseService();
-        $envService = new EnvService();
+        $envService = EnvService::getInstance();
         $routeService = new RouteService(
             $dispatcherService,
             $containerService,
