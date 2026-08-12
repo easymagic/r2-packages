@@ -5,6 +5,7 @@ namespace R2Packages\Framework\Infrastructure\Framework\Router;
 use Exception;
 use R2Packages\Framework\Infrastructure\Framework\Container\ContainerServiceInterface;
 use R2Packages\Framework\Infrastructure\Framework\Dispatcher\DispatcherServiceInterface;
+use R2Packages\Framework\Infrastructure\Framework\Env\EnvServiceInterface;
 use R2Packages\Framework\Infrastructure\Framework\Json\JsonResponseServiceInterface;
 
 use R2Packages\Framework\Utils;
@@ -15,15 +16,18 @@ class RouteService implements RouteServiceInterface
     private DispatcherServiceInterface $dispatcherService;
     private ContainerServiceInterface $containerService;
     private JsonResponseServiceInterface $jsonResponseService;
+    private EnvServiceInterface $envService;
 
     public function __construct(
         DispatcherServiceInterface $dispatcherService,
         ContainerServiceInterface $containerService,
-        JsonResponseServiceInterface $jsonResponseService
+        JsonResponseServiceInterface $jsonResponseService,
+        EnvServiceInterface $envService
     ) {
         $this->dispatcherService = $dispatcherService;
         $this->containerService = $containerService;
         $this->jsonResponseService = $jsonResponseService;
+        $this->envService = $envService;
     }
 
     private $routes = [
@@ -129,6 +133,13 @@ class RouteService implements RouteServiceInterface
     public function run(string $path, string $method)
     {
         $method = strtolower($method);
+
+        // ROUTE_FOLDER
+        $routeFolder = $this->envService->get('ROUTE_FOLDER');
+        if (!empty($routeFolder)) {
+            $path = str_replace($routeFolder, '', $path);
+            // $path = $routeFolder . '/' . $path;
+        }
 
         $path = trim($path, '/');
         if (empty($path)) {
